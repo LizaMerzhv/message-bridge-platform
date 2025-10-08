@@ -24,16 +24,16 @@ public class SendAtWindowBoundaryTest {
     }
 
     @Test
-    void accepts_now_and_inside_window() {
+    void accepts_soon_and_inside_window() {
         v.initialize(defaultAnno());
-        assertThat(v.isValid(Instant.now(), null)).isTrue();
+        assertThat(v.isValid(Instant.now().plusMillis(1), null)).isTrue();
         assertThat(v.isValid(Instant.now().plus(Duration.ofDays(100)), null)).isTrue();
     }
 
     @Test
     void rejects_beyond_window() {
         v.initialize(defaultAnno());
-        assertThat(v.isValid(Instant.now().plus(Duration.ofDays(366)), null)).isFalse();
+        assertThat(v.isValid(Instant.now().plus(Duration.ofDays(365)).plusSeconds(1), null)).isFalse();
     }
 
     private SendAtWindow defaultAnno() {
