@@ -1,32 +1,59 @@
 package com.example.notifi.common.error;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Map;
+
+import static com.example.notifi.common.error.ProblemTypes.*;
 
 public final class Problems {
     private Problems() {}
 
-    private static ProblemDetails basic(int status, String title, String detail, String instancePath) {
-        URI type = URI.create("about:blank");
-        URI instance = instancePath != null ? URI.create(instancePath) : null;
-        return ProblemDetails.of(type, title, status, detail, instance);
+    public static ProblemDetails of(int status, String type, String title,
+                                    String detail, String instance, String traceId,
+                                    String errorCode, Map<String, List<String>> errors) {
+        ProblemDetails p = new ProblemDetails();
+        p.setStatus(status);
+        p.setType(type != null ? URI.create(type) : null);
+        p.setTitle(title);
+        p.setDetail(detail);
+        p.setInstance(instance != null ? URI.create(instance) : null);
+        p.setTraceId(traceId);
+        p.setErrorCode(errorCode);
+        p.setErrors(errors);
+        return p;
     }
 
-    public static ProblemDetails badRequest(String detail) {
-        return basic(400, "Bad Request", detail, null);
+    public static ProblemDetails badRequest(String detail, String instance, String traceId) {
+        return of(400, BAD_REQUEST, "Bad Request", detail, instance, traceId, null, null);
     }
-    public static ProblemDetails unauthorized(String detail) {
-        return basic(401, "Unauthorized", detail, null);
+
+    public static ProblemDetails unauthorized(String detail, String instance, String traceId) {
+        return of(401, UNAUTHORIZED, "Unauthorized", detail, instance, traceId, null, null);
     }
-    public static ProblemDetails forbidden(String detail) {
-        return basic(403, "Forbidden", detail, null);
+
+    public static ProblemDetails forbidden(String detail, String instance, String traceId) {
+        return of(403, FORBIDDEN, "Forbidden", detail, instance, traceId, null, null);
     }
-    public static ProblemDetails notFound(String detail) {
-        return basic(404, "Not Found", detail, null);
+
+    public static ProblemDetails notFound(String detail, String instance, String traceId) {
+        return of(404, NOT_FOUND, "Not Found", detail, instance, traceId, null, null);
     }
-    public static ProblemDetails conflict(String detail) {
-        return basic(409, "Conflict", detail, null);
+
+    public static ProblemDetails conflict(String detail, String instance, String traceId) {
+        return of(409, CONFLICT, "Conflict", detail, instance, traceId, null, null);
     }
-    public static ProblemDetails unprocessable(String detail) {
-        return basic(422, "Unprocessable Entity", detail, null);
+
+    public static ProblemDetails unprocessable(String detail, String instance, String traceId,
+                                               Map<String, List<String>> errors) {
+        return of(422, UNPROCESSABLE, "Unprocessable Entity", detail, instance, traceId, null, errors);
+    }
+
+    public static ProblemDetails tooManyRequests(String detail, String instance, String traceId) {
+        return of(429, TOO_MANY_REQUESTS, "Too Many Requests", detail, instance, traceId, null, null);
+    }
+
+    public static ProblemDetails internal(String detail, String instance, String traceId) {
+        return of(500, INTERNAL, "Internal Server Error", detail, instance, traceId, null, null);
     }
 }

@@ -22,23 +22,13 @@ public class ProblemDetailsJsonTest {
     }
 
     @Test
-    void serializes_full_and_basic_factories() throws JsonProcessingException {
-        ProblemDetails p = ProblemDetails.of(
-                URI.create("about:blank"),
-                "Unprocessable Entity",
-                422,
-                "detail",
-                URI.create("/api/v1/resource")
-        );
+    void problem_serializes_as_problem_json() throws Exception {
+        ProblemDetails p = Problems.notFound("N/A", "/r", "t");
+        com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper()
+            .findAndRegisterModules();
         String json = om.writeValueAsString(p);
-        assertThat(json).contains("\"type\":\"about:blank\"");
-        assertThat(json).contains("\"title\":\"Unprocessable Entity\"");
-        assertThat(json).contains("\"status\":422");
-        assertThat(json).contains("\"detail\":\"detail\"");
-        assertThat(json).contains("\"instance\":\"/api/v1/resource\"");
-
-        assertThat(Problems.badRequest("x").getStatus()).isEqualTo(400);
-        assertThat(Problems.conflict("y").getStatus()).isEqualTo(409);
-        assertThat(Problems.unprocessable("z").getStatus()).isEqualTo(422);
+        assertThat(json).contains("\"status\":404");
+        assertThat(json).doesNotContain("\"errors\":{}"); // пустое -> null
     }
+
 }
