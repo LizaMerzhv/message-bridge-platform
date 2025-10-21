@@ -3,6 +3,8 @@ package com.example.notifi.common.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Locale;
+
 public enum Channel {
     EMAIL;
 
@@ -14,5 +16,9 @@ public enum Channel {
     @JsonValue
     public String toValue() {
         return name().toLowerCase();
+    }
+
+    public String metricTag() {
+        return name().toLowerCase(Locale.ROOT);
     }
 }
