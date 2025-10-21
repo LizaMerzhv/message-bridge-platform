@@ -1,4 +1,4 @@
-package com.example.notifi.db;
+package com.example.notifi.api.db;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
