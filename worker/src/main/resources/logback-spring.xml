@@ -1,0 +1,11 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>{"timestamp":"%date{ISO8601}","level":"%level","logger":"%logger{36}","thread":"%thread","service":"worker","env":"${APP_ENV:-local}","version":"${APP_VERSION:-dev}","traceId":"%X{traceId}","message":"%replace(%msg%nopex){\"\\\"\",\"\\\\\\\"\"}"}%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
