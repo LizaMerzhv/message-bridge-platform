@@ -9,8 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.Map;
@@ -19,208 +17,138 @@ import java.util.UUID;
 @Entity
 @Table(name = "notification")
 public class NotificationEntity {
-  @Id private UUID id;
 
-  @Column(nullable = false)
-  private UUID clientId;
+    @Id
+    private UUID id;
 
-  @Column(nullable = false)
-  private String externalRequestId;
+    @Column(nullable = false)
+    private UUID clientId;
 
-  @Column(nullable = false)
-  private Instant sendAt;
+    @Column(nullable = false)
+    private String externalRequestId;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private NotificationStatus status;
+    @Column(name = "\"send_at\"", nullable = false)
+    private Instant sendAt;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private Channel channel;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private NotificationStatus status;
 
-  @Column(name = "recipient", nullable = false)
-  private String toAddress;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Channel channel;
 
-  private String subject;
+    @Column(name = "\"to\"", nullable = false)
+    private String toAddress;
 
-  private String templateCode;
+    private String subject;
 
-  @Convert(converter = JsonAttributesConverter.class)
-  private Map<String, Object> variables;
+    private String templateCode;
 
-  private String traceId;
+    @Convert(converter = JsonAttributesConverter.class)
+    private Map<String, Object> variables;
 
-  private String webhookUrl;
+    private String traceId;
 
-  private String webhookSecret;
+    private String webhookUrl;
+    private String webhookSecret;
 
-  @Column(nullable = false)
-  private Instant createdAt;
+    @Column(name = "\"attempts\"", nullable = false)
+    private int attempts;
 
-  @Column(nullable = false)
-  private Instant updatedAt;
+    @Column(nullable = false)
+    private Instant createdAt;
 
-  public UUID getId() {
-    return id;
-  }
+    @Column(nullable = false)
+    private Instant updatedAt;
 
-  public void setId(UUID id) {
-    this.id = id;
-  }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
-  public UUID getClientId() {
-    return clientId;
-  }
+    public UUID getClientId() { return clientId; }
+    public void setClientId(UUID clientId) { this.clientId = clientId; }
 
-  public void setClientId(UUID clientId) {
-    this.clientId = clientId;
-  }
+    public String getExternalRequestId() { return externalRequestId; }
+    public void setExternalRequestId(String externalRequestId) { this.externalRequestId = externalRequestId; }
 
-  public String getExternalRequestId() {
-    return externalRequestId;
-  }
+    public Instant getSendAt() { return sendAt; }
+    public void setSendAt(Instant sendAt) { this.sendAt = sendAt; }
 
-  public void setExternalRequestId(String externalRequestId) {
-    this.externalRequestId = externalRequestId;
-  }
+    public NotificationStatus getStatus() { return status; }
+    public void setStatus(NotificationStatus status) { this.status = status; }
 
-  public Instant getSendAt() {
-    return sendAt;
-  }
+    public Channel getChannel() { return channel; }
+    public void setChannel(Channel channel) { this.channel = channel; }
 
-  public void setSendAt(Instant sendAt) {
-    this.sendAt = sendAt;
-  }
+    public String getToAddress() { return toAddress; }
+    public void setToAddress(String toAddress) { this.toAddress = toAddress; }
 
-  public NotificationStatus getStatus() {
-    return status;
-  }
+    public String getSubject() { return subject; }
+    public void setSubject(String subject) { this.subject = subject; }
 
-  public void setStatus(NotificationStatus status) {
-    this.status = status;
-  }
+    public String getTemplateCode() { return templateCode; }
+    public void setTemplateCode(String templateCode) { this.templateCode = templateCode; }
 
-  public Channel getChannel() {
-    return channel;
-  }
+    public Map<String, Object> getVariables() { return variables; }
+    public void setVariables(Map<String, Object> variables) { this.variables = variables; }
 
-  public void setChannel(Channel channel) {
-    this.channel = channel;
-  }
+    public String getTraceId() { return traceId; }
+    public void setTraceId(String traceId) { this.traceId = traceId; }
 
-  public String getToAddress() {
-    return toAddress;
-  }
+    public String getWebhookUrl() { return webhookUrl; }
+    public void setWebhookUrl(String webhookUrl) { this.webhookUrl = webhookUrl; }
 
-  public void setToAddress(String toAddress) {
-    this.toAddress = toAddress;
-  }
+    public String getWebhookSecret() { return webhookSecret; }
+    public void setWebhookSecret(String webhookSecret) { this.webhookSecret = webhookSecret; }
 
-  public String getSubject() {
-    return subject;
-  }
+    public int getAttempts() { return attempts; }
+    public void setAttempts(int attempts) { this.attempts = attempts; }
 
-  public void setSubject(String subject) {
-    this.subject = subject;
-  }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
-  public String getTemplateCode() {
-    return templateCode;
-  }
+    public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 
-  public void setTemplateCode(String templateCode) {
-    this.templateCode = templateCode;
-  }
+    // --- domain helpers ---
 
-  public Map<String, Object> getVariables() {
-    return variables;
-  }
-
-  public void setVariables(Map<String, Object> variables) {
-    this.variables = variables;
-  }
-
-  public String getTraceId() {
-    return traceId;
-  }
-
-  public void setTraceId(String traceId) {
-    this.traceId = traceId;
-  }
-
-  public String getWebhookUrl() {
-    return webhookUrl;
-  }
-
-  public void setWebhookUrl(String webhookUrl) {
-    this.webhookUrl = webhookUrl;
-  }
-
-  public String getWebhookSecret() {
-    return webhookSecret;
-  }
-
-  public void setWebhookSecret(String webhookSecret) {
-    this.webhookSecret = webhookSecret;
-  }
-
-  public Instant getCreatedAt() {
-    return createdAt;
-  }
-
-  public Instant getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public void markQueued(Instant now) {
-    this.status = NotificationStatus.QUEUED;
-    this.updatedAt = now;
-  }
-
-  public void markSent(Instant now) {
-    this.status = NotificationStatus.SENT;
-    this.updatedAt = now;
-  }
-
-  public void markFailed(Instant now) {
-    this.status = NotificationStatus.FAILED;
-    this.updatedAt = now;
-  }
-
-  @PrePersist
-  void prePersist() {
-    Instant now = Instant.now();
-    this.createdAt = now;
-    this.updatedAt = now;
-    validateContent();
-  }
-
-  @PreUpdate
-  void preUpdate() {
-    validateContent();
-  }
-
-  private void validateContent() {
-    boolean subjectPresent = subject != null && !subject.isBlank();
-    boolean templatePresent = templateCode != null && !templateCode.isBlank();
-    boolean variablesPresent = variables != null && !variables.isEmpty();
-    if (subjectPresent == (templatePresent && variablesPresent)) {
-      throw new IllegalStateException("Notification content must satisfy XOR invariant");
+    public void markQueued(Instant now) {
+        this.status = NotificationStatus.QUEUED;
+        this.updatedAt = now;
     }
-  }
 
-  public NotificationSnapshot toSnapshot() {
-    return new NotificationSnapshot(id, clientId, externalRequestId, channel, toAddress, subject, templateCode, variables, traceId);
-  }
+    public void markSent(Instant now) {
+        this.status = NotificationStatus.SENT;
+        this.updatedAt = now;
+    }
 
-  public record NotificationSnapshot(
-      UUID id,
-      UUID clientId,
-      String externalRequestId,
-      Channel channel,
-      String to,
-      String subject,
-      String templateCode,
-      Map<String, Object> variables,
-      String traceId) {}
+    public void markFailed(Instant now) {
+        this.status = NotificationStatus.FAILED;
+        this.updatedAt = now;
+    }
+
+    private void validateContent() {
+        boolean subjectPresent = subject != null && !subject.isBlank();
+        boolean templatePresent = templateCode != null && !templateCode.isBlank();
+        boolean variablesPresent = variables != null && !variables.isEmpty();
+        if (subjectPresent == (templatePresent && variablesPresent)) {
+            throw new IllegalStateException("Notification content must satisfy XOR invariant");
+        }
+    }
+
+    public NotificationSnapshot toSnapshot() {
+        return new NotificationSnapshot(
+            id, clientId, externalRequestId, channel, toAddress, subject, templateCode, variables, traceId);
+    }
+
+    public record NotificationSnapshot(
+        UUID id,
+        UUID clientId,
+        String externalRequestId,
+        Channel channel,
+        String to,
+        String subject,
+        String templateCode,
+        Map<String, Object> variables,
+        String traceId) {}
 }
