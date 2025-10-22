@@ -8,11 +8,10 @@ import java.util.function.DoubleSupplier;
 
 public class RetryPolicy {
 
-    private static final Map<Integer, Duration> ATTEMPT_BASE =
-        Map.of(
-            1, Duration.ofSeconds(10),
-            2, Duration.ofSeconds(30),
-            3, Duration.ofSeconds(90));
+    private static final Map<Integer, Duration> ATTEMPT_BASE = Map.of(
+        1, Duration.ofSeconds(10),
+        2, Duration.ofSeconds(30),
+        3, Duration.ofSeconds(90));
 
     private final DoubleSupplier randomSupplier;
     private final int maxAttempts;
@@ -26,6 +25,7 @@ public class RetryPolicy {
         this(ThreadLocalRandom.current()::nextDouble, 3);
     }
 
+    /** 1→10s, 2→30s, 3→90s */
     public Duration baseDelayForAttempt(int attempt) {
         return ATTEMPT_BASE.getOrDefault(attempt, Duration.ofSeconds(90));
     }
@@ -52,9 +52,10 @@ public class RetryPolicy {
         }
         int nextAttempt = currentAttempt + 1;
 
-        Duration base = baseDelayForAttempt(currentAttempt);
+        Duration base = baseDelayForAttempt(nextAttempt);
         Duration ttl  = minimumDelay(base);
-        Duration jitter = Duration.ZERO;
+        Duration jitter = Duration.ofMillis(
+            Math.round((maximumDelay(base).toMillis() - ttl.toMillis()) * randomSupplier.getAsDouble()));
 
         return RetryDecision.retry(nextAttempt, ttl, jitter);
     }
