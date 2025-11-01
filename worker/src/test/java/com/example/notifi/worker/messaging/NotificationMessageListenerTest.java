@@ -9,7 +9,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.example.notifi.common.model.NotificationStatus;
+import com.example.notifi.api.data.NotificationStatus;
 import com.example.notifi.common.model.NotificationTaskPayload;
 import com.example.notifi.worker.config.WorkerProperties;
 import com.example.notifi.worker.model.DeliveryEntity;

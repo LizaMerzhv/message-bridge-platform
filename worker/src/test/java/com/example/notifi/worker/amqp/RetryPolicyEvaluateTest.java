@@ -24,7 +24,7 @@ class RetryPolicyEvaluateTest {
         value.set(1.0d);
         RetryDecision second = policy.evaluate(2);
         assertThat(second.ttl()).isEqualTo(Duration.ofSeconds(72));
-        assertThat(second.additionalDelay().toMillis()).isBetween(0L, 36_000L);
+        assertThat(second.additionalDelay().toMillis()).isBetween(0L, 18_000L);
 
         RetryDecision finalAttempt = policy.evaluate(3);
         assertThat(finalAttempt.shouldRetry()).isFalse();
