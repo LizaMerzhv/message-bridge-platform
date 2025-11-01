@@ -5,8 +5,6 @@ import com.example.notifi.api.core.notification.exception.SendAtWindowException;
 import com.example.notifi.api.core.template.exception.TemplateCodeNotFoundException;
 import com.example.notifi.api.core.template.exception.TemplateInactiveException;
 import com.example.notifi.api.core.template.exception.TemplateNotFoundException;
-import com.example.notifi.common.error.ProblemDetails;
-import com.example.notifi.common.error.Problems;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.MDC;
@@ -28,11 +26,9 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 public class ProblemDetailsAdvice {
 
     private static String traceId() {
-        // Единый источник traceId во всех проблемах
         return MDC.get("traceId");
     }
 
-    // 400: ошибки валидации тела/биндинга
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     public ResponseEntity<ProblemDetails> handleValidationErrors(Exception ex, HttpServletRequest req) {
         String detail = aggregateErrors(ex);
@@ -42,7 +38,6 @@ public class ProblemDetailsAdvice {
             .body(body);
     }
 
-    // 400: ошибки ConstraintValidator
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ProblemDetails> handleConstraintViolation(ConstraintViolationException ex,
                                                                     HttpServletRequest req) {
@@ -53,7 +48,6 @@ public class ProblemDetailsAdvice {
             .body(body);
     }
 
-    // 400: неверный JSON/формат
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ProblemDetails> handleUnreadable(HttpMessageNotReadableException ex,
                                                            HttpServletRequest req) {
@@ -63,7 +57,6 @@ public class ProblemDetailsAdvice {
             .body(body);
     }
 
-    // 400: отсутствует обязательный параметр
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ProblemDetails> handleMissingParam(MissingServletRequestParameterException ex,
                                                              HttpServletRequest req) {
@@ -74,7 +67,6 @@ public class ProblemDetailsAdvice {
             .body(body);
     }
 
-    // 404: уведомление не найдено (специализированный type)
     @ExceptionHandler(NotificationNotFoundException.class)
     public ResponseEntity<ProblemDetails> handleNotificationNotFound(NotificationNotFoundException ex,
                                                                      HttpServletRequest req) {
@@ -93,7 +85,6 @@ public class ProblemDetailsAdvice {
             .body(body);
     }
 
-    // 404: шаблон не найден (специализированный type)
     @ExceptionHandler(TemplateNotFoundException.class)
     public ResponseEntity<ProblemDetails> handleTemplateNotFound(TemplateNotFoundException ex,
                                                                  HttpServletRequest req) {
@@ -112,7 +103,6 @@ public class ProblemDetailsAdvice {
             .body(body);
     }
 
-    // 422: код шаблона отсутствует
     @ExceptionHandler(TemplateCodeNotFoundException.class)
     public ResponseEntity<ProblemDetails> handleTemplateCodeNotFound(TemplateCodeNotFoundException ex,
                                                                      HttpServletRequest req) {
@@ -131,7 +121,6 @@ public class ProblemDetailsAdvice {
             .body(body);
     }
 
-    // 422: шаблон INACTIVE
     @ExceptionHandler(TemplateInactiveException.class)
     public ResponseEntity<ProblemDetails> handleTemplateInactive(TemplateInactiveException ex,
                                                                  HttpServletRequest req) {
@@ -150,7 +139,6 @@ public class ProblemDetailsAdvice {
             .body(body);
     }
 
-    // 422: окно sendAt нарушено
     @ExceptionHandler(SendAtWindowException.class)
     public ResponseEntity<ProblemDetails> handleSendAt(SendAtWindowException ex,
                                                        HttpServletRequest req) {
@@ -169,7 +157,6 @@ public class ProblemDetailsAdvice {
             .body(body);
     }
 
-    // 409: БД-конфликты (не про идемпотентность)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ProblemDetails> handleConflict(DataIntegrityViolationException ex,
                                                          HttpServletRequest req) {
@@ -182,7 +169,6 @@ public class ProblemDetailsAdvice {
             .body(body);
     }
 
-    // 400: прочие бизнес-ошибки
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ProblemDetails> handleBadRequest(IllegalArgumentException ex,
                                                            HttpServletRequest req) {
@@ -192,7 +178,6 @@ public class ProblemDetailsAdvice {
             .body(body);
     }
 
-    // 500: fallback
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ProblemDetails> handleInternal(Exception ex, HttpServletRequest req) {
         ProblemDetails body = Problems.internal("Internal error", req.getRequestURI(), traceId());

@@ -1,6 +1,6 @@
 package com.example.notifi.api.web.template;
 
-import com.example.notifi.common.validation.TemplateCode;
+import com.example.notifi.api.validation.TemplateCode;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 

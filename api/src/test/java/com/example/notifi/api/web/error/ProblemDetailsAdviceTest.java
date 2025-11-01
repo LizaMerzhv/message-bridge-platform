@@ -1,6 +1,5 @@
 package com.example.notifi.api.web.error;
 
-import com.example.notifi.common.error.ProblemDetails;
 import com.example.notifi.api.test.WebTestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
