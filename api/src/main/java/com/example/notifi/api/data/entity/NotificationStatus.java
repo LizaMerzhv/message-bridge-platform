@@ -1,4 +1,4 @@
-package com.example.notifi.common.model;
+package com.example.notifi.api.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

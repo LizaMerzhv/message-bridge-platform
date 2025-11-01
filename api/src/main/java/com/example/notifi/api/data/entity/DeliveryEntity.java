@@ -1,6 +1,5 @@
 package com.example.notifi.api.data.entity;
 
-import com.example.notifi.common.model.DeliveryStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -36,7 +36,6 @@ public class NotificationEntity {
     @Column(name = "\"templateCode\"", length = 64)
     private String templateCode;
 
-    // jsonb (БЕЗ конвертера строк) — Hibernate 6 умеет JSON сам
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "variables", columnDefinition = "jsonb")
     private Map<String, Object> variables;
