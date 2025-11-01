@@ -9,7 +9,7 @@ import com.example.notifi.api.data.repository.NotificationRepository;
 import com.example.notifi.api.data.spec.NotificationSpecifications;
 import com.example.notifi.api.security.ClientPrincipal;
 import com.example.notifi.api.web.notification.dto.CreateNotificationRequest;
-import com.example.notifi.api.data.entity.Channel;
+import com.example.notifi.common.model.Channel;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.UUID;

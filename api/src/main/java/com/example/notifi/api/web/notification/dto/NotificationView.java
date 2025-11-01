@@ -1,6 +1,6 @@
 package com.example.notifi.api.web.notification.dto;
 
-import com.example.notifi.api.data.entity.Channel;
+import com.example.notifi.common.model.Channel;
 import com.example.notifi.api.data.entity.NotificationStatus;
 
 import java.time.Instant;

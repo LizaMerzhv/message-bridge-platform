@@ -1,6 +1,6 @@
 package com.example.notifi.api.model;
 
-import com.example.notifi.api.data.entity.Channel;
+import com.example.notifi.common.model.Channel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

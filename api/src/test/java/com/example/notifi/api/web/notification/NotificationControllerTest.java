@@ -10,7 +10,7 @@ import com.example.notifi.api.security.ClientAuthenticationToken;
 import com.example.notifi.api.security.ClientPrincipal;
 import com.example.notifi.api.web.error.ProblemDetailsAdvice;
 import com.example.notifi.api.web.notification.dto.CreateNotificationRequest;
-import com.example.notifi.api.data.entity.Channel;
+import com.example.notifi.common.model.Channel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

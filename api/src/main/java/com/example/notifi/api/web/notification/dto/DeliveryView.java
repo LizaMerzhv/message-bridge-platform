@@ -1,6 +1,6 @@
 package com.example.notifi.api.web.notification.dto;
 
-import com.example.notifi.api.data.entity.DeliveryStatus;
+import com.example.notifi.common.model.DeliveryStatus;
 
 import java.time.Instant;
 import java.util.UUID;

@@ -9,7 +9,7 @@ import com.example.notifi.api.data.entity.NotificationStatus;
 import com.example.notifi.api.data.repository.NotificationRepository;
 import com.example.notifi.api.security.ClientPrincipal;
 import com.example.notifi.api.web.notification.dto.CreateNotificationRequest;
-import com.example.notifi.api.data.entity.Channel;
+import com.example.notifi.common.model.Channel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

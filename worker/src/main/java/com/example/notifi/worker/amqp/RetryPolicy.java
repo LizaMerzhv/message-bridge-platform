@@ -53,12 +53,16 @@ public class RetryPolicy {
         int nextAttempt = currentAttempt + 1;
 
         Duration base = baseDelayForAttempt(nextAttempt);
-        Duration ttl  = minimumDelay(base);
+
+        Duration ttl = minimumDelay(base);
+
         Duration jitter = Duration.ofMillis(
-            Math.round((maximumDelay(base).toMillis() - ttl.toMillis()) * randomSupplier.getAsDouble()));
+            Math.round(base.toMillis() * 0.2 * randomSupplier.getAsDouble())
+        );
 
         return RetryDecision.retry(nextAttempt, ttl, jitter);
     }
+
 
     private static Duration scale(Duration base, double factor) {
         return Duration.ofMillis(Math.round(base.toMillis() * factor));
