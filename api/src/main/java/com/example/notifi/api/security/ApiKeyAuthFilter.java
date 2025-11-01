@@ -2,7 +2,7 @@ package com.example.notifi.api.security;
 
 import com.example.notifi.api.data.entity.ClientEntity;
 import com.example.notifi.api.data.repository.ClientRepository;
-import com.example.notifi.common.error.ProblemDetails;
+import com.example.notifi.api.web.error.ProblemDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import static com.example.notifi.common.error.Problems.unauthorized;
+import static com.example.notifi.api.web.error.Problems.unauthorized;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 
 public class ApiKeyAuthFilter extends OncePerRequestFilter {

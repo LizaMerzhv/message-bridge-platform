@@ -1,7 +1,7 @@
 package com.example.notifi.api.security;
 
 import com.example.notifi.api.test.WebTestBase;
-import com.example.notifi.common.error.ProblemDetails;
+import com.example.notifi.api.web.error.ProblemDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

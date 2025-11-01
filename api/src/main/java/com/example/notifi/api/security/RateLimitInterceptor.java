@@ -1,15 +1,14 @@
 package com.example.notifi.api.security;
 
-import com.example.notifi.common.error.ProblemDetails;
+import com.example.notifi.api.web.error.ProblemDetails;
+import com.example.notifi.api.web.error.Problems;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URI;
+
 import java.time.Clock;
 import java.time.Instant;
-import org.slf4j.MDC;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.web.servlet.HandlerInterceptor;
 
 public class RateLimitInterceptor implements HandlerInterceptor {
@@ -59,8 +58,8 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     private boolean writeTooManyRequestsProblem(HttpServletRequest request, HttpServletResponse response)
         throws java.io.IOException {
 
-        com.example.notifi.common.error.ProblemDetails body =
-            com.example.notifi.common.error.Problems.tooManyRequests(
+        ProblemDetails body =
+            Problems.tooManyRequests(
                 "Rate limit exceeded",
                 request.getRequestURI(),
                 org.slf4j.MDC.get("traceId")
