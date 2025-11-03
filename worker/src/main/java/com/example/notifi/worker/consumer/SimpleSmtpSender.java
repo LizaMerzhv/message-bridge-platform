@@ -1,6 +1,6 @@
 package com.example.notifi.worker.consumer;
 
-import com.example.notifi.common.messaging.NotificationTaskMessage; // SMTP sender consumes API-produced DTO
+import com.example.notifi.common.messaging.NotificationTaskMessage;
 import jakarta.mail.Message;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
