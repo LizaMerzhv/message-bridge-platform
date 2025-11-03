@@ -1,6 +1,6 @@
 package com.example.notifi.worker.consumer;
 
-import com.example.notifi.common.messaging.NotificationTaskMessage; // use DTO emitted by API service
+import com.example.notifi.common.messaging.NotificationTaskMessage;
 import com.example.notifi.worker.amqp.AmqpPublisher;
 import com.example.notifi.worker.amqp.RetryPolicy;
 import com.example.notifi.worker.amqp.RetryPolicy.RetryDecision;
