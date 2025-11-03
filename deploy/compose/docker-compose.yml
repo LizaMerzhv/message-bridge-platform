@@ -1,15 +1,28 @@
 version: "3.9"
 
 services:
-  postgres:
+  postgres-api:
     image: postgres:15
     environment:
-      POSTGRES_DB: notifi
-      POSTGRES_USER: ${DB_USER:-notifi}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-notifi}
-    ports: ["5432:5432"]
+      POSTGRES_DB: notifi_api
+      POSTGRES_USER: ${API_DB_USER:-notifi_api}
+      POSTGRES_PASSWORD: ${API_DB_PASSWORD:-notifi_api}
+    ports: ["5442:5432"]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-notifi} -d notifi"]
+      test: ["CMD-SHELL", "pg_isready -U ${API_DB_USER:-notifi_api} -d notifi_api"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  postgres-worker:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: notifi_worker
+      POSTGRES_USER: ${WORKER_DB_USER:-notifi_worker}
+      POSTGRES_PASSWORD: ${WORKER_DB_PASSWORD:-notifi_worker}
+    ports: ["5443:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${WORKER_DB_USER:-notifi_worker} -d notifi_worker"]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -17,18 +30,7 @@ services:
   rabbitmq:
     image: rabbitmq:3.12-management
     ports: ["5672:5672", "15672:15672"]
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
 
   mailhog:
     image: mailhog/mailhog:latest
     ports: ["8025:8025", "1025:1025"]
-
-  webhook-catcher:
-    image: mendhak/http-https-echo:32
-    environment:
-      - HTTP_PORT=8080
-    ports: ["8080:8080"]

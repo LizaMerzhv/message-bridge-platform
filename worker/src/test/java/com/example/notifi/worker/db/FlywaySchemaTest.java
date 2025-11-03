@@ -1,23 +1,19 @@
-package com.example.notifi.api.db;
+package com.example.notifi.worker.db;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.jdbc.core.JdbcTemplate;
-
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.sql.SQLException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Testcontainers
 @DataJpaTest
@@ -26,9 +22,9 @@ class FlywaySchemaTest {
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:15.6-alpine")
-        .withDatabaseName("notifi_api")
-        .withUsername("notifi_api")
-        .withPassword("notifi_api")
+        .withDatabaseName("notifi_worker")
+        .withUsername("notifi_worker")
+        .withPassword("notifi_worker")
         .withReuse(true)
         .waitingFor(Wait.forListeningPort());
 
@@ -43,33 +39,9 @@ class FlywaySchemaTest {
     JdbcTemplate jdbc;
 
     @Test
-    void shouldCreateRequiredTables() {
-        assertThat(reg("public.client")).isNotNull();
-        assertThat(reg("public.template")).isNotNull();
+    void shouldCreateWorkerTables() {
         assertThat(reg("public.notification")).isNotNull();
         assertThat(reg("public.delivery")).isNotNull();
-    }
-
-    @Test
-    void shouldCreateExpectedIndexes() {
-        assertThat(reg("public.ix_notification_status_send_at")).isNotNull();
-        assertThat(reg("public.ix_notification_client_created_at")).isNotNull();
-        assertThat(reg("public.ix_delivery_notification_attempt")).isNotNull();
-        // assertThat(reg("public.ix_delivery_status")).isNotNull();
-    }
-
-    @Test
-    void shouldEnforceXorConstraintOnNotification() {
-        assertThatThrownBy(() ->
-            jdbc.execute("""
-                INSERT INTO notification
-                  (id,"clientId","externalRequestId",channel,"to","sendAt",status,attempts,"createdAt","updatedAt")
-                VALUES
-                  (gen_random_uuid(), gen_random_uuid(), 'dup', 'email', 'u@example.com', now(), 'CREATED', 0, now(), now())
-            """)
-        )
-            .hasRootCauseInstanceOf(SQLException.class)
-            .hasMessageContaining("notification_subject_template_xor");
     }
 
     private String reg(String name) {

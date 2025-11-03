@@ -12,6 +12,7 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +31,10 @@ public class WorkerConfiguration {
 
   @Bean
   public RetryPolicy retryPolicy(WorkerProperties properties) {
-    return new RetryPolicy(
-        ThreadLocalRandom.current()::nextDouble, properties.getConsumer().getRetry().getMaxAttempts());
+      return new RetryPolicy(
+          ThreadLocalRandom.current()::nextDouble,
+          properties.getRetry().getMaxAttempts() // <-- было getConsumer().getRetry()
+      );
   }
 
   @Bean
@@ -50,6 +53,12 @@ public class WorkerConfiguration {
         .withArgument("x-dead-letter-exchange", properties.getAmqp().getDlx())
         .withArgument("x-dead-letter-routing-key", properties.getAmqp().getDlqRoutingKey())
         .build();
+  }
+
+  @Bean
+  public Queue ingestQueue(WorkerProperties properties) {
+      return QueueBuilder.durable(properties.getAmqp().getIngestQueue())
+          .build(); // ingestion queue keeps raw tasks for worker DB
   }
 
   @Bean
@@ -72,6 +81,15 @@ public class WorkerConfiguration {
         .with(properties.getAmqp().getTasksRoutingKey());
   }
 
+
+  @Bean
+  public Binding ingestBinding(
+      WorkerProperties properties, Queue ingestQueue, DirectExchange notifiExchange) {
+      return BindingBuilder.bind(ingestQueue)
+          .to(notifiExchange)
+          .with(properties.getAmqp().getIngestRoutingKey()); // route API events to ingestion queue
+  }
+
   @Bean
   public Binding retryBinding(WorkerProperties properties, Queue retryQueue, DirectExchange notifiExchange) {
     return BindingBuilder.bind(retryQueue)
@@ -85,6 +103,14 @@ public class WorkerConfiguration {
         .to(deadLetterExchange)
         .with(properties.getAmqp().getDlqRoutingKey());
   }
+
+    @Bean
+    public RabbitTemplate rabbitTemplate(
+        ConnectionFactory connectionFactory, Jackson2JsonMessageConverter messageConverter) {
+        RabbitTemplate template = new RabbitTemplate(connectionFactory);
+        template.setMessageConverter(messageConverter); // align producer serialization with API
+        return template;
+    }
 
   @Bean
   public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {

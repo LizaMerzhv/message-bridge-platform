@@ -1,7 +1,7 @@
 package com.example.notifi.worker.amqp;
 
+import com.example.notifi.common.messaging.NotificationTaskMessage; // publish DTO emitted by API
 import com.example.notifi.worker.config.WorkerProperties;
-import com.example.notifi.worker.model.NotificationMessage;
 import java.time.Duration;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
@@ -19,14 +19,14 @@ public class AmqpPublisher {
         this.properties = properties;
     }
 
-    public void publishTask(NotificationMessage message) {
+    public void publishTask(NotificationTaskMessage message) {
         rabbitTemplate.convertAndSend(
             properties.getAmqp().getExchange(),
             properties.getAmqp().getTasksRoutingKey(),
             message);
     }
 
-    public void publishRetry(NotificationMessage message, Duration ttl, Duration jitter) {
+    public void publishRetry(NotificationTaskMessage message, Duration ttl, Duration jitter) {
         long ttlMillis = Math.max(1, ttl.plus(jitter).toMillis());
         Message original = rabbitTemplate.getMessageConverter().toMessage(message, null);
         Message amqpMessage = MessageBuilder
@@ -39,7 +39,7 @@ public class AmqpPublisher {
             amqpMessage);
     }
 
-    public void publishDlq(NotificationMessage message) {
+    public void publishDlq(NotificationTaskMessage message) {
         rabbitTemplate.convertAndSend(
             properties.getAmqp().getDlx(),
             properties.getAmqp().getDlqRoutingKey(),

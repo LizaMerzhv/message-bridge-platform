@@ -1,6 +1,6 @@
 package com.example.notifi.worker.scheduler;
 
-import com.example.notifi.worker.model.NotificationMessage;
+import com.example.notifi.common.messaging.NotificationTaskMessage;
 import com.example.notifi.worker.amqp.AmqpPublisher;
 import com.example.notifi.worker.config.WorkerProperties;
 import com.example.notifi.worker.metrics.WorkerMetrics;
@@ -49,10 +49,11 @@ public class SchedulerService {
     }
 
     for (NotificationEntity notification : due) {
-      notification.markQueued(now);
-      NotificationMessage message = mapper.toMessage(notification, 1);
-      publisher.publishTask(message);
-      metrics.incrementNotificationsQueued();
+        int attempt = 1; // initial attempt for worker processing
+        notification.markQueued(now, attempt);
+        NotificationTaskMessage message = mapper.toMessage(notification, attempt);
+        publisher.publishTask(message);
+        metrics.incrementNotificationsQueued();
     }
   }
 }
