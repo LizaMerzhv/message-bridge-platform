@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="fragments/layout :: layout('Create template', ~{::content})">
+    <section class="space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold text-sky-300">Create template</h1>
+                <p class="text-sm text-slate-400">Define ACTIVE email template.</p>
+            </div>
+            <a href="/templates" class="text-sm text-sky-400 hover:text-sky-200">Cancel</a>
+        </div>
+        <form th:action="@{/templates}" th:object="${templateForm}" method="post" class="space-y-6 rounded-lg border border-slate-800 bg-slate-900/40 p-6">
+            <div class="grid gap-4 md:grid-cols-2">
+                <div>
+                    <label class="text-xs uppercase text-slate-400">Code</label>
+                    <input type="text" th:field="*{code}" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-800/60 text-sm text-slate-100" required />
+                    <p class="mt-1 text-xs text-rose-400" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></p>
+                </div>
+                <div>
+                    <label class="text-xs uppercase text-slate-400">Subject</label>
+                    <input type="text" th:field="*{subject}" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-800/60 text-sm text-slate-100" required />
+                    <p class="mt-1 text-xs text-rose-400" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></p>
+                </div>
+            </div>
+            <div class="grid gap-4 md:grid-cols-2">
+                <div>
+                    <label class="text-xs uppercase text-slate-400">Body HTML</label>
+                    <textarea th:field="*{bodyHtml}" rows="8" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-800/60 text-sm text-slate-100" required></textarea>
+                    <p class="mt-1 text-xs text-rose-400" th:if="${#fields.hasErrors('bodyHtml')}" th:errors="*{bodyHtml}"></p>
+                </div>
+                <div>
+                    <label class="text-xs uppercase text-slate-400">Body text</label>
+                    <textarea th:field="*{bodyText}" rows="8" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-800/60 text-sm text-slate-100" required></textarea>
+                    <p class="mt-1 text-xs text-rose-400" th:if="${#fields.hasErrors('bodyText')}" th:errors="*{bodyText}"></p>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button type="submit" class="inline-flex items-center rounded-md bg-sky-500 px-5 py-2 text-sm font-medium text-slate-900 hover:bg-sky-400">Create</button>
+            </div>
+        </form>
+    </section>
+</th:block>
+</html>

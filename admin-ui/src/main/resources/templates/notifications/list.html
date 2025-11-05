@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{fragments/layout :: layout('Notifications', 'notifications', ~{::content})}">
+    <section class="space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold text-sky-300">Notifications</h1>
+                <p class="text-sm text-slate-400">Browse and manage notifications.</p>
+            </div>
+            <a href="/notifications/create"
+               class="inline-flex items-center justify-center rounded-md bg-sky-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-sky-400">
+                Create notification
+            </a>
+        </div>
+
+        <div class="overflow-x-auto rounded-lg border border-slate-800 bg-slate-900/40">
+            <table class="min-w-full divide-y divide-slate-800 text-sm">
+                <thead class="bg-slate-900/70 text-xs uppercase tracking-wide text-slate-400">
+                <tr>
+                    <th class="px-4 py-3 text-left">ID</th>
+                    <th class="px-4 py-3 text-left">Status</th>
+                    <th class="px-4 py-3 text-left">Created at</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800" th:if="${page != null && page.hasContent()}">
+                <tr th:each="n : ${page.content}" class="hover:bg-slate-800/40">
+                    <td class="px-4 py-3 font-mono text-xs text-sky-300">
+                        <a th:href="@{'/notifications/' + ${n.id}}" th:text="${n.id}">id</a>
+                    </td>
+                    <td class="px-4 py-3"><span class="rounded bg-slate-800 px-2 py-1 text-xs" th:text="${n.status}">PENDING</span></td>
+                    <td class="px-4 py-3"
+                        th:text="${n.createdAt != null ? #temporals.format(n.createdAt, 'yyyy-MM-dd''T''HH:mm:ss''Z''') : '—'}">—</td>
+                </tr>
+                </tbody>
+                <tbody th:if="${page == null || !page.hasContent()}">
+                <tr>
+                    <td colspan="3" class="px-4 py-6 text-center text-sm text-slate-400">No notifications found</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</th:block>
+</html>
