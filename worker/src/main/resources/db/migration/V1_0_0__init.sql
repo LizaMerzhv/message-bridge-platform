@@ -1,39 +1,39 @@
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE notification (
                               id UUID PRIMARY KEY,
-                              "clientId" UUID NOT NULL,
-                              "externalRequestId" VARCHAR(64) NOT NULL,
-                              "sendAt" TIMESTAMPTZ,
+                              client_id UUID NOT NULL,
+                              external_request_id VARCHAR(64) NOT NULL,
+                              send_at TIMESTAMPTZ,
                               status TEXT NOT NULL CHECK (status IN ('CREATED','QUEUED','SENT','FAILED')),
                               channel TEXT NOT NULL CHECK (channel = 'EMAIL'),
-                              "to" VARCHAR(254) NOT NULL,
+                              recipient VARCHAR(254) NOT NULL,
                               subject TEXT,
-                              "templateCode" VARCHAR(64),
+                              template_code VARCHAR(64),
                               variables JSONB,
-                              "traceId" TEXT,
-                              "webhookUrl" TEXT,
-                              "webhookSecret" TEXT,
+                              trace_id TEXT,
+                              webhook_url TEXT,
+                              webhook_secret TEXT,
                               attempts INTEGER NOT NULL DEFAULT 0,
-                              "createdAt" TIMESTAMPTZ NOT NULL,
-                              "updatedAt" TIMESTAMPTZ NOT NULL
+                              created_at TIMESTAMPTZ NOT NULL,
+                              updated_at TIMESTAMPTZ NOT NULL
 );
 
-CREATE INDEX ix_worker_notification_status_send_at ON notification (status, "sendAt");
-CREATE INDEX ix_worker_notification_client ON notification ("clientId");
+CREATE INDEX ix_worker_notification_status_send_at ON notification (status, send_at);
+CREATE INDEX ix_worker_notification_client ON notification (client_id);
 
 CREATE TABLE delivery (
                           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                          "notificationId" UUID NOT NULL REFERENCES notification(id) ON DELETE CASCADE,
+                          notification_id UUID NOT NULL REFERENCES notification(id) ON DELETE CASCADE,
                           status TEXT NOT NULL CHECK (status IN ('PENDING','SENT','FAILED')),
                           attempt INTEGER NOT NULL,
                           channel TEXT NOT NULL,
-                          "to" VARCHAR(254) NOT NULL,
+                          recipient VARCHAR(254) NOT NULL,
                           subject TEXT,
-                          "errorCode" TEXT,
-                          "errorMessage" TEXT,
-                          "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
-                          "lastAttemptAt" TIMESTAMPTZ
+                          error_code TEXT,
+                          error_message TEXT,
+                          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+                          last_attempt_at TIMESTAMPTZ
 );
 
-CREATE INDEX ix_worker_delivery_notification_attempt ON delivery ("notificationId", attempt);
+CREATE INDEX ix_worker_delivery_notification_attempt ON delivery (notification_id, attempt);

@@ -74,5 +74,9 @@ notifi:
 logging:
   level:
     root: INFO
+    org.hibernate: WARN
+    org.springframework: INFO
+    com.zaxxer.hikari: INFO
   pattern:
     console: '%msg%n'
+
