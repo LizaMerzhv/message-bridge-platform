@@ -21,7 +21,17 @@ spring:
     addresses: ${API_RABBIT_URL:amqp://guest:guest@localhost:5672} # RabbitMQ connection for event publishing
   jackson:
     time-zone: UTC
-
+  springdoc:
+    api-docs:
+      path: /v3/api-docs
+    swagger-ui:
+      path: /swagger-ui.html
+logging:
+  level:
+    root: INFO
+    com.example.notifi: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.validation: DEBUG
 notifi:
   amqp:
     exchange: ${API_AMQP_EXCHANGE:notifi.exchange} # shared direct exchange name
