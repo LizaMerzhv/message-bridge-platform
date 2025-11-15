@@ -5,6 +5,8 @@ import com.example.notifi.api.data.entity.NotificationEntity;
 import com.example.notifi.common.messaging.AmqpConstants;
 import com.example.notifi.common.messaging.NotificationTaskMessage;
 import com.example.notifi.common.model.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class NotificationTaskPublisher {
+
+    private static final Logger log = LoggerFactory.getLogger(NotificationTaskPublisher.class);
 
     private final RabbitTemplate rabbitTemplate;
     private final String exchange;
@@ -46,6 +50,11 @@ public class NotificationTaskPublisher {
             MDC.get("traceId"),
             client.getWebhookUrl(),
             client.getWebhookSecret());
+        log.info(
+            "Publishing notification {} with status {} scheduled at {}",
+            entity.getId(),
+            entity.getStatus(),
+            entity.getSendAt());
         rabbitTemplate.convertAndSend(exchange, routingKey, payload); // emit event instead of sharing DB tables
     }
 }

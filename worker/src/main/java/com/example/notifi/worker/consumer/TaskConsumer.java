@@ -59,6 +59,7 @@ public class TaskConsumer {
     @Transactional
     public void handle(NotificationTaskMessage message) {
         UUID notificationId = message.notificationId();
+        log.info("Received task for notification {} (attempt {})", notificationId, message.attempt());
         Instant now = clock.instant();
 
         try {

@@ -22,12 +22,13 @@ import java.util.UUID;
 @Entity
 @Table(name = "delivery")
 public class DeliveryEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "\"notificationId\"", nullable = false)
+    @JoinColumn(name = "notification_id", nullable = false)
     private NotificationEntity notification;
 
     @Enumerated(EnumType.STRING)
@@ -41,25 +42,28 @@ public class DeliveryEntity {
     @Column(nullable = false)
     private Channel channel;
 
-    @Column(name = "\"to\"", nullable = false)
+    @Column(name = "recipient", nullable = false, length = 254)
     private String recipient;
 
+    @Column(name = "subject")
     private String subject;
 
-    @Transient private String templateCode;
+    @Transient
+    private String templateCode;
 
-    @Transient private Map<String, Object> variables;
+    @Transient
+    private Map<String, Object> variables;
 
-    @Column(name = "\"errorMessage\"")
+    @Column(name = "error_message")
     private String errorMessage;
 
-    @Column(name = "\"errorCode\"")
+    @Column(name = "error_code")
     private String errorCode;
 
-    @Column(name = "\"lastAttemptAt\"")
+    @Column(name = "last_attempt_at")
     private Instant lastAttemptAt;
 
-    @Column(name = "\"createdAt\"", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
     public static DeliveryEntity create(NotificationEntity notification, int attempt) {
@@ -85,22 +89,6 @@ public class DeliveryEntity {
 
     public DeliveryStatus getStatus() {
         return status;
-    }
-
-    public void markSent() {
-        this.status = DeliveryStatus.SENT;
-        this.errorMessage = null;
-        this.errorCode = null;
-    }
-
-    public void markFailed(String message) {
-        markFailed(message, null);
-    }
-
-    public void markFailed(String message, String code) {
-        this.status = DeliveryStatus.FAILED;
-        this.errorMessage = message;
-        this.errorCode = code;
     }
 
     public int getAttempt() {
@@ -131,33 +119,50 @@ public class DeliveryEntity {
         return errorMessage;
     }
 
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
     public String getErrorCode() {
         return errorCode;
-    }
-
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
     }
 
     public Instant getLastAttemptAt() {
         return lastAttemptAt;
     }
 
-    public void setLastAttemptAt(Instant lastAttemptAt) {
-        this.lastAttemptAt = lastAttemptAt;
-    }
     public Instant getCreatedAt() {
         return createdAt;
     }
 
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public void setLastAttemptAt(Instant lastAttemptAt) {
+        this.lastAttemptAt = lastAttemptAt;
+    }
+
+    public void markSent() {
+        this.status = DeliveryStatus.SENT;
+        this.errorMessage = null;
+        this.errorCode = null;
+    }
+
+    public void markFailed(String message) {
+        markFailed(message, null);
+    }
+
+    public void markFailed(String message, String code) {
+        this.status = DeliveryStatus.FAILED;
+        this.errorMessage = message;
+        this.errorCode = code;
+    }
+
     @PrePersist
     void prePersist() {
-        Instant now = Instant.now();
-        this.createdAt = now;
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
     }
 }
