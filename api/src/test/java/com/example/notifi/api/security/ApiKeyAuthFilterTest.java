@@ -32,8 +32,10 @@ class ApiKeyAuthFilterTest extends WebTestBase {
 
     @RestController
     static class DummyController {
-        @GetMapping("/secure")
-        public String secure() { return "ok"; }
+        @GetMapping("/api/v1/secure")
+        public String secure() {
+            return "ok";
+        }
     }
 
     @BeforeEach
@@ -41,17 +43,21 @@ class ApiKeyAuthFilterTest extends WebTestBase {
         this.clientRepository = Mockito.mock(ClientRepository.class);
         this.filter = new ApiKeyAuthFilter(clientRepository, new ObjectMapper().findAndRegisterModules());
         this.filter.init(new MockFilterConfig());
+
         this.mvc = MockMvcBuilders
-                .standaloneSetup(new DummyController())
-                .addFilters(new RequestIdFilter(), filter)
-                .build();
+            .standaloneSetup(new DummyController())
+            .addFilters(new RequestIdFilter(), filter)
+            .build();
     }
 
     @Test
     void should_return_401_when_missing_key() throws Exception {
-        var result = mvc.perform(get("/secure")).andReturn();
-        assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-        assertThat(result.getResponse().getContentType()).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
+        var result = mvc.perform(get("/api/v1/secure")).andReturn();
+
+        assertThat(result.getResponse().getStatus())
+            .isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(result.getResponse().getContentType())
+            .isEqualTo(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
     }
 
     @Test
@@ -63,9 +69,13 @@ class ApiKeyAuthFilterTest extends WebTestBase {
         client.setRateLimitPerMin(60);
         client.setCreatedAt(Instant.now());
         client.setUpdatedAt(Instant.now());
+
         when(clientRepository.findByApiKey(anyString())).thenReturn(Optional.of(client));
 
-        var result = mvc.perform(get("/secure").header(ApiKeyAuthFilter.HEADER, "key")).andReturn();
+        var result = mvc.perform(get("/api/v1/secure")
+                .header(ApiKeyAuthFilter.HEADER, "key"))
+            .andReturn();
+
         assertThat(result.getResponse().getStatus()).isEqualTo(200);
     }
 }

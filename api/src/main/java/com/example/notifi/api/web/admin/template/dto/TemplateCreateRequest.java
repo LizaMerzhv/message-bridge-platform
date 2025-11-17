@@ -1,4 +1,4 @@
-package com.example.notifi.api.web.template;
+package com.example.notifi.api.web.admin.template.dto;
 
 import com.example.notifi.api.validation.TemplateCode;
 import jakarta.validation.constraints.NotBlank;

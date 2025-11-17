@@ -1,145 +1,159 @@
-package com.example.notifi.api.core.notification;
+package com.example.notifi.api.web.admin.notification.dto;
 
-import com.example.notifi.api.data.entity.NotificationStatus;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class NotificationView {
+public class NotificationDetailDto {
     private UUID id;
     private UUID clientId;
     private String channel;
     private String to;
+    private String status;
     private String subject;
     private String templateCode;
     private Map<String, Object> variables;
     private String externalRequestId;
     private Instant sendAt;
     private Instant sendAtEffective;
-    private NotificationStatus status;
-    private int attempts;
     private Instant createdAt;
     private Instant updatedAt;
-    private List<DeliveryView> deliveries;
+    private int attempts;
+    private List<DeliveryAttemptDto> deliveries;
 
     public UUID getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public NotificationDetailDto setId(UUID id) {
         this.id = id;
+        return this;
     }
 
     public UUID getClientId() {
         return clientId;
     }
 
-    public void setClientId(UUID clientId) {
+    public NotificationDetailDto setClientId(UUID clientId) {
         this.clientId = clientId;
+        return this;
     }
 
     public String getChannel() {
         return channel;
     }
 
-    public void setChannel(String channel) {
+    public NotificationDetailDto setChannel(String channel) {
         this.channel = channel;
+        return this;
     }
 
     public String getTo() {
         return to;
     }
 
-    public void setTo(String to) {
+    public NotificationDetailDto setTo(String to) {
         this.to = to;
+        return this;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public NotificationDetailDto setStatus(String status) {
+        this.status = status;
+        return this;
     }
 
     public String getSubject() {
         return subject;
     }
 
-    public void setSubject(String subject) {
+    public NotificationDetailDto setSubject(String subject) {
         this.subject = subject;
+        return this;
     }
 
     public String getTemplateCode() {
         return templateCode;
     }
 
-    public void setTemplateCode(String templateCode) {
+    public NotificationDetailDto setTemplateCode(String templateCode) {
         this.templateCode = templateCode;
+        return this;
     }
 
     public Map<String, Object> getVariables() {
         return variables;
     }
 
-    public void setVariables(Map<String, Object> variables) {
+    public NotificationDetailDto setVariables(Map<String, Object> variables) {
         this.variables = variables;
+        return this;
     }
 
     public String getExternalRequestId() {
         return externalRequestId;
     }
 
-    public void setExternalRequestId(String externalRequestId) {
+    public NotificationDetailDto setExternalRequestId(String externalRequestId) {
         this.externalRequestId = externalRequestId;
+        return this;
     }
 
     public Instant getSendAt() {
         return sendAt;
     }
 
-    public void setSendAt(Instant sendAt) {
+    public NotificationDetailDto setSendAt(Instant sendAt) {
         this.sendAt = sendAt;
+        return this;
     }
 
     public Instant getSendAtEffective() {
         return sendAtEffective;
     }
 
-    public void setSendAtEffective(Instant sendAtEffective) {
+    public NotificationDetailDto setSendAtEffective(Instant sendAtEffective) {
         this.sendAtEffective = sendAtEffective;
-    }
-
-    public NotificationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(NotificationStatus status) {
-        this.status = status;
-    }
-
-    public int getAttempts() {
-        return attempts;
-    }
-
-    public void setAttempts(int attempts) {
-        this.attempts = attempts;
+        return this;
     }
 
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public NotificationDetailDto setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+        return this;
     }
 
     public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public NotificationDetailDto setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+        return this;
     }
 
-    public List<DeliveryView> getDeliveries() {
+    public int getAttempts() {
+        return attempts;
+    }
+
+    public NotificationDetailDto setAttempts(int attempts) {
+        this.attempts = attempts;
+        return this;
+    }
+
+    public List<DeliveryAttemptDto> getDeliveries() {
         return deliveries;
     }
 
-    public void setDeliveries(List<DeliveryView> deliveries) {
+    public NotificationDetailDto setDeliveries(List<DeliveryAttemptDto> deliveries) {
         this.deliveries = deliveries;
+        return this;
     }
 }

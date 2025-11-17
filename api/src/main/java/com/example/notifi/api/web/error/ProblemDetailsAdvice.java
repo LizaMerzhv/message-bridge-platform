@@ -104,22 +104,22 @@ public class ProblemDetailsAdvice {
     }
 
     @ExceptionHandler(TemplateCodeNotFoundException.class)
-    public ResponseEntity<ProblemDetails> handleTemplateCodeNotFound(TemplateCodeNotFoundException ex,
-                                                                     HttpServletRequest req) {
-        ProblemDetails body = Problems.of(
-            422,
-            "/problems/template-not-found",
-            "Unprocessable Entity",
+    public ResponseEntity<ProblemDetails> handleTemplateCodeNotFound(
+        TemplateCodeNotFoundException ex,
+        HttpServletRequest req
+    ) {
+        ProblemDetails body = Problems.notFound(
             ex.getMessage(),
             req.getRequestURI(),
-            traceId(),
-            null,
-            null
+            traceId()
         );
-        return ResponseEntity.unprocessableEntity()
+
+        return ResponseEntity
+            .status(404)
             .contentType(APPLICATION_PROBLEM_JSON)
             .body(body);
     }
+
 
     @ExceptionHandler(TemplateInactiveException.class)
     public ResponseEntity<ProblemDetails> handleTemplateInactive(TemplateInactiveException ex,

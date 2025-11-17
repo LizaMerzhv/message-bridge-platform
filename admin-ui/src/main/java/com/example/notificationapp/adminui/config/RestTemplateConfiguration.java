@@ -17,7 +17,7 @@ public class RestTemplateConfiguration {
             RestTemplateBuilder builder, AdminUiProperties properties, ObjectMapper objectMapper) {
         return builder
                 .rootUri(properties.baseUrl())
-                .defaultHeader("X-API-Key", properties.apiKey())
+                .basicAuthentication(properties.username(), properties.password())
                 .defaultHeader("Accept", MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .setConnectTimeout(Duration.ofMillis(properties.connectTimeoutMs()))

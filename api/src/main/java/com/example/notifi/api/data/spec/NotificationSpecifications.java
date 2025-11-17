@@ -14,6 +14,12 @@ public final class NotificationSpecifications {
         return (root, query, cb) -> cb.equal(root.get("clientId"), clientId);
     }
 
+    public static Specification<NotificationEntity> hasClient(UUID clientId) {
+        return clientId == null
+                ? null
+                : (root, query, cb) -> cb.equal(root.get("clientId"), clientId);
+    }
+
     public static Specification<NotificationEntity> hasStatus(NotificationStatus status) {
         return status == null
                 ? null

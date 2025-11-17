@@ -10,6 +10,8 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,13 +52,24 @@ public class TemplateService {
     }
 
     @Transactional(readOnly = true)
-    public List<TemplateView> list() {
-        return templateRepository.findAll().stream().map(templateMapper::toView).toList();
+    public TemplateView getByCode(String code) {
+        TemplateEntity entity =
+                templateRepository
+                        .findByCode(code)
+                        .orElseThrow(() -> new TemplateCodeNotFoundException(code));
+        return templateMapper.toView(entity);
     }
 
-    public TemplateView deactivate(UUID id) {
+    @Transactional(readOnly = true)
+    public Page<TemplateView> findAll(Pageable pageable) {
+        return templateRepository.findAll(pageable).map(templateMapper::toView);
+    }
+
+    public TemplateView deactivateByCode(String code) {
         TemplateEntity entity =
-                templateRepository.findById(id).orElseThrow(() -> new TemplateNotFoundException(id));
+                templateRepository
+                        .findByCode(code)
+                        .orElseThrow(() -> new TemplateCodeNotFoundException(code));
         if (entity.getStatus() == TemplateStatus.INACTIVE) {
             return templateMapper.toView(entity);
         }

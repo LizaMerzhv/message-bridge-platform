@@ -42,8 +42,6 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 2) Ищем клиента по ключу
-        // ПРИМЕЧАНИЕ: если у репозитория другой метод — поправьте ниже.
         final Optional<ClientEntity> clientOpt = clientRepository.findByApiKey(apiKey);
         if (clientOpt.isEmpty()) {
             writeUnauthorized(request, response, "Missing or invalid API key");
@@ -68,10 +66,15 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        final String path = request.getRequestURI();
-        return path.startsWith("/v3/api-docs")
-            || path.startsWith("/swagger-ui")
-            || path.startsWith("/actuator");
+        String path = request.getRequestURI();
+
+        if (path.startsWith("/admin/")
+            || path.startsWith("/actuator/")
+            || path.startsWith("/error")) {
+            return true;
+        }
+
+        return !path.startsWith("/api/v1/");
     }
 
     private void writeUnauthorized(HttpServletRequest request,

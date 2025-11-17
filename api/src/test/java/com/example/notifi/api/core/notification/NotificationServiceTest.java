@@ -11,7 +11,7 @@ import com.example.notifi.api.data.repository.ClientRepository;
 import com.example.notifi.api.data.repository.NotificationRepository;
 import com.example.notifi.api.core.notification.NotificationTaskPublisher;
 import com.example.notifi.api.security.ClientPrincipal;
-import com.example.notifi.api.web.notification.dto.CreateNotificationRequest;
+import com.example.notifi.api.web.shared.notification.dto.CreateNotificationRequest;
 import com.example.notifi.common.model.Channel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

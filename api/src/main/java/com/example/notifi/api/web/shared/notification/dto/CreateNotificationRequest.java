@@ -1,4 +1,4 @@
-package com.example.notifi.api.web.notification.dto;
+package com.example.notifi.api.web.shared.notification.dto;
 
 import com.example.notifi.common.model.Channel;
 import com.example.notifi.api.validation.ExternalRequestId;

@@ -1,4 +1,4 @@
-package com.example.notifi.api.web.notification.dto;
+package com.example.notifi.api.web.shared.notification.dto;
 
 import java.time.Instant;
 import java.util.UUID;

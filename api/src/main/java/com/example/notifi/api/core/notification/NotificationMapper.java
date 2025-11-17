@@ -11,8 +11,12 @@ public class NotificationMapper {
 
     public NotificationView toView(NotificationEntity entity, List<DeliveryEntity> deliveries) {
         NotificationView view = toView(entity);
-        view.setDeliveries(deliveries.stream().map(this::toDeliveryView).collect(Collectors.toList()));
+        view.setDeliveries(toDeliveryViews(deliveries));
         return view;
+    }
+
+    public List<DeliveryView> toDeliveryViews(List<DeliveryEntity> deliveries) {
+        return deliveries.stream().map(this::toDeliveryView).collect(Collectors.toList());
     }
 
     public NotificationView toView(NotificationEntity entity) {
@@ -24,7 +28,9 @@ public class NotificationMapper {
         view.setSubject(entity.getSubject());
         view.setTemplateCode(entity.getTemplateCode());
         view.setVariables(entity.getVariables());
+        view.setExternalRequestId(entity.getExternalRequestId());
         view.setSendAt(entity.getSendAt());
+        view.setSendAtEffective(entity.getSendAt());
         view.setStatus(entity.getStatus());
         view.setAttempts(entity.getAttempts());
         view.setCreatedAt(entity.getCreatedAt());

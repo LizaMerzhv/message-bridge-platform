@@ -1,6 +1,7 @@
 package com.example.notifi.api.core.notification;
 
 import com.example.notifi.api.core.notification.exception.NotificationNotFoundException;
+import com.example.notifi.api.core.notification.NotificationTaskPublisher;
 import com.example.notifi.api.core.template.TemplateService;
 import com.example.notifi.api.data.entity.ClientEntity;
 import com.example.notifi.api.data.entity.NotificationEntity;
@@ -10,11 +11,11 @@ import com.example.notifi.api.data.repository.DeliveryRepository;
 import com.example.notifi.api.data.repository.NotificationRepository;
 import com.example.notifi.api.data.spec.NotificationSpecifications;
 import com.example.notifi.api.security.ClientPrincipal;
-import com.example.notifi.api.web.notification.dto.CreateNotificationRequest;
-import com.example.notifi.api.core.notification.NotificationTaskPublisher;
+import com.example.notifi.api.web.shared.notification.dto.CreateNotificationRequest;
 import com.example.notifi.common.model.Channel;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -120,5 +121,35 @@ public class NotificationService {
                 .and(NotificationSpecifications.createdAtFrom(filter.getCreatedFrom()))
                 .and(NotificationSpecifications.createdAtTo(filter.getCreatedTo()));
         return notificationRepository.findAll(spec, pageable).map(notificationMapper::toView);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<NotificationView> findAll(NotificationFilter filter, Pageable pageable) {
+        Specification<NotificationEntity> spec =
+                Specification.where(NotificationSpecifications.hasClient(filter.getClientId()))
+                        .and(NotificationSpecifications.hasStatus(filter.getStatus()))
+                        .and(NotificationSpecifications.createdAtFrom(filter.getCreatedFrom()))
+                        .and(NotificationSpecifications.createdAtTo(filter.getCreatedTo()));
+        return notificationRepository.findAll(spec, pageable).map(notificationMapper::toView);
+    }
+
+    @Transactional(readOnly = true)
+    public NotificationView findById(UUID id) {
+        NotificationEntity entity =
+                notificationRepository
+                        .findById(id)
+                        .orElseThrow(() -> new NotificationNotFoundException(id));
+        return notificationMapper.toView(
+                entity, deliveryRepository.findByNotificationIdOrderByAttemptAsc(entity.getId()));
+    }
+
+    @Transactional(readOnly = true)
+    public List<DeliveryView> findDeliveries(UUID id) {
+        NotificationEntity entity =
+                notificationRepository
+                        .findById(id)
+                        .orElseThrow(() -> new NotificationNotFoundException(id));
+        return notificationMapper.toDeliveryViews(
+                deliveryRepository.findByNotificationIdOrderByAttemptAsc(entity.getId()));
     }
 }

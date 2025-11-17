@@ -1,6 +1,6 @@
 package com.example.notifi.api.dto;
 
-import com.example.notifi.api.web.notification.dto.CreateNotificationRequest;
+import com.example.notifi.api.web.shared.notification.dto.CreateNotificationRequest;
 import com.example.notifi.common.model.Channel;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
