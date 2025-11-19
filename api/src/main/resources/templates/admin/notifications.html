@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Notifications • Notifi Admin</title>
+    <style>
+        body { font-family: "Inter", Arial, sans-serif; margin: 0; background: #f4f5f7; }
+        header { background: #111827; color: #f9fafb; padding: 16px 32px; }
+        nav a { color: #d1d5db; margin-right: 16px; text-decoration: none; font-size: 14px; }
+        nav a.active { color: #fff; font-weight: 600; }
+        main { padding: 32px; }
+        table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+        th { background: #f9fafb; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; }
+        form { margin-bottom: 16px; display: flex; gap: 12px; align-items: flex-end; }
+        label { display: block; font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+        input, select { padding: 8px 10px; border-radius: 6px; border: 1px solid #d1d5db; font-size: 14px; }
+        button { background: #2563eb; color: #fff; border: 0; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Notifi Admin</h1>
+    <nav>
+        <a th:href="@{/admin/ui/templates}">Templates</a>
+        <a th:href="@{/admin/ui/notifications}" class="active">Notifications</a>
+    </nav>
+</header>
+<main>
+    <h2>Notifications</h2>
+    <form method="get" th:action="@{/admin/ui/notifications}">
+        <div>
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                <option value="" th:selected="${statusFilter == null || statusFilter.isEmpty()}">Any</option>
+                <option th:each="status : ${availableStatuses}"
+                        th:value="${status}"
+                        th:text="${status}"
+                        th:selected="${statusFilter != null and statusFilter.equalsIgnoreCase(status.name())}"></option>
+            </select>
+        </div>
+        <div>
+            <label for="clientId">Client ID</label>
+            <input id="clientId" name="clientId" type="text" placeholder="UUID" th:value="${clientFilter}" />
+        </div>
+        <div>
+            <button type="submit">Apply</button>
+        </div>
+    </form>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Status</th>
+            <th>Recipient</th>
+            <th>Send at</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="notification : ${page.content}">
+            <td th:text="${notification.id}">8f0...</td>
+            <td th:text="${notification.status}">CREATED</td>
+            <td th:text="${notification.to}">user@example.com</td>
+            <td th:text="${notification.sendAt}">2024-01-01T00:00Z</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(page.content)}">
+            <td colspan="4">No notifications found.</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

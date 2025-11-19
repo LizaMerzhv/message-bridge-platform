@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Templates • Notifi Admin</title>
+    <style>
+        body { font-family: "Inter", Arial, sans-serif; margin: 0; background: #f4f5f7; }
+        header { background: #111827; color: #f9fafb; padding: 16px 32px; }
+        header h1 { margin: 0; font-size: 20px; }
+        nav a { color: #d1d5db; margin-right: 16px; text-decoration: none; font-size: 14px; }
+        nav a.active { color: #fff; font-weight: 600; }
+        main { padding: 32px; }
+        .actions { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+        table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+        th { background: #f9fafb; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; }
+        a.button { background: #2563eb; color: #fff; padding: 10px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; }
+        .meta { margin-top: 12px; font-size: 13px; color: #6b7280; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Notifi Admin</h1>
+    <nav>
+        <a th:href="@{/admin/ui/templates}" class="active">Templates</a>
+        <a th:href="@{/admin/ui/notifications}">Notifications</a>
+    </nav>
+</header>
+<main>
+    <div class="actions">
+        <div>
+            <h2>Templates</h2>
+            <p th:text="${page.totalElements} + ' total templates'"></p>
+        </div>
+        <a class="button" th:href="@{/admin/ui/templates/new}">New template</a>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th>Code</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="template : ${page.content}">
+            <td th:text="${template.code}">WELCOME</td>
+            <td th:text="${template.subject}">Welcome email</td>
+            <td th:text="${template.status}">ACTIVE</td>
+            <td th:text="${#temporals.format(template.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
+            <td><a th:href="@{'/admin/ui/templates/' + ${template.code}}">View</a></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(page.content)}">
+            <td colspan="5">No templates found.</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="meta">
+        Page <span th:text="${page.number + 1}"></span> of <span th:text="${page.totalPages == 0 ? 1 : page.totalPages}"></span>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Create template • Notifi Admin</title>
+    <style>
+        body { font-family: "Inter", Arial, sans-serif; margin: 0; background: #f4f5f7; }
+        header { background: #111827; color: #f9fafb; padding: 16px 32px; }
+        nav a { color: #d1d5db; margin-right: 16px; text-decoration: none; font-size: 14px; }
+        nav a.active { color: #fff; font-weight: 600; }
+        main { padding: 32px; }
+        form { background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+        label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #374151; }
+        input[type=text], textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
+        textarea { min-height: 140px; font-family: monospace; }
+        .field { margin-bottom: 16px; }
+        .error { color: #dc2626; font-size: 13px; margin-top: 4px; }
+        .actions { display: flex; gap: 12px; }
+        button { background: #2563eb; color: #fff; padding: 12px 20px; border: 0; border-radius: 8px; font-size: 14px; cursor: pointer; }
+        a { color: #2563eb; text-decoration: none; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Notifi Admin</h1>
+    <nav>
+        <a th:href="@{/admin/ui/templates}" class="active">Templates</a>
+        <a th:href="@{/admin/ui/notifications}">Notifications</a>
+    </nav>
+</header>
+<main>
+    <a th:href="@{/admin/ui/templates}">&larr; Back to templates</a>
+    <form th:action="@{/admin/ui/templates}" method="post" th:object="${templateForm}">
+        <h2>Create template</h2>
+        <div class="field">
+            <label for="code">Code</label>
+            <input id="code" type="text" th:field="*{code}" placeholder="WELCOME_EMAIL" />
+            <div class="error" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></div>
+        </div>
+        <div class="field">
+            <label for="subject">Subject</label>
+            <input id="subject" type="text" th:field="*{subject}" placeholder="Welcome to Notifi" />
+            <div class="error" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></div>
+        </div>
+        <div class="field">
+            <label for="bodyHtml">HTML body</label>
+            <textarea id="bodyHtml" th:field="*{bodyHtml}" placeholder="<h1>Hello</h1>"></textarea>
+            <div class="error" th:if="${#fields.hasErrors('bodyHtml')}" th:errors="*{bodyHtml}"></div>
+        </div>
+        <div class="field">
+            <label for="bodyText">Text body</label>
+            <textarea id="bodyText" th:field="*{bodyText}" placeholder="Hello"></textarea>
+            <div class="error" th:if="${#fields.hasErrors('bodyText')}" th:errors="*{bodyText}"></div>
+        </div>
+        <div class="actions">
+            <button type="submit">Create</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>
