@@ -31,6 +31,7 @@ public class AdminTemplatePageController {
     public String list(@PageableDefault(size = 20) Pageable pageable, Model model) {
         Page<TemplateView> page = templateService.findAll(pageable);
         model.addAttribute("page", page);
+        model.addAttribute("activePage", "templates");
         return "admin/templates";
     }
 
@@ -38,6 +39,7 @@ public class AdminTemplatePageController {
     public String detail(@PathVariable String code, Model model) {
         TemplateView template = templateService.getByCode(code);
         model.addAttribute("template", template);
+        model.addAttribute("activePage", "templates");
         return "admin/template-detail";
     }
 
@@ -46,6 +48,7 @@ public class AdminTemplatePageController {
         if (!model.containsAttribute("templateForm")) {
             model.addAttribute("templateForm", new TemplateForm());
         }
+        model.addAttribute("activePage", "templates");
         return "admin/template-new";
     }
 
@@ -53,8 +56,10 @@ public class AdminTemplatePageController {
     public String create(
         @Valid @ModelAttribute("templateForm") TemplateForm form,
         BindingResult bindingResult,
-        RedirectAttributes redirectAttributes) {
+        RedirectAttributes redirectAttributes,
+        Model model) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("activePage", "templates");
             return "admin/template-new";
         }
 
@@ -67,5 +72,12 @@ public class AdminTemplatePageController {
         TemplateView created = templateService.create(command);
         redirectAttributes.addFlashAttribute("created", true);
         return "redirect:/admin/ui/templates/" + created.getCode();
+    }
+
+    @PostMapping("/{code}/deactivate")
+    public String deactivate(@PathVariable String code, RedirectAttributes redirectAttributes) {
+        TemplateView updated = templateService.deactivateByCode(code);
+        redirectAttributes.addFlashAttribute("deactivated", true);
+        return "redirect:/admin/ui/templates/" + updated.getCode();
     }
 }

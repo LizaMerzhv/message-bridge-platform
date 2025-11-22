@@ -6,9 +6,13 @@ import java.util.UUID;
 public class NotificationSummaryDto {
     private UUID id;
     private UUID clientId;
+    private String channel;
     private String to;
+    private String subject;
+    private String templateCode;
     private String status;
     private Instant sendAt;
+    private Instant sendAtEffective;
     private Instant createdAt;
     private int attempts;
 
@@ -72,6 +76,39 @@ public class NotificationSummaryDto {
 
     public NotificationSummaryDto setAttempts(int attempts) {
         this.attempts = attempts;
+        return this;
+    }
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public NotificationSummaryDto setChannel(String channel) {
+        this.channel = channel;
+        return this;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+    public NotificationSummaryDto setSubject(String subject) {
+        this.subject = subject;
+        return this;
+    }
+    public String getTemplateCode() {
+        return templateCode;
+    }
+    public NotificationSummaryDto setTemplateCode(String templateCode) {
+        this.templateCode = templateCode;
+        return this;
+    }
+
+    public Instant getSendAtEffective() {
+        return sendAtEffective;
+    }
+
+    public NotificationSummaryDto setSendAtEffective(Instant sendAtEffective) {
+        this.sendAtEffective = sendAtEffective;
         return this;
     }
 }

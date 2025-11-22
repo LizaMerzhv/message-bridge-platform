@@ -16,9 +16,13 @@ public class NotificationAdminMapper {
         return new NotificationSummaryDto()
                 .setId(view.getId())
                 .setClientId(view.getClientId())
+                .setChannel(view.getChannel())
                 .setTo(view.getTo())
+                .setSubject(view.getSubject())
+                .setTemplateCode(view.getTemplateCode())
                 .setStatus(view.getStatus().name())
                 .setSendAt(view.getSendAt())
+                .setSendAtEffective(view.getSendAtEffective())
                 .setCreatedAt(view.getCreatedAt())
                 .setAttempts(view.getAttempts());
     }

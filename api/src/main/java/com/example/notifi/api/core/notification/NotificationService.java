@@ -152,4 +152,24 @@ public class NotificationService {
         return notificationMapper.toDeliveryViews(
                 deliveryRepository.findByNotificationIdOrderByAttemptAsc(entity.getId()));
     }
+
+    @Transactional(readOnly = true)
+    public long count(NotificationFilter filter) {
+        Specification<NotificationEntity> spec = buildSpecification(filter, filter.getStatus());
+        return notificationRepository.count(spec);
+    }
+
+    @Transactional(readOnly = true)
+    public long countByStatus(NotificationFilter filter, NotificationStatus status) {
+        Specification<NotificationEntity> spec = buildSpecification(filter, status);
+        return notificationRepository.count(spec);
+    }
+
+    private Specification<NotificationEntity> buildSpecification(
+        NotificationFilter filter, NotificationStatus statusOverride) {
+        return Specification.where(NotificationSpecifications.hasClient(filter.getClientId()))
+            .and(NotificationSpecifications.hasStatus(statusOverride))
+            .and(NotificationSpecifications.createdAtFrom(filter.getCreatedFrom()))
+            .and(NotificationSpecifications.createdAtTo(filter.getCreatedTo()));
+    }
 }
