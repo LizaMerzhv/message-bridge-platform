@@ -1,6 +1,6 @@
 package com.example.notifi.api.core.notification;
 
-import com.example.notifi.api.core.notification.exception.SendAtWindowException;
+import com.example.notifi.api.core.notification.exceptions.SendAtWindowException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;

@@ -2,8 +2,8 @@ package com.example.notifi.worker.consumer;
 
 import com.example.notifi.common.messaging.NotificationTaskMessage;
 import com.example.notifi.common.model.NotificationStatus;
-import com.example.notifi.worker.model.NotificationEntity;
-import com.example.notifi.worker.repo.NotificationRepository;
+import com.example.notifi.worker.data.entity.NotificationEntity;
+import com.example.notifi.worker.data.repository.NotificationRepository;
 import java.time.Clock;
 import java.time.Instant;
 import org.slf4j.Logger;

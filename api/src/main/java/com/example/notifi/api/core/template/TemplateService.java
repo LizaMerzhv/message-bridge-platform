@@ -1,14 +1,13 @@
 package com.example.notifi.api.core.template;
 
-import com.example.notifi.api.core.template.exception.TemplateCodeNotFoundException;
-import com.example.notifi.api.core.template.exception.TemplateInactiveException;
-import com.example.notifi.api.core.template.exception.TemplateNotFoundException;
+import com.example.notifi.api.core.template.exceptions.TemplateCodeNotFoundException;
+import com.example.notifi.api.core.template.exceptions.TemplateInactiveException;
+import com.example.notifi.api.core.template.exceptions.TemplateNotFoundException;
 import com.example.notifi.api.data.entity.TemplateEntity;
 import com.example.notifi.api.data.entity.TemplateStatus;
 import com.example.notifi.api.data.repository.TemplateRepository;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

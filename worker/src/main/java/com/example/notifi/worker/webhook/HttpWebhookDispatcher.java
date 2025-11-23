@@ -1,7 +1,7 @@
 package com.example.notifi.worker.webhook;
 
 import com.example.notifi.worker.metrics.WorkerMetrics;
-import com.example.notifi.worker.model.NotificationEntity;
+import com.example.notifi.worker.data.entity.NotificationEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.time.Duration;

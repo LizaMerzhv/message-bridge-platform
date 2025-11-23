@@ -1,10 +1,10 @@
 package com.example.notifi.api.web.error;
 
-import com.example.notifi.api.core.notification.exception.NotificationNotFoundException;
-import com.example.notifi.api.core.notification.exception.SendAtWindowException;
-import com.example.notifi.api.core.template.exception.TemplateCodeNotFoundException;
-import com.example.notifi.api.core.template.exception.TemplateInactiveException;
-import com.example.notifi.api.core.template.exception.TemplateNotFoundException;
+import com.example.notifi.api.core.notification.exceptions.NotificationNotFoundException;
+import com.example.notifi.api.core.notification.exceptions.SendAtWindowException;
+import com.example.notifi.api.core.template.exceptions.TemplateCodeNotFoundException;
+import com.example.notifi.api.core.template.exceptions.TemplateInactiveException;
+import com.example.notifi.api.core.template.exceptions.TemplateNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.MDC;

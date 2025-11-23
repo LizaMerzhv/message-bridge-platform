@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.notifi.api.core.template.TemplateService;
 import com.example.notifi.api.core.template.TemplateView;
-import com.example.notifi.api.core.template.exception.TemplateCodeNotFoundException;
+import com.example.notifi.api.core.template.exceptions.TemplateCodeNotFoundException;
 import com.example.notifi.api.data.entity.TemplateStatus;
 import com.example.notifi.api.web.admin.template.dto.TemplateCreateRequest;
 import com.example.notifi.api.web.error.ProblemDetailsAdvice;

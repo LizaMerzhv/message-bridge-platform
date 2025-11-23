@@ -1,15 +1,14 @@
 package com.example.notifi.api.core.notification;
 
-import com.example.notifi.api.core.notification.exception.SendAtWindowException;
+import com.example.notifi.api.core.notification.exceptions.SendAtWindowException;
 import com.example.notifi.api.core.template.TemplateService;
-import com.example.notifi.api.core.template.exception.TemplateCodeNotFoundException;
-import com.example.notifi.api.core.template.exception.TemplateInactiveException;
+import com.example.notifi.api.core.template.exceptions.TemplateCodeNotFoundException;
+import com.example.notifi.api.core.template.exceptions.TemplateInactiveException;
 import com.example.notifi.api.data.entity.ClientEntity;
 import com.example.notifi.api.data.entity.NotificationEntity;
 import com.example.notifi.api.data.entity.NotificationStatus;
 import com.example.notifi.api.data.repository.ClientRepository;
 import com.example.notifi.api.data.repository.NotificationRepository;
-import com.example.notifi.api.core.notification.NotificationTaskPublisher;
 import com.example.notifi.api.security.ClientPrincipal;
 import com.example.notifi.api.web.shared.notification.dto.CreateNotificationRequest;
 import com.example.notifi.common.model.Channel;
