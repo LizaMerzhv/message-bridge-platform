@@ -37,6 +37,7 @@ class TaskConsumerTest {
     @Mock private RetryPolicy retryPolicy;
     @Mock private AmqpPublisher amqpPublisher;
     @Mock private WebhookDispatcher webhookDispatcher;
+    @Mock private NotificationApiClient notificationApiClient;
 
     private WorkerMetrics metrics;
     private Clock clock;
@@ -55,7 +56,8 @@ class TaskConsumerTest {
                 amqpPublisher,
                 metrics,
                 clock,
-                webhookDispatcher);
+                webhookDispatcher,
+                notificationApiClient);
     }
 
     @Test
@@ -69,6 +71,8 @@ class TaskConsumerTest {
 
         assertThat(notification.getStatus()).isEqualTo(NotificationStatus.SENT);
         verify(webhookDispatcher).dispatch(notification);
+        verify(notificationApiClient)
+            .sendDeliveryResult(notification.getId(), NotificationStatus.SENT, clock.instant(), null);
         double sentCount =
             metrics
                 .registry()
@@ -111,6 +115,8 @@ class TaskConsumerTest {
         verify(amqpPublisher)
             .publishRetry(expectedRetry, java.time.Duration.ofSeconds(8), java.time.Duration.ZERO);
         assertThat(metrics.registry().get("deliveries_failed_total").counter().count()).isEqualTo(1.0d);
+        verify(notificationApiClient, org.mockito.Mockito.never())
+            .sendDeliveryResult(any(), any(), any(), any());
     }
 
     @Test
@@ -127,6 +133,8 @@ class TaskConsumerTest {
         assertThat(notification.getStatus()).isEqualTo(NotificationStatus.FAILED);
         verify(amqpPublisher).publishDlq(message);
         verify(webhookDispatcher).dispatch(notification);
+        verify(notificationApiClient)
+            .sendDeliveryResult(notification.getId(), NotificationStatus.FAILED, clock.instant(), "smtp error");
         assertThat(metrics.registry().get("deliveries_failed_total").counter().count()).isEqualTo(1.0d);
     }
 

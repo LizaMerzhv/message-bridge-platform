@@ -11,6 +11,7 @@ import com.example.notifi.worker.data.entity.NotificationEntity;
 import com.example.notifi.worker.data.repository.DeliveryRepository;
 import com.example.notifi.worker.data.repository.NotificationRepository;
 import com.example.notifi.worker.webhook.WebhookDispatcher;
+import com.example.notifi.worker.consumer.NotificationApiClient;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.UUID;
@@ -33,6 +34,7 @@ public class TaskConsumer {
     private final WorkerMetrics metrics;
     private final Clock clock;
     private final WebhookDispatcher webhookDispatcher;
+    private final NotificationApiClient notificationApiClient;
 
     public TaskConsumer(
         NotificationRepository notificationRepository,
@@ -42,7 +44,8 @@ public class TaskConsumer {
         AmqpPublisher publisher,
         WorkerMetrics metrics,
         Clock clock,
-        WebhookDispatcher webhookDispatcher) {
+        WebhookDispatcher webhookDispatcher,
+        NotificationApiClient notificationApiClient) {
         this.notificationRepository = notificationRepository;
         this.deliveryRepository = deliveryRepository;
         this.smtpSender = smtpSender;
@@ -51,6 +54,7 @@ public class TaskConsumer {
         this.metrics = metrics;
         this.clock = clock;
         this.webhookDispatcher = webhookDispatcher;
+        this.notificationApiClient = notificationApiClient;
     }
 
     @RabbitListener(
@@ -85,6 +89,8 @@ public class TaskConsumer {
 
                 metrics.incrementDeliveriesSent(message.channel());
                 metrics.recordSendLatency(notification.getCreatedAt(), now);
+
+                notifyApi(notificationId, NotificationStatus.SENT, now, null);
 
                 webhookDispatcher.dispatch(notification);
 
@@ -124,6 +130,7 @@ public class TaskConsumer {
                     notification.markFailed(now, message.attempt());
                     publisher.publishDlq(message);
                     webhookDispatcher.dispatch(notification);
+                    notifyApi(notificationId, NotificationStatus.FAILED, now, errorMessage);
                 }
             }
 
@@ -132,7 +139,19 @@ public class TaskConsumer {
         }
     }
 
+    public NotificationApiClient getNotificationApiClient() {
+        return notificationApiClient;
+    }
+
     public interface SmtpSender {
         void send(NotificationTaskMessage message) throws Exception;
+    }
+
+    private void notifyApi(UUID notificationId, NotificationStatus status, Instant attemptedAt, String errorMessage) {
+        try {
+            notificationApiClient.sendDeliveryResult(notificationId, status, attemptedAt, errorMessage);
+        } catch (Exception e) {
+            log.warn("Failed to notify API about delivery {}: {}", notificationId, e.getMessage());
+        }
     }
 }

@@ -54,6 +54,24 @@ public class NotificationService {
         this.clock = clock;
     }
 
+    public NotificationEntity recordDeliveryResult(
+        UUID id, NotificationStatus status, Instant attemptedAt, String errorMessage) {
+        if (status != NotificationStatus.SENT && status != NotificationStatus.FAILED) {
+            throw new IllegalArgumentException("Unsupported status: " + status);
+        }
+
+        NotificationEntity entity =
+            notificationRepository
+                .findById(id)
+                .orElseThrow(() -> new NotificationNotFoundException(id));
+
+        entity.setAttempts(entity.getAttempts() + 1);
+        entity.setStatus(status);
+        entity.setUpdatedAt(attemptedAt != null ? attemptedAt : clock.instant());
+
+        return notificationRepository.save(entity);
+    }
+
     public CreateNotificationResult create(CreateNotificationRequest request, ClientPrincipal principal) {
         if (request.getChannel() != Channel.EMAIL) {
             throw new IllegalArgumentException("Only email channel is supported");

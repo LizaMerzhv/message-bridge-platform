@@ -189,6 +189,38 @@ class NotificationServiceTest {
         verify(taskPublisher, never()).publish(any(), any());
     }
 
+    @Test
+    void recordDeliveryResult_ShouldUpdateStatusAttemptsAndTimestamp() {
+        Instant now = Instant.parse("2024-01-01T00:00:00Z");
+        NotificationEntity entity = new NotificationEntity();
+        entity.setId(UUID.randomUUID());
+        entity.setStatus(NotificationStatus.QUEUED);
+        entity.setAttempts(1);
+        Instant attemptedAt = now.plusSeconds(5);
+
+        when(notificationRepository.findById(entity.getId())).thenReturn(Optional.of(entity));
+        when(notificationRepository.save(any(NotificationEntity.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+
+        NotificationEntity updated =
+            service.recordDeliveryResult(entity.getId(), NotificationStatus.SENT, attemptedAt, null);
+
+        assertThat(updated.getStatus()).isEqualTo(NotificationStatus.SENT);
+        assertThat(updated.getAttempts()).isEqualTo(2);
+        assertThat(updated.getUpdatedAt()).isEqualTo(attemptedAt);
+    }
+
+    @Test
+    void recordDeliveryResult_ShouldThrow_WhenNotificationMissing() {
+        UUID missingId = UUID.randomUUID();
+        when(notificationRepository.findById(missingId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(
+            () -> service.recordDeliveryResult(missingId, NotificationStatus.SENT, Instant.now(), null))
+            .isInstanceOf(com.example.notifi.api.core.notification.exceptions.NotificationNotFoundException.class);
+    }
+
+
     private ClientEntity client() {
         ClientEntity client = new ClientEntity();
         client.setId(principal.clientId());

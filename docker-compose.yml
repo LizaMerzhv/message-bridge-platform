@@ -96,6 +96,7 @@ services:
       WORKER_RABBIT_URL: amqp://guest:guest@rabbitmq:5672
       SMTP_HOST: mailhog
       SMTP_PORT: 1025
+      API_INTERNAL_BASE_URL: http://api:8080
       SERVER_PORT: 8080
     depends_on:
       - postgres-worker
