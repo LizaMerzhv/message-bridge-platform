@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MetricsConfig {
 
-    @Bean
-    public MeterRegistryCustomizer<MeterRegistry> commonTagsCustomizer() {
-        return registry -> registry.config().commonTags("application", "notifi-api");
-    }
+  @Bean
+  public MeterRegistryCustomizer<MeterRegistry> commonTagsCustomizer() {
+    return registry -> registry.config().commonTags("application", "notifi-api");
+  }
 }

@@ -1,5 +1,8 @@
 package com.example.notifi.api.security;
 
+import static com.example.notifi.api.web.error.Problems.unauthorized;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+
 import com.example.notifi.api.data.entity.ClientEntity;
 import com.example.notifi.api.data.repository.ClientRepository;
 import com.example.notifi.api.web.error.ProblemDetails;
@@ -15,75 +18,69 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import static com.example.notifi.api.web.error.Problems.unauthorized;
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
-
 public class ApiKeyAuthFilter extends OncePerRequestFilter {
 
-    public static final String HEADER = "X-API-Key";
+  public static final String HEADER = "X-API-Key";
 
-    private final ClientRepository clientRepository;
-    private final ObjectMapper objectMapper;
+  private final ClientRepository clientRepository;
+  private final ObjectMapper objectMapper;
 
-    public ApiKeyAuthFilter(ClientRepository clientRepository, ObjectMapper objectMapper) {
-        this.clientRepository = clientRepository;
-        this.objectMapper = objectMapper;
+  public ApiKeyAuthFilter(ClientRepository clientRepository, ObjectMapper objectMapper) {
+    this.clientRepository = clientRepository;
+    this.objectMapper = objectMapper;
+  }
+
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+
+    // 1) Забираем API-ключ
+    final String apiKey = request.getHeader(HEADER);
+    if (apiKey == null || apiKey.isBlank()) {
+      writeUnauthorized(request, response, "Missing or invalid API key");
+      return;
     }
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-
-        // 1) Забираем API-ключ
-        final String apiKey = request.getHeader(HEADER);
-        if (apiKey == null || apiKey.isBlank()) {
-            writeUnauthorized(request, response, "Missing or invalid API key");
-            return;
-        }
-
-        final Optional<ClientEntity> clientOpt = clientRepository.findByApiKey(apiKey);
-        if (clientOpt.isEmpty()) {
-            writeUnauthorized(request, response, "Missing or invalid API key");
-            return;
-        }
-
-        // 3) Устанавливаем аутентификацию в контекст
-        final ClientEntity client = clientOpt.get();
-        final ClientPrincipal principal =
-            new ClientPrincipal(client.getId(), client.getName(), client.getRateLimitPerMin());
-
-        final ClientAuthenticationToken authentication = new ClientAuthenticationToken(principal);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        request.setAttribute(ClientPrincipal.class.getName(), principal);
-
-        try {
-            filterChain.doFilter(request, response);
-        } finally {
-            SecurityContextHolder.clearContext();
-        }
+    final Optional<ClientEntity> clientOpt = clientRepository.findByApiKey(apiKey);
+    if (clientOpt.isEmpty()) {
+      writeUnauthorized(request, response, "Missing or invalid API key");
+      return;
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
+    // 3) Устанавливаем аутентификацию в контекст
+    final ClientEntity client = clientOpt.get();
+    final ClientPrincipal principal =
+        new ClientPrincipal(client.getId(), client.getName(), client.getRateLimitPerMin());
 
-        if (path.startsWith("/admin/")
-            || path.startsWith("/actuator/")
-            || path.startsWith("/error")) {
-            return true;
-        }
+    final ClientAuthenticationToken authentication = new ClientAuthenticationToken(principal);
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    request.setAttribute(ClientPrincipal.class.getName(), principal);
 
-        return !path.startsWith("/api/v1/");
+    try {
+      filterChain.doFilter(request, response);
+    } finally {
+      SecurityContextHolder.clearContext();
+    }
+  }
+
+  @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) {
+    String path = request.getRequestURI();
+
+    if (path.startsWith("/admin/") || path.startsWith("/actuator/") || path.startsWith("/error")) {
+      return true;
     }
 
-    private void writeUnauthorized(HttpServletRequest request,
-                                   HttpServletResponse response,
-                                   String detail) throws IOException {
-        final String traceId = MDC.get("traceId");
-        final ProblemDetails body = unauthorized(detail, request.getRequestURI(), traceId);
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.setContentType(APPLICATION_PROBLEM_JSON_VALUE);
-        objectMapper.writeValue(response.getWriter(), body);
-    }
+    return !path.startsWith("/api/v1/");
+  }
+
+  private void writeUnauthorized(
+      HttpServletRequest request, HttpServletResponse response, String detail) throws IOException {
+    final String traceId = MDC.get("traceId");
+    final ProblemDetails body = unauthorized(detail, request.getRequestURI(), traceId);
+    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+    response.setContentType(APPLICATION_PROBLEM_JSON_VALUE);
+    objectMapper.writeValue(response.getWriter(), body);
+  }
 }

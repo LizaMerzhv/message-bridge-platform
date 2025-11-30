@@ -36,111 +36,118 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 class TemplateAdminControllerTest {
 
-    private MockMvc mockMvc;
-    private TemplateService templateService;
-    private ObjectMapper objectMapper;
+  private MockMvc mockMvc;
+  private TemplateService templateService;
+  private ObjectMapper objectMapper;
 
-    @BeforeEach
-    void setUp() {
-        MDC.put("traceId", "test-trace");
+  @BeforeEach
+  void setUp() {
+    MDC.put("traceId", "test-trace");
 
-        this.objectMapper = new ObjectMapper().findAndRegisterModules();
-        this.templateService = Mockito.mock(TemplateService.class);
+    this.objectMapper = new ObjectMapper().findAndRegisterModules();
+    this.templateService = Mockito.mock(TemplateService.class);
 
-        TemplateAdminController controller = new TemplateAdminController(templateService);
+    TemplateAdminController controller = new TemplateAdminController(templateService);
 
-        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-        validator.afterPropertiesSet();
+    LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+    validator.afterPropertiesSet();
 
-        this.mockMvc = MockMvcBuilders
-            .standaloneSetup(controller)
+    this.mockMvc =
+        MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(new ProblemDetailsAdvice())
             .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
             .setValidator(validator)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver()) // ВАЖНО
             .build();
-    }
+  }
 
-    @AfterEach
-    void tearDown() {
-        MDC.clear();
-    }
+  @AfterEach
+  void tearDown() {
+    MDC.clear();
+  }
 
-    private TemplateView buildView(TemplateStatus status) {
-        TemplateView view = new TemplateView();
-        view.setId(UUID.randomUUID());
-        view.setCode("WELCOME");
-        view.setSubject("Subject");
-        view.setBodyHtml("<p>Hello</p>");
-        view.setBodyText("Hello");
-        view.setStatus(status);
-        view.setCreatedAt(Instant.parse("2024-01-01T00:00:00Z"));
-        view.setUpdatedAt(Instant.parse("2024-01-02T00:00:00Z"));
-        return view;
-    }
+  private TemplateView buildView(TemplateStatus status) {
+    TemplateView view = new TemplateView();
+    view.setId(UUID.randomUUID());
+    view.setCode("WELCOME");
+    view.setSubject("Subject");
+    view.setBodyHtml("<p>Hello</p>");
+    view.setBodyText("Hello");
+    view.setStatus(status);
+    view.setCreatedAt(Instant.parse("2024-01-01T00:00:00Z"));
+    view.setUpdatedAt(Instant.parse("2024-01-02T00:00:00Z"));
+    return view;
+  }
 
-    @Test
-    void create_ShouldReturnCreated_WhenRequestValid() throws Exception {
-        TemplateView view = buildView(TemplateStatus.ACTIVE);
-        when(templateService.create(any())).thenReturn(view);
+  @Test
+  void create_ShouldReturnCreated_WhenRequestValid() throws Exception {
+    TemplateView view = buildView(TemplateStatus.ACTIVE);
+    when(templateService.create(any())).thenReturn(view);
 
-        TemplateCreateRequest request = new TemplateCreateRequest();
-        request.setCode("WELCOME");
-        request.setSubject("Subject");
-        request.setBodyHtml("<p>Hello</p>");
+    TemplateCreateRequest request = new TemplateCreateRequest();
+    request.setCode("WELCOME");
+    request.setSubject("Subject");
+    request.setBodyHtml("<p>Hello</p>");
 
-        mockMvc.perform(post("/admin/templates")
+    mockMvc
+        .perform(
+            post("/admin/templates")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isCreated())
-            .andExpect(header().string("Location", "/admin/templates/" + view.getCode()))
-            .andExpect(jsonPath("$.code").value("WELCOME"));
-    }
+        .andExpect(status().isCreated())
+        .andExpect(header().string("Location", "/admin/templates/" + view.getCode()))
+        .andExpect(jsonPath("$.code").value("WELCOME"));
+  }
 
-    @Test
-    void create_ShouldReturnBadRequest_WhenCodeInvalid() throws Exception {
-        TemplateCreateRequest request = new TemplateCreateRequest();
-        request.setCode("lowercase");
-        request.setSubject("Subject");
+  @Test
+  void create_ShouldReturnBadRequest_WhenCodeInvalid() throws Exception {
+    TemplateCreateRequest request = new TemplateCreateRequest();
+    request.setCode("lowercase");
+    request.setSubject("Subject");
 
-        mockMvc.perform(post("/admin/templates")
+    mockMvc
+        .perform(
+            post("/admin/templates")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isBadRequest())
-            .andExpect(content().contentType("application/problem+json"))
-            .andExpect(jsonPath("$.traceId").value("test-trace"));
-    }
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType("application/problem+json"))
+        .andExpect(jsonPath("$.traceId").value("test-trace"));
+  }
 
-    @Test
-    void list_ShouldReturnPagedResponse() throws Exception {
-        TemplateView view = buildView(TemplateStatus.ACTIVE);
+  @Test
+  void list_ShouldReturnPagedResponse() throws Exception {
+    TemplateView view = buildView(TemplateStatus.ACTIVE);
 
-        when(templateService.findAll(any(Pageable.class)))
-            .thenReturn(new PageImpl<>(List.of(view), PageRequest.of(0, 10), 1));
+    when(templateService.findAll(any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of(view), PageRequest.of(0, 10), 1));
 
-        mockMvc.perform(get("/admin/templates"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.content[0].code").value("WELCOME"));
-    }
+    mockMvc
+        .perform(get("/admin/templates"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.content[0].code").value("WELCOME"));
+  }
 
-    @Test
-    void deactivate_ShouldReturnInactive() throws Exception {
-        TemplateView view = buildView(TemplateStatus.INACTIVE);
-        when(templateService.deactivateByCode("WELCOME")).thenReturn(view);
+  @Test
+  void deactivate_ShouldReturnInactive() throws Exception {
+    TemplateView view = buildView(TemplateStatus.INACTIVE);
+    when(templateService.deactivateByCode("WELCOME")).thenReturn(view);
 
-        mockMvc.perform(post("/admin/templates/{code}/deactivate", "WELCOME"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.status").value("INACTIVE"));
-    }
+    mockMvc
+        .perform(post("/admin/templates/{code}/deactivate", "WELCOME"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("INACTIVE"));
+  }
 
-    @Test
-    void get_ShouldReturnProblem_WhenTemplateMissing() throws Exception {
-        when(templateService.getByCode("UNKNOWN"))
-            .thenThrow(new TemplateCodeNotFoundException("UNKNOWN"));
+  @Test
+  void get_ShouldReturnProblem_WhenTemplateMissing() throws Exception {
+    when(templateService.getByCode("UNKNOWN"))
+        .thenThrow(new TemplateCodeNotFoundException("UNKNOWN"));
 
-        mockMvc.perform(get("/admin/templates/{code}", "UNKNOWN"))
-            .andExpect(status().isNotFound())
-            .andExpect(content().contentType("application/problem+json"))
-            .andExpect(jsonPath("$.traceId").value("test-trace"));
-    }
+    mockMvc
+        .perform(get("/admin/templates/{code}", "UNKNOWN"))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType("application/problem+json"))
+        .andExpect(jsonPath("$.traceId").value("test-trace"));
+  }
 }

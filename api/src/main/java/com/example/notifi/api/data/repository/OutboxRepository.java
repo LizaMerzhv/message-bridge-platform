@@ -14,9 +14,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface OutboxRepository extends JpaRepository<OutboxEntity, UUID> {
 
-    Optional<OutboxEntity> findByMessageKey(String messageKey);
+  Optional<OutboxEntity> findByMessageKey(String messageKey);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select o from OutboxEntity o where o.status in :statuses order by o.createdAt")
-    List<OutboxEntity> findNextBatchForUpdate(Collection<OutboxStatus> statuses, Pageable pageable);
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  @Query("select o from OutboxEntity o where o.status in :statuses order by o.createdAt")
+  List<OutboxEntity> findNextBatchForUpdate(Collection<OutboxStatus> statuses, Pageable pageable);
 }

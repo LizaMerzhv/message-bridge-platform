@@ -19,5 +19,4 @@ public record NotificationTaskMessage(
     int attempt,
     String traceId,
     String webhookUrl,
-    String webhookSecret
-) {}
+    String webhookSecret) {}

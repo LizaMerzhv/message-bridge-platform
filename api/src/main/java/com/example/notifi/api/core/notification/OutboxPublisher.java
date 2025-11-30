@@ -22,73 +22,78 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class OutboxPublisher {
 
-    private static final Logger log = LoggerFactory.getLogger(OutboxPublisher.class);
+  private static final Logger log = LoggerFactory.getLogger(OutboxPublisher.class);
 
-    private final OutboxRepository outboxRepository;
-    private final ObjectMapper objectMapper;
-    private final RabbitTemplate rabbitTemplate;
-    private final Clock clock;
-    private final String exchange;
-    private final String routingKey;
-    private final int batchSize;
+  private final OutboxRepository outboxRepository;
+  private final ObjectMapper objectMapper;
+  private final RabbitTemplate rabbitTemplate;
+  private final Clock clock;
+  private final String exchange;
+  private final String routingKey;
+  private final int batchSize;
 
-    public OutboxPublisher(
-        OutboxRepository outboxRepository,
-        ObjectMapper objectMapper,
-        RabbitTemplate rabbitTemplate,
-        Clock clock,
-        @Value("${notifi.amqp.exchange:" + AmqpConstants.DEFAULT_EXCHANGE + "}") String exchange,
-        @Value("${notifi.amqp.ingest-routing-key:" + AmqpConstants.INGEST_ROUTING_KEY + "}") String routingKey,
-        @Value("${notifi.outbox.batch-size:25}") int batchSize) {
-        this.outboxRepository = outboxRepository;
-        this.objectMapper = objectMapper;
-        this.rabbitTemplate = rabbitTemplate;
-        this.clock = clock;
-        this.exchange = exchange;
-        this.routingKey = routingKey;
-        this.batchSize = batchSize;
+  public OutboxPublisher(
+      OutboxRepository outboxRepository,
+      ObjectMapper objectMapper,
+      RabbitTemplate rabbitTemplate,
+      Clock clock,
+      @Value("${notifi.amqp.exchange:" + AmqpConstants.DEFAULT_EXCHANGE + "}") String exchange,
+      @Value("${notifi.amqp.ingest-routing-key:" + AmqpConstants.INGEST_ROUTING_KEY + "}")
+          String routingKey,
+      @Value("${notifi.outbox.batch-size:25}") int batchSize) {
+    this.outboxRepository = outboxRepository;
+    this.objectMapper = objectMapper;
+    this.rabbitTemplate = rabbitTemplate;
+    this.clock = clock;
+    this.exchange = exchange;
+    this.routingKey = routingKey;
+    this.batchSize = batchSize;
+  }
+
+  @Scheduled(fixedDelayString = "${notifi.outbox.poll-interval-ms:5000}")
+  @Transactional
+  public void publishPending() {
+    List<OutboxEntity> batch =
+        outboxRepository.findNextBatchForUpdate(
+            List.of(OutboxStatus.PENDING, OutboxStatus.FAILED), PageRequest.of(0, batchSize));
+
+    if (batch.isEmpty()) {
+      return;
     }
 
-    @Scheduled(fixedDelayString = "${notifi.outbox.poll-interval-ms:5000}")
-    @Transactional
-    public void publishPending() {
-        List<OutboxEntity> batch =
-            outboxRepository.findNextBatchForUpdate(
-                List.of(OutboxStatus.PENDING, OutboxStatus.FAILED), PageRequest.of(0, batchSize));
+    log.info("Publishing {} outbox messages", batch.size());
+    Instant now = clock.instant();
 
-        if (batch.isEmpty()) {
-            return;
-        }
+    for (OutboxEntity outbox : batch) {
+      try {
+        NotificationTaskMessage message =
+            objectMapper.readValue(outbox.getPayload(), NotificationTaskMessage.class);
+        rabbitTemplate.convertAndSend(exchange, routingKey, message, messageId(outbox));
 
-        log.info("Publishing {} outbox messages", batch.size());
-        Instant now = clock.instant();
+        outbox.setStatus(OutboxStatus.PUBLISHED);
+        outbox.setPublishedAt(now);
+        outbox.setLastAttemptAt(now);
+      } catch (Exception ex) {
+        outbox.setAttempts(outbox.getAttempts() + 1);
+        outbox.setLastAttemptAt(now);
+        outbox.setStatus(OutboxStatus.FAILED);
+        log.error(
+            "Failed to publish outbox message {} with key {}",
+            outbox.getId(),
+            outbox.getMessageKey(),
+            ex);
+      }
 
-        for (OutboxEntity outbox : batch) {
-            try {
-                NotificationTaskMessage message =
-                    objectMapper.readValue(outbox.getPayload(), NotificationTaskMessage.class);
-                rabbitTemplate.convertAndSend(exchange, routingKey, message, messageId(outbox));
-
-                outbox.setStatus(OutboxStatus.PUBLISHED);
-                outbox.setPublishedAt(now);
-                outbox.setLastAttemptAt(now);
-            } catch (Exception ex) {
-                outbox.setAttempts(outbox.getAttempts() + 1);
-                outbox.setLastAttemptAt(now);
-                outbox.setStatus(OutboxStatus.FAILED);
-                log.error("Failed to publish outbox message {} with key {}", outbox.getId(), outbox.getMessageKey(), ex);
-            }
-
-            outbox.setUpdatedAt(now);
-        }
-
-        outboxRepository.saveAll(batch);
+      outbox.setUpdatedAt(now);
     }
 
-    private MessagePostProcessor messageId(OutboxEntity outbox) {
-        return message -> {
-            message.getMessageProperties().setMessageId(outbox.getId().toString());
-            return message;
-        };
-    }
+    outboxRepository.saveAll(batch);
+  }
+
+  private MessagePostProcessor messageId(OutboxEntity outbox) {
+    return message -> {
+      message.getMessageProperties().setMessageId(outbox.getId().toString());
+      return message;
+    };
+  }
 }

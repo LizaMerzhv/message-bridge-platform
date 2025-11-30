@@ -7,9 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface NotificationRepository
-        extends JpaRepository<NotificationEntity, UUID>,
-                JpaSpecificationExecutor<NotificationEntity> {
-    Optional<NotificationEntity> findByClientIdAndExternalRequestId(UUID clientId, String externalRequestId);
+    extends JpaRepository<NotificationEntity, UUID>, JpaSpecificationExecutor<NotificationEntity> {
+  Optional<NotificationEntity> findByClientIdAndExternalRequestId(
+      UUID clientId, String externalRequestId);
 
-    Optional<NotificationEntity> findByIdAndClientId(UUID id, UUID clientId);
+  Optional<NotificationEntity> findByIdAndClientId(UUID id, UUID clientId);
 }

@@ -13,19 +13,20 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NotificationRepository extends JpaRepository<NotificationEntity, UUID> {
 
-    @Query(
-        value = """
+  @Query(
+      value =
+          """
             SELECT * FROM notification
             WHERE status = :status AND send_at <= :cutoff
             ORDER BY send_at, id
             LIMIT :limit
             FOR UPDATE SKIP LOCKED
             """,
-        nativeQuery = true)
-    List<NotificationEntity> lockNextBatch(
-        @Param("status") String status, @Param("cutoff") Instant cutoff, @Param("limit") int limit);
+      nativeQuery = true)
+  List<NotificationEntity> lockNextBatch(
+      @Param("status") String status, @Param("cutoff") Instant cutoff, @Param("limit") int limit);
 
-    default List<NotificationEntity> lockCreatedBefore(Instant cutoff, int limit) {
-        return lockNextBatch(NotificationStatus.CREATED.name(), cutoff, limit);
-    }
+  default List<NotificationEntity> lockCreatedBefore(Instant cutoff, int limit) {
+    return lockNextBatch(NotificationStatus.CREATED.name(), cutoff, limit);
+  }
 }

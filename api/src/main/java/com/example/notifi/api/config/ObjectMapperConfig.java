@@ -9,11 +9,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ObjectMapperConfig {
 
-    @Bean
-    public Jackson2ObjectMapperBuilderCustomizer notifiObjectMapperCustomizer() {
-        return builder ->
-                builder.modulesToInstall(JavaTimeModule.class)
-                        .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                        .simpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-    }
+  @Bean
+  public Jackson2ObjectMapperBuilderCustomizer notifiObjectMapperCustomizer() {
+    return builder ->
+        builder
+            .modulesToInstall(JavaTimeModule.class)
+            .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            .simpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+  }
 }

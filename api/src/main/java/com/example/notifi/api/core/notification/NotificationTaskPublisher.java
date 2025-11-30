@@ -25,29 +25,31 @@ import org.springframework.stereotype.Component;
 @Component
 public class NotificationTaskPublisher {
 
-    private static final Logger log = LoggerFactory.getLogger(NotificationTaskPublisher.class);
+  private static final Logger log = LoggerFactory.getLogger(NotificationTaskPublisher.class);
 
-    private final OutboxRepository outboxRepository;
-    private final ObjectMapper objectMapper;
-    private final Clock clock;
+  private final OutboxRepository outboxRepository;
+  private final ObjectMapper objectMapper;
+  private final Clock clock;
 
-    public NotificationTaskPublisher(OutboxRepository outboxRepository, ObjectMapper objectMapper, Clock clock) {
-        this.outboxRepository = outboxRepository;
-        this.objectMapper = objectMapper;
-        this.clock = clock;
+  public NotificationTaskPublisher(
+      OutboxRepository outboxRepository, ObjectMapper objectMapper, Clock clock) {
+    this.outboxRepository = outboxRepository;
+    this.objectMapper = objectMapper;
+    this.clock = clock;
+  }
+
+  public void publish(NotificationEntity entity, ClientEntity client) {
+    Channel channel = Channel.from(entity.getChannel());
+    String messageKey = "notification:" + entity.getId();
+
+    Optional<OutboxEntity> existing = outboxRepository.findByMessageKey(messageKey);
+    if (existing.isPresent()) {
+      log.debug("Notification {} already stored in outbox", entity.getId());
+      return;
     }
 
-    public void publish(NotificationEntity entity, ClientEntity client) {
-        Channel channel = Channel.from(entity.getChannel());
-        String messageKey = "notification:" + entity.getId();
-
-        Optional<OutboxEntity> existing = outboxRepository.findByMessageKey(messageKey);
-        if (existing.isPresent()) {
-            log.debug("Notification {} already stored in outbox", entity.getId());
-            return;
-        }
-
-        NotificationTaskMessage payload = new NotificationTaskMessage(
+    NotificationTaskMessage payload =
+        new NotificationTaskMessage(
             entity.getId(),
             entity.getClientId(),
             entity.getExternalRequestId(),
@@ -61,40 +63,38 @@ public class NotificationTaskPublisher {
             0,
             MDC.get("traceId"),
             client.getWebhookUrl(),
-            client.getWebhookSecret()
-        );
+            client.getWebhookSecret());
 
-        String payloadJson = serialize(payload);
-        Instant now = clock.instant();
+    String payloadJson = serialize(payload);
+    Instant now = clock.instant();
 
-        OutboxEntity outbox = new OutboxEntity();
-        outbox.setId(UUID.randomUUID());
-        outbox.setMessageKey(messageKey);
-        outbox.setEventType("NOTIFICATION_TASK");
-        outbox.setPayload(payloadJson);
-        outbox.setStatus(OutboxStatus.PENDING);
-        outbox.setAttempts(0);
-        outbox.setCreatedAt(now);
-        outbox.setUpdatedAt(now);
+    OutboxEntity outbox = new OutboxEntity();
+    outbox.setId(UUID.randomUUID());
+    outbox.setMessageKey(messageKey);
+    outbox.setEventType("NOTIFICATION_TASK");
+    outbox.setPayload(payloadJson);
+    outbox.setStatus(OutboxStatus.PENDING);
+    outbox.setAttempts(0);
+    outbox.setCreatedAt(now);
+    outbox.setUpdatedAt(now);
 
-        try {
-            outboxRepository.save(outbox);
-            log.info(
-                "Stored notification {} in outbox with status {} scheduled at {}",
-                entity.getId(),
-                entity.getStatus(),
-                entity.getSendAt()
-            );
-        } catch (DataIntegrityViolationException ex) {
-            log.debug("Outbox record already exists for notification {}", entity.getId(), ex);
-        }
+    try {
+      outboxRepository.save(outbox);
+      log.info(
+          "Stored notification {} in outbox with status {} scheduled at {}",
+          entity.getId(),
+          entity.getStatus(),
+          entity.getSendAt());
+    } catch (DataIntegrityViolationException ex) {
+      log.debug("Outbox record already exists for notification {}", entity.getId(), ex);
     }
+  }
 
-    private String serialize(NotificationTaskMessage payload) {
-        try {
-            return objectMapper.writeValueAsString(payload);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Failed to serialize notification task payload", e);
-        }
+  private String serialize(NotificationTaskMessage payload) {
+    try {
+      return objectMapper.writeValueAsString(payload);
+    } catch (JsonProcessingException e) {
+      throw new IllegalStateException("Failed to serialize notification task payload", e);
     }
+  }
 }

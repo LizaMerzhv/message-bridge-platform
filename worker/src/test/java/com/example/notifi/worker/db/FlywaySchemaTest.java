@@ -20,31 +20,31 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class FlywaySchemaTest {
 
-    @Container
-    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:15.6-alpine")
-        .withDatabaseName("notifi_worker")
-        .withUsername("notifi_worker")
-        .withPassword("notifi_worker")
-        .withReuse(true)
-        .waitingFor(Wait.forListeningPort());
+  @Container
+  static final PostgreSQLContainer<?> POSTGRES =
+      new PostgreSQLContainer<>("postgres:15.6-alpine")
+          .withDatabaseName("notifi_worker")
+          .withUsername("notifi_worker")
+          .withPassword("notifi_worker")
+          .withReuse(true)
+          .waitingFor(Wait.forListeningPort());
 
-    @DynamicPropertySource
-    static void configure(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
-        registry.add("spring.datasource.username", POSTGRES::getUsername);
-        registry.add("spring.datasource.password", POSTGRES::getPassword);
-    }
+  @DynamicPropertySource
+  static void configure(DynamicPropertyRegistry registry) {
+    registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
+    registry.add("spring.datasource.username", POSTGRES::getUsername);
+    registry.add("spring.datasource.password", POSTGRES::getPassword);
+  }
 
-    @Autowired
-    JdbcTemplate jdbc;
+  @Autowired JdbcTemplate jdbc;
 
-    @Test
-    void shouldCreateWorkerTables() {
-        assertThat(reg("public.notification")).isNotNull();
-        assertThat(reg("public.delivery")).isNotNull();
-    }
+  @Test
+  void shouldCreateWorkerTables() {
+    assertThat(reg("public.notification")).isNotNull();
+    assertThat(reg("public.delivery")).isNotNull();
+  }
 
-    private String reg(String name) {
-        return jdbc.queryForObject("SELECT to_regclass(?)", String.class, name);
-    }
+  private String reg(String name) {
+    return jdbc.queryForObject("SELECT to_regclass(?)", String.class, name);
+  }
 }

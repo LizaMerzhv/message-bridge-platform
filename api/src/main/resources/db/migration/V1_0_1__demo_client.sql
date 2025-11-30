@@ -2,7 +2,7 @@ INSERT INTO client (id, name, "apiKey", "rateLimitPerMin", "createdAt", "updated
 VALUES (
     '00000000-0000-0000-0000-000000000001',
     'Demo client',
-    'demo-123',
+    '${demoApiKey}',
     60,
     now(),
     now()

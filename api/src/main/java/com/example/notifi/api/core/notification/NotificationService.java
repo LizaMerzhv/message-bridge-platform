@@ -26,167 +26,171 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class NotificationService {
 
-    private final NotificationRepository notificationRepository;
-    private final ClientRepository clientRepository;
-    private final DeliveryRepository deliveryRepository;
-    private final NotificationMapper notificationMapper;
-    private final NotificationPolicy notificationPolicy;
-    private final TemplateService templateService;
-    private final NotificationTaskPublisher taskPublisher;
-    private final Clock clock;
+  private final NotificationRepository notificationRepository;
+  private final ClientRepository clientRepository;
+  private final DeliveryRepository deliveryRepository;
+  private final NotificationMapper notificationMapper;
+  private final NotificationPolicy notificationPolicy;
+  private final TemplateService templateService;
+  private final NotificationTaskPublisher taskPublisher;
+  private final Clock clock;
 
-    public NotificationService(
-        NotificationRepository notificationRepository,
-        ClientRepository clientRepository,
-        DeliveryRepository deliveryRepository,
-        NotificationMapper notificationMapper,
-        NotificationPolicy notificationPolicy,
-        TemplateService templateService,
-        NotificationTaskPublisher taskPublisher,
-        Clock clock) {
-        this.notificationRepository = notificationRepository;
-        this.clientRepository = clientRepository;
-        this.deliveryRepository = deliveryRepository;
-        this.notificationMapper = notificationMapper;
-        this.notificationPolicy = notificationPolicy;
-        this.templateService = templateService;
-        this.taskPublisher = taskPublisher;
-        this.clock = clock;
+  public NotificationService(
+      NotificationRepository notificationRepository,
+      ClientRepository clientRepository,
+      DeliveryRepository deliveryRepository,
+      NotificationMapper notificationMapper,
+      NotificationPolicy notificationPolicy,
+      TemplateService templateService,
+      NotificationTaskPublisher taskPublisher,
+      Clock clock) {
+    this.notificationRepository = notificationRepository;
+    this.clientRepository = clientRepository;
+    this.deliveryRepository = deliveryRepository;
+    this.notificationMapper = notificationMapper;
+    this.notificationPolicy = notificationPolicy;
+    this.templateService = templateService;
+    this.taskPublisher = taskPublisher;
+    this.clock = clock;
+  }
+
+  public NotificationEntity recordDeliveryResult(
+      UUID id, NotificationStatus status, Instant attemptedAt, String errorMessage) {
+    if (status != NotificationStatus.SENT && status != NotificationStatus.FAILED) {
+      throw new IllegalArgumentException("Unsupported status: " + status);
     }
 
-    public NotificationEntity recordDeliveryResult(
-        UUID id, NotificationStatus status, Instant attemptedAt, String errorMessage) {
-        if (status != NotificationStatus.SENT && status != NotificationStatus.FAILED) {
-            throw new IllegalArgumentException("Unsupported status: " + status);
-        }
+    NotificationEntity entity =
+        notificationRepository
+            .findById(id)
+            .orElseThrow(() -> new NotificationNotFoundException(id));
 
-        NotificationEntity entity =
-            notificationRepository
-                .findById(id)
-                .orElseThrow(() -> new NotificationNotFoundException(id));
+    entity.setAttempts(entity.getAttempts() + 1);
+    entity.setStatus(status);
+    entity.setUpdatedAt(attemptedAt != null ? attemptedAt : clock.instant());
 
-        entity.setAttempts(entity.getAttempts() + 1);
-        entity.setStatus(status);
-        entity.setUpdatedAt(attemptedAt != null ? attemptedAt : clock.instant());
+    return notificationRepository.save(entity);
+  }
 
-        return notificationRepository.save(entity);
+  public CreateNotificationResult create(
+      CreateNotificationRequest request, ClientPrincipal principal) {
+    if (request.getChannel() != Channel.EMAIL) {
+      throw new IllegalArgumentException("Only email channel is supported");
     }
 
-    public CreateNotificationResult create(CreateNotificationRequest request, ClientPrincipal principal) {
-        if (request.getChannel() != Channel.EMAIL) {
-            throw new IllegalArgumentException("Only email channel is supported");
-        }
+    notificationPolicy.validateSendAt(request.getSendAt(), clock);
 
-        notificationPolicy.validateSendAt(request.getSendAt(), clock);
-
-        NotificationEntity existing =
-            notificationRepository
-                .findByClientIdAndExternalRequestId(principal.clientId(), request.getExternalRequestId())
-                .orElse(null);
-        if (existing != null) {
-            return new CreateNotificationResult(existing, true);
-        }
-
-        if (request.getTemplateCode() != null) {
-            templateService.requireActiveByCode(request.getTemplateCode());
-        }
-
-        Instant now = clock.instant();
-
-        NotificationEntity entity = new NotificationEntity();
-        entity.setId(UUID.randomUUID());
-        entity.setClientId(principal.clientId());
-        entity.setExternalRequestId(request.getExternalRequestId());
-        entity.setChannel(request.getChannel().toValue());
-        entity.setTo(request.getTo());
-        entity.setSubject(request.getSubject());
-        entity.setTemplateCode(request.getTemplateCode());
-        entity.setVariables(request.getVariables());
-        entity.setSendAt(request.getSendAt() != null ? request.getSendAt() : now);
-        entity.setStatus(NotificationStatus.CREATED);
-        entity.setAttempts(0);
-        entity.setCreatedAt(now);
-        entity.setUpdatedAt(now);
-
-        NotificationEntity saved = notificationRepository.save(entity);
-
-        ClientEntity client =
-            clientRepository
-                .findById(principal.clientId())
-                .orElseThrow(() -> new IllegalStateException("Client not found: " + principal.clientId()));
-
-        taskPublisher.publish(saved, client); // send event to worker instead of sharing database tables
-
-        return new CreateNotificationResult(saved, false);
+    NotificationEntity existing =
+        notificationRepository
+            .findByClientIdAndExternalRequestId(
+                principal.clientId(), request.getExternalRequestId())
+            .orElse(null);
+    if (existing != null) {
+      return new CreateNotificationResult(existing, true);
     }
 
-    @Transactional(readOnly = true)
-    public NotificationView findByIdForClient(UUID id, UUID clientId) {
-        NotificationEntity entity =
-            notificationRepository
-                .findByIdAndClientId(id, clientId)
-                .orElseThrow(() -> new NotificationNotFoundException(id));
-        return notificationMapper.toView(
-            entity, deliveryRepository.findByNotificationIdOrderByAttemptAsc(entity.getId()));
+    if (request.getTemplateCode() != null) {
+      templateService.requireActiveByCode(request.getTemplateCode());
     }
 
-    @Transactional(readOnly = true)
-    public Page<NotificationView> findAllForClient(NotificationFilter filter, UUID clientId, Pageable pageable) {
-        Specification<NotificationEntity> spec =
-            Specification.where(NotificationSpecifications.belongsToClient(clientId))
-                .and(NotificationSpecifications.hasStatus(filter.getStatus()))
-                .and(NotificationSpecifications.createdAtFrom(filter.getCreatedFrom()))
-                .and(NotificationSpecifications.createdAtTo(filter.getCreatedTo()));
-        return notificationRepository.findAll(spec, pageable).map(notificationMapper::toView);
-    }
+    Instant now = clock.instant();
 
-    @Transactional(readOnly = true)
-    public Page<NotificationView> findAll(NotificationFilter filter, Pageable pageable) {
-        Specification<NotificationEntity> spec =
-                Specification.where(NotificationSpecifications.hasClient(filter.getClientId()))
-                        .and(NotificationSpecifications.hasStatus(filter.getStatus()))
-                        .and(NotificationSpecifications.createdAtFrom(filter.getCreatedFrom()))
-                        .and(NotificationSpecifications.createdAtTo(filter.getCreatedTo()));
-        return notificationRepository.findAll(spec, pageable).map(notificationMapper::toView);
-    }
+    NotificationEntity entity = new NotificationEntity();
+    entity.setId(UUID.randomUUID());
+    entity.setClientId(principal.clientId());
+    entity.setExternalRequestId(request.getExternalRequestId());
+    entity.setChannel(request.getChannel().toValue());
+    entity.setTo(request.getTo());
+    entity.setSubject(request.getSubject());
+    entity.setTemplateCode(request.getTemplateCode());
+    entity.setVariables(request.getVariables());
+    entity.setSendAt(request.getSendAt() != null ? request.getSendAt() : now);
+    entity.setStatus(NotificationStatus.CREATED);
+    entity.setAttempts(0);
+    entity.setCreatedAt(now);
+    entity.setUpdatedAt(now);
 
-    @Transactional(readOnly = true)
-    public NotificationView findById(UUID id) {
-        NotificationEntity entity =
-                notificationRepository
-                        .findById(id)
-                        .orElseThrow(() -> new NotificationNotFoundException(id));
-        return notificationMapper.toView(
-                entity, deliveryRepository.findByNotificationIdOrderByAttemptAsc(entity.getId()));
-    }
+    NotificationEntity saved = notificationRepository.save(entity);
 
-    @Transactional(readOnly = true)
-    public List<DeliveryView> findDeliveries(UUID id) {
-        NotificationEntity entity =
-                notificationRepository
-                        .findById(id)
-                        .orElseThrow(() -> new NotificationNotFoundException(id));
-        return notificationMapper.toDeliveryViews(
-                deliveryRepository.findByNotificationIdOrderByAttemptAsc(entity.getId()));
-    }
+    ClientEntity client =
+        clientRepository
+            .findById(principal.clientId())
+            .orElseThrow(
+                () -> new IllegalStateException("Client not found: " + principal.clientId()));
 
-    @Transactional(readOnly = true)
-    public long count(NotificationFilter filter) {
-        Specification<NotificationEntity> spec = buildSpecification(filter, filter.getStatus());
-        return notificationRepository.count(spec);
-    }
+    taskPublisher.publish(saved, client); // send event to worker instead of sharing database tables
 
-    @Transactional(readOnly = true)
-    public long countByStatus(NotificationFilter filter, NotificationStatus status) {
-        Specification<NotificationEntity> spec = buildSpecification(filter, status);
-        return notificationRepository.count(spec);
-    }
+    return new CreateNotificationResult(saved, false);
+  }
 
-    private Specification<NotificationEntity> buildSpecification(
-        NotificationFilter filter, NotificationStatus statusOverride) {
-        return Specification.where(NotificationSpecifications.hasClient(filter.getClientId()))
-            .and(NotificationSpecifications.hasStatus(statusOverride))
+  @Transactional(readOnly = true)
+  public NotificationView findByIdForClient(UUID id, UUID clientId) {
+    NotificationEntity entity =
+        notificationRepository
+            .findByIdAndClientId(id, clientId)
+            .orElseThrow(() -> new NotificationNotFoundException(id));
+    return notificationMapper.toView(
+        entity, deliveryRepository.findByNotificationIdOrderByAttemptAsc(entity.getId()));
+  }
+
+  @Transactional(readOnly = true)
+  public Page<NotificationView> findAllForClient(
+      NotificationFilter filter, UUID clientId, Pageable pageable) {
+    Specification<NotificationEntity> spec =
+        Specification.where(NotificationSpecifications.belongsToClient(clientId))
+            .and(NotificationSpecifications.hasStatus(filter.getStatus()))
             .and(NotificationSpecifications.createdAtFrom(filter.getCreatedFrom()))
             .and(NotificationSpecifications.createdAtTo(filter.getCreatedTo()));
-    }
+    return notificationRepository.findAll(spec, pageable).map(notificationMapper::toView);
+  }
+
+  @Transactional(readOnly = true)
+  public Page<NotificationView> findAll(NotificationFilter filter, Pageable pageable) {
+    Specification<NotificationEntity> spec =
+        Specification.where(NotificationSpecifications.hasClient(filter.getClientId()))
+            .and(NotificationSpecifications.hasStatus(filter.getStatus()))
+            .and(NotificationSpecifications.createdAtFrom(filter.getCreatedFrom()))
+            .and(NotificationSpecifications.createdAtTo(filter.getCreatedTo()));
+    return notificationRepository.findAll(spec, pageable).map(notificationMapper::toView);
+  }
+
+  @Transactional(readOnly = true)
+  public NotificationView findById(UUID id) {
+    NotificationEntity entity =
+        notificationRepository
+            .findById(id)
+            .orElseThrow(() -> new NotificationNotFoundException(id));
+    return notificationMapper.toView(
+        entity, deliveryRepository.findByNotificationIdOrderByAttemptAsc(entity.getId()));
+  }
+
+  @Transactional(readOnly = true)
+  public List<DeliveryView> findDeliveries(UUID id) {
+    NotificationEntity entity =
+        notificationRepository
+            .findById(id)
+            .orElseThrow(() -> new NotificationNotFoundException(id));
+    return notificationMapper.toDeliveryViews(
+        deliveryRepository.findByNotificationIdOrderByAttemptAsc(entity.getId()));
+  }
+
+  @Transactional(readOnly = true)
+  public long count(NotificationFilter filter) {
+    Specification<NotificationEntity> spec = buildSpecification(filter, filter.getStatus());
+    return notificationRepository.count(spec);
+  }
+
+  @Transactional(readOnly = true)
+  public long countByStatus(NotificationFilter filter, NotificationStatus status) {
+    Specification<NotificationEntity> spec = buildSpecification(filter, status);
+    return notificationRepository.count(spec);
+  }
+
+  private Specification<NotificationEntity> buildSpecification(
+      NotificationFilter filter, NotificationStatus statusOverride) {
+    return Specification.where(NotificationSpecifications.hasClient(filter.getClientId()))
+        .and(NotificationSpecifications.hasStatus(statusOverride))
+        .and(NotificationSpecifications.createdAtFrom(filter.getCreatedFrom()))
+        .and(NotificationSpecifications.createdAtTo(filter.getCreatedTo()));
+  }
 }

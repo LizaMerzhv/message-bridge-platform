@@ -6,47 +6,47 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class TemplateSummaryDto {
-    private UUID id;
-    private String code;
-    private String subject;
-    private TemplateStatus status;
-    private Instant createdAt;
-    private Instant updatedAt;
+  private UUID id;
+  private String code;
+  private String subject;
+  private TemplateStatus status;
+  private Instant createdAt;
+  private Instant updatedAt;
 
-    public TemplateSummaryDto() {
-        // needed for Jackson
-    }
+  public TemplateSummaryDto() {
+    // needed for Jackson
+  }
 
-    public TemplateSummaryDto(TemplateView view) {
-        this.id = view.getId();
-        this.code = view.getCode();
-        this.subject = view.getSubject();
-        this.status = view.getStatus();
-        this.createdAt = view.getCreatedAt();
-        this.updatedAt = view.getUpdatedAt();
-    }
+  public TemplateSummaryDto(TemplateView view) {
+    this.id = view.getId();
+    this.code = view.getCode();
+    this.subject = view.getSubject();
+    this.status = view.getStatus();
+    this.createdAt = view.getCreatedAt();
+    this.updatedAt = view.getUpdatedAt();
+  }
 
-    public UUID getId() {
-        return id;
-    }
+  public UUID getId() {
+    return id;
+  }
 
-    public String getCode() {
-        return code;
-    }
+  public String getCode() {
+    return code;
+  }
 
-    public String getSubject() {
-        return subject;
-    }
+  public String getSubject() {
+    return subject;
+  }
 
-    public TemplateStatus getStatus() {
-        return status;
-    }
+  public TemplateStatus getStatus() {
+    return status;
+  }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
+  public Instant getUpdatedAt() {
+    return updatedAt;
+  }
 }

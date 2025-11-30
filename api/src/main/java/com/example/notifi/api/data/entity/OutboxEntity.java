@@ -13,114 +13,113 @@ import java.util.UUID;
 @Table(name = "outbox")
 public class OutboxEntity {
 
-    @Id
-    private UUID id;
+  @Id private UUID id;
 
-    @Column(name = "\"messageKey\"", nullable = false, length = 128)
-    private String messageKey;
+  @Column(name = "\"messageKey\"", nullable = false, length = 128)
+  private String messageKey;
 
-    @Column(name = "\"eventType\"", nullable = false, length = 64)
-    private String eventType;
+  @Column(name = "\"eventType\"", nullable = false, length = 64)
+  private String eventType;
 
-    @Column(name = "payload", nullable = false, columnDefinition = "jsonb")
-    private String payload;
+  @Column(name = "payload", nullable = false, columnDefinition = "jsonb")
+  private String payload;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private OutboxStatus status;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private OutboxStatus status;
 
-    @Column(nullable = false)
-    private int attempts;
+  @Column(nullable = false)
+  private int attempts;
 
-    @Column(name = "\"lastAttemptAt\"")
-    private Instant lastAttemptAt;
+  @Column(name = "\"lastAttemptAt\"")
+  private Instant lastAttemptAt;
 
-    @Column(name = "\"publishedAt\"")
-    private Instant publishedAt;
+  @Column(name = "\"publishedAt\"")
+  private Instant publishedAt;
 
-    @Column(name = "\"createdAt\"", nullable = false)
-    private Instant createdAt;
+  @Column(name = "\"createdAt\"", nullable = false)
+  private Instant createdAt;
 
-    @Column(name = "\"updatedAt\"", nullable = false)
-    private Instant updatedAt;
+  @Column(name = "\"updatedAt\"", nullable = false)
+  private Instant updatedAt;
 
-    public UUID getId() {
-        return id;
-    }
+  public UUID getId() {
+    return id;
+  }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public String getMessageKey() {
-        return messageKey;
-    }
+  public String getMessageKey() {
+    return messageKey;
+  }
 
-    public void setMessageKey(String messageKey) {
-        this.messageKey = messageKey;
-    }
+  public void setMessageKey(String messageKey) {
+    this.messageKey = messageKey;
+  }
 
-    public String getEventType() {
-        return eventType;
-    }
+  public String getEventType() {
+    return eventType;
+  }
 
-    public void setEventType(String eventType) {
-        this.eventType = eventType;
-    }
+  public void setEventType(String eventType) {
+    this.eventType = eventType;
+  }
 
-    public String getPayload() {
-        return payload;
-    }
+  public String getPayload() {
+    return payload;
+  }
 
-    public void setPayload(String payload) {
-        this.payload = payload;
-    }
+  public void setPayload(String payload) {
+    this.payload = payload;
+  }
 
-    public OutboxStatus getStatus() {
-        return status;
-    }
+  public OutboxStatus getStatus() {
+    return status;
+  }
 
-    public void setStatus(OutboxStatus status) {
-        this.status = status;
-    }
+  public void setStatus(OutboxStatus status) {
+    this.status = status;
+  }
 
-    public int getAttempts() {
-        return attempts;
-    }
+  public int getAttempts() {
+    return attempts;
+  }
 
-    public void setAttempts(int attempts) {
-        this.attempts = attempts;
-    }
+  public void setAttempts(int attempts) {
+    this.attempts = attempts;
+  }
 
-    public Instant getLastAttemptAt() {
-        return lastAttemptAt;
-    }
+  public Instant getLastAttemptAt() {
+    return lastAttemptAt;
+  }
 
-    public void setLastAttemptAt(Instant lastAttemptAt) {
-        this.lastAttemptAt = lastAttemptAt;
-    }
+  public void setLastAttemptAt(Instant lastAttemptAt) {
+    this.lastAttemptAt = lastAttemptAt;
+  }
 
-    public Instant getPublishedAt() {
-        return publishedAt;
-    }
+  public Instant getPublishedAt() {
+    return publishedAt;
+  }
 
-    public void setPublishedAt(Instant publishedAt) {
-        this.publishedAt = publishedAt;
-    }
+  public void setPublishedAt(Instant publishedAt) {
+    this.publishedAt = publishedAt;
+  }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
+  public void setCreatedAt(Instant createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
+  public Instant getUpdatedAt() {
+    return updatedAt;
+  }
 
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public void setUpdatedAt(Instant updatedAt) {
+    this.updatedAt = updatedAt;
+  }
 }

@@ -6,23 +6,33 @@ import java.time.Instant;
 
 public class NotificationDeliveryUpdateRequest {
 
-    @NotNull
-    private NotificationStatus status;
+  @NotNull private NotificationStatus status;
 
-    private String errorMessage;
+  private String errorMessage;
 
-    @NotNull
-    private Instant attemptedAt;
+  @NotNull private Instant attemptedAt;
 
-    public NotificationStatus getStatus() { return status; }
+  public NotificationStatus getStatus() {
+    return status;
+  }
 
-    public void setStatus(NotificationStatus status) { this.status = status; }
+  public void setStatus(NotificationStatus status) {
+    this.status = status;
+  }
 
-    public String getErrorMessage() { return errorMessage; }
+  public String getErrorMessage() {
+    return errorMessage;
+  }
 
-    public void setErrorMessage(String errorMessage) { this.errorMessage = errorMessage; }
+  public void setErrorMessage(String errorMessage) {
+    this.errorMessage = errorMessage;
+  }
 
-    public Instant getAttemptedAt() { return attemptedAt; }
+  public Instant getAttemptedAt() {
+    return attemptedAt;
+  }
 
-    public void setAttemptedAt(Instant attemptedAt) { this.attemptedAt = attemptedAt; }
+  public void setAttemptedAt(Instant attemptedAt) {
+    this.attemptedAt = attemptedAt;
+  }
 }

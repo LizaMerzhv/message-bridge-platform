@@ -3,14 +3,14 @@ package com.example.notifi.api.core.template.exceptions;
 import java.util.UUID;
 
 public class TemplateNotFoundException extends RuntimeException {
-    private final UUID templateId;
+  private final UUID templateId;
 
-    public TemplateNotFoundException(UUID templateId) {
-        super("Template not found: " + templateId);
-        this.templateId = templateId;
-    }
+  public TemplateNotFoundException(UUID templateId) {
+    super("Template not found: " + templateId);
+    this.templateId = templateId;
+  }
 
-    public UUID getTemplateId() {
-        return templateId;
-    }
+  public UUID getTemplateId() {
+    return templateId;
+  }
 }

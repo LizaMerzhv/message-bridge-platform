@@ -31,10 +31,10 @@ public class WorkerConfiguration {
 
   @Bean
   public RetryPolicy retryPolicy(WorkerProperties properties) {
-      return new RetryPolicy(
-          ThreadLocalRandom.current()::nextDouble,
-          properties.getRetry().getMaxAttempts() // <-- было getConsumer().getRetry()
-      );
+    return new RetryPolicy(
+        ThreadLocalRandom.current()::nextDouble,
+        properties.getRetry().getMaxAttempts() // <-- было getConsumer().getRetry()
+        );
   }
 
   @Bean
@@ -57,8 +57,8 @@ public class WorkerConfiguration {
 
   @Bean
   public Queue ingestQueue(WorkerProperties properties) {
-      return QueueBuilder.durable(properties.getAmqp().getIngestQueue())
-          .build(); // ingestion queue keeps raw tasks for worker DB
+    return QueueBuilder.durable(properties.getAmqp().getIngestQueue())
+        .build(); // ingestion queue keeps raw tasks for worker DB
   }
 
   @Bean
@@ -75,42 +75,44 @@ public class WorkerConfiguration {
   }
 
   @Bean
-  public Binding tasksBinding(WorkerProperties properties, Queue tasksQueue, DirectExchange notifiExchange) {
+  public Binding tasksBinding(
+      WorkerProperties properties, Queue tasksQueue, DirectExchange notifiExchange) {
     return BindingBuilder.bind(tasksQueue)
         .to(notifiExchange)
         .with(properties.getAmqp().getTasksRoutingKey());
   }
 
-
   @Bean
   public Binding ingestBinding(
       WorkerProperties properties, Queue ingestQueue, DirectExchange notifiExchange) {
-      return BindingBuilder.bind(ingestQueue)
-          .to(notifiExchange)
-          .with(properties.getAmqp().getIngestRoutingKey()); // route API events to ingestion queue
+    return BindingBuilder.bind(ingestQueue)
+        .to(notifiExchange)
+        .with(properties.getAmqp().getIngestRoutingKey()); // route API events to ingestion queue
   }
 
   @Bean
-  public Binding retryBinding(WorkerProperties properties, Queue retryQueue, DirectExchange notifiExchange) {
+  public Binding retryBinding(
+      WorkerProperties properties, Queue retryQueue, DirectExchange notifiExchange) {
     return BindingBuilder.bind(retryQueue)
         .to(notifiExchange)
         .with(properties.getAmqp().getRetryRoutingKey());
   }
 
   @Bean
-  public Binding dlqBinding(WorkerProperties properties, Queue deadLetterQueue, DirectExchange deadLetterExchange) {
+  public Binding dlqBinding(
+      WorkerProperties properties, Queue deadLetterQueue, DirectExchange deadLetterExchange) {
     return BindingBuilder.bind(deadLetterQueue)
         .to(deadLetterExchange)
         .with(properties.getAmqp().getDlqRoutingKey());
   }
 
-    @Bean
-    public RabbitTemplate rabbitTemplate(
-        ConnectionFactory connectionFactory, Jackson2JsonMessageConverter messageConverter) {
-        RabbitTemplate template = new RabbitTemplate(connectionFactory);
-        template.setMessageConverter(messageConverter); // align producer serialization with API
-        return template;
-    }
+  @Bean
+  public RabbitTemplate rabbitTemplate(
+      ConnectionFactory connectionFactory, Jackson2JsonMessageConverter messageConverter) {
+    RabbitTemplate template = new RabbitTemplate(connectionFactory);
+    template.setMessageConverter(messageConverter); // align producer serialization with API
+    return template;
+  }
 
   @Bean
   public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {

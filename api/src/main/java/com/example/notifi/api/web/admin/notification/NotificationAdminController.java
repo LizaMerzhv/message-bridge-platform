@@ -33,68 +33,72 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin/notifications")
 public class NotificationAdminController {
 
-    private final NotificationService notificationService;
-    private final ClientRepository clientRepository;
-    private final NotificationAdminMapper mapper;
+  private final NotificationService notificationService;
+  private final ClientRepository clientRepository;
+  private final NotificationAdminMapper mapper;
 
-    public NotificationAdminController(
-            NotificationService notificationService,
-            ClientRepository clientRepository,
-            NotificationAdminMapper mapper) {
-        this.notificationService = notificationService;
-        this.clientRepository = clientRepository;
-        this.mapper = mapper;
-    }
+  public NotificationAdminController(
+      NotificationService notificationService,
+      ClientRepository clientRepository,
+      NotificationAdminMapper mapper) {
+    this.notificationService = notificationService;
+    this.clientRepository = clientRepository;
+    this.mapper = mapper;
+  }
 
-    @GetMapping
-    public PageResponse<NotificationSummaryDto> list(
-            @RequestParam(name = "status", required = false) String status,
-            @RequestParam(name = "clientId", required = false) String clientId,
-            @RequestParam(name = "createdFrom", required = false) String createdFrom,
-            @RequestParam(name = "createdTo", required = false) String createdTo,
-            Pageable pageable) {
-        NotificationFilter filter = new NotificationFilter();
-        if (StringUtils.hasText(status)) {
-            filter.setStatus(NotificationStatus.valueOf(status.toUpperCase()));
-        }
-        if (StringUtils.hasText(clientId)) {
-            filter.setClientId(UUID.fromString(clientId));
-        }
-        if (StringUtils.hasText(createdFrom)) {
-            filter.setCreatedFrom(Instant.parse(createdFrom));
-        }
-        if (StringUtils.hasText(createdTo)) {
-            filter.setCreatedTo(Instant.parse(createdTo));
-        }
-        Page<NotificationSummaryDto> page = notificationService.findAll(filter, pageable).map(mapper::toSummary);
-        return PageResponse.from(page);
+  @GetMapping
+  public PageResponse<NotificationSummaryDto> list(
+      @RequestParam(name = "status", required = false) String status,
+      @RequestParam(name = "clientId", required = false) String clientId,
+      @RequestParam(name = "createdFrom", required = false) String createdFrom,
+      @RequestParam(name = "createdTo", required = false) String createdTo,
+      Pageable pageable) {
+    NotificationFilter filter = new NotificationFilter();
+    if (StringUtils.hasText(status)) {
+      filter.setStatus(NotificationStatus.valueOf(status.toUpperCase()));
     }
+    if (StringUtils.hasText(clientId)) {
+      filter.setClientId(UUID.fromString(clientId));
+    }
+    if (StringUtils.hasText(createdFrom)) {
+      filter.setCreatedFrom(Instant.parse(createdFrom));
+    }
+    if (StringUtils.hasText(createdTo)) {
+      filter.setCreatedTo(Instant.parse(createdTo));
+    }
+    Page<NotificationSummaryDto> page =
+        notificationService.findAll(filter, pageable).map(mapper::toSummary);
+    return PageResponse.from(page);
+  }
 
-    @GetMapping("/{id}")
-    public NotificationDetailDto getById(@PathVariable UUID id) {
-        NotificationView view = notificationService.findById(id);
-        return mapper.toDetail(view);
-    }
+  @GetMapping("/{id}")
+  public NotificationDetailDto getById(@PathVariable UUID id) {
+    NotificationView view = notificationService.findById(id);
+    return mapper.toDetail(view);
+  }
 
-    @GetMapping("/{id}/attempts")
-    public List<DeliveryAttemptDto> attempts(@PathVariable UUID id) {
-        return mapper.toDeliveryAttempts(notificationService.findDeliveries(id));
-    }
+  @GetMapping("/{id}/attempts")
+  public List<DeliveryAttemptDto> attempts(@PathVariable UUID id) {
+    return mapper.toDeliveryAttempts(notificationService.findDeliveries(id));
+  }
 
-    @PostMapping
-    public ResponseEntity<NotificationDetailDto> create(
-            @Valid @RequestBody AdminCreateNotificationRequest request) {
-        ClientPrincipal principal = resolvePrincipal(request.getClientId());
-        CreateNotificationResult result = notificationService.create(request, principal);
-        NotificationDetailDto body = mapper.toDetail(notificationService.findById(result.getEntity().getId()));
-        URI location = URI.create(String.format("/admin/notifications/%s", body.getId()));
-        return ResponseEntity.created(location).body(body);
-    }
+  @PostMapping
+  public ResponseEntity<NotificationDetailDto> create(
+      @Valid @RequestBody AdminCreateNotificationRequest request) {
+    ClientPrincipal principal = resolvePrincipal(request.getClientId());
+    CreateNotificationResult result = notificationService.create(request, principal);
+    NotificationDetailDto body =
+        mapper.toDetail(notificationService.findById(result.getEntity().getId()));
+    URI location = URI.create(String.format("/admin/notifications/%s", body.getId()));
+    return ResponseEntity.created(location).body(body);
+  }
 
-    private ClientPrincipal resolvePrincipal(UUID clientId) {
-        return clientRepository
-                .findById(clientId)
-                .map(entity -> new ClientPrincipal(entity.getId(), entity.getName(), entity.getRateLimitPerMin()))
-                .orElseThrow(() -> new IllegalArgumentException("Unknown client: " + clientId));
-    }
+  private ClientPrincipal resolvePrincipal(UUID clientId) {
+    return clientRepository
+        .findById(clientId)
+        .map(
+            entity ->
+                new ClientPrincipal(entity.getId(), entity.getName(), entity.getRateLimitPerMin()))
+        .orElseThrow(() -> new IllegalArgumentException("Unknown client: " + clientId));
+  }
 }

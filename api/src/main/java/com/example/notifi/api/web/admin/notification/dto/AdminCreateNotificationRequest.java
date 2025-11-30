@@ -6,14 +6,13 @@ import java.util.UUID;
 
 public class AdminCreateNotificationRequest extends CreateNotificationRequest {
 
-    @NotNull
-    private UUID clientId;
+  @NotNull private UUID clientId;
 
-    public UUID getClientId() {
-        return clientId;
-    }
+  public UUID getClientId() {
+    return clientId;
+  }
 
-    public void setClientId(UUID clientId) {
-        this.clientId = clientId;
-    }
+  public void setClientId(UUID clientId) {
+    this.clientId = clientId;
+  }
 }

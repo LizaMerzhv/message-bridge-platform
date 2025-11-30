@@ -38,7 +38,11 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,prometheus
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when_authorized
   metrics:
     distribution:
       percentiles-histogram:

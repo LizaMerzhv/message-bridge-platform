@@ -11,23 +11,23 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 public class RequestIdFilter extends OncePerRequestFilter {
 
-    public static final String HEADER_NAME = "X-Request-Id";
-    public static final String MDC_KEY = "traceId";
+  public static final String HEADER_NAME = "X-Request-Id";
+  public static final String MDC_KEY = "traceId";
 
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        String requestId = request.getHeader(HEADER_NAME);
-        if (requestId == null || requestId.isBlank()) {
-            requestId = UUID.randomUUID().toString();
-        }
-        MDC.put(MDC_KEY, requestId);
-        try {
-            response.setHeader(HEADER_NAME, requestId);
-            filterChain.doFilter(request, response);
-        } finally {
-            MDC.remove(MDC_KEY);
-        }
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+    String requestId = request.getHeader(HEADER_NAME);
+    if (requestId == null || requestId.isBlank()) {
+      requestId = UUID.randomUUID().toString();
     }
+    MDC.put(MDC_KEY, requestId);
+    try {
+      response.setHeader(HEADER_NAME, requestId);
+      filterChain.doFilter(request, response);
+    } finally {
+      MDC.remove(MDC_KEY);
+    }
+  }
 }

@@ -8,7 +8,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TemplateRepository extends JpaRepository<TemplateEntity, UUID> {
-    Optional<TemplateEntity> findByCode(String code);
+  Optional<TemplateEntity> findByCode(String code);
 
-    List<TemplateEntity> findAllByStatus(TemplateStatus status);
+  List<TemplateEntity> findAllByStatus(TemplateStatus status);
 }

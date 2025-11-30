@@ -18,74 +18,75 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TemplateService {
 
-    private final TemplateRepository templateRepository;
-    private final TemplateMapper templateMapper;
-    private final Clock clock;
+  private final TemplateRepository templateRepository;
+  private final TemplateMapper templateMapper;
+  private final Clock clock;
 
-    public TemplateService(TemplateRepository templateRepository, TemplateMapper templateMapper, Clock clock) {
-        this.templateRepository = templateRepository;
-        this.templateMapper = templateMapper;
-        this.clock = clock;
-    }
+  public TemplateService(
+      TemplateRepository templateRepository, TemplateMapper templateMapper, Clock clock) {
+    this.templateRepository = templateRepository;
+    this.templateMapper = templateMapper;
+    this.clock = clock;
+  }
 
-    public TemplateView create(TemplateCreateCommand command) {
-        Instant now = clock.instant();
-        TemplateEntity entity = new TemplateEntity();
-        entity.setId(UUID.randomUUID());
-        entity.setCode(command.getCode());
-        entity.setSubject(command.getSubject());
-        entity.setBodyHtml(command.getBodyHtml());
-        entity.setBodyText(command.getBodyText());
-        entity.setStatus(TemplateStatus.ACTIVE);
-        entity.setCreatedAt(now);
-        entity.setUpdatedAt(now);
-        TemplateEntity saved = templateRepository.save(entity);
-        return templateMapper.toView(saved);
-    }
+  public TemplateView create(TemplateCreateCommand command) {
+    Instant now = clock.instant();
+    TemplateEntity entity = new TemplateEntity();
+    entity.setId(UUID.randomUUID());
+    entity.setCode(command.getCode());
+    entity.setSubject(command.getSubject());
+    entity.setBodyHtml(command.getBodyHtml());
+    entity.setBodyText(command.getBodyText());
+    entity.setStatus(TemplateStatus.ACTIVE);
+    entity.setCreatedAt(now);
+    entity.setUpdatedAt(now);
+    TemplateEntity saved = templateRepository.save(entity);
+    return templateMapper.toView(saved);
+  }
 
-    @Transactional(readOnly = true)
-    public TemplateView get(UUID id) {
-        TemplateEntity entity =
-                templateRepository.findById(id).orElseThrow(() -> new TemplateNotFoundException(id));
-        return templateMapper.toView(entity);
-    }
+  @Transactional(readOnly = true)
+  public TemplateView get(UUID id) {
+    TemplateEntity entity =
+        templateRepository.findById(id).orElseThrow(() -> new TemplateNotFoundException(id));
+    return templateMapper.toView(entity);
+  }
 
-    @Transactional(readOnly = true)
-    public TemplateView getByCode(String code) {
-        TemplateEntity entity =
-                templateRepository
-                        .findByCode(code)
-                        .orElseThrow(() -> new TemplateCodeNotFoundException(code));
-        return templateMapper.toView(entity);
-    }
+  @Transactional(readOnly = true)
+  public TemplateView getByCode(String code) {
+    TemplateEntity entity =
+        templateRepository
+            .findByCode(code)
+            .orElseThrow(() -> new TemplateCodeNotFoundException(code));
+    return templateMapper.toView(entity);
+  }
 
-    @Transactional(readOnly = true)
-    public Page<TemplateView> findAll(Pageable pageable) {
-        return templateRepository.findAll(pageable).map(templateMapper::toView);
-    }
+  @Transactional(readOnly = true)
+  public Page<TemplateView> findAll(Pageable pageable) {
+    return templateRepository.findAll(pageable).map(templateMapper::toView);
+  }
 
-    public TemplateView deactivateByCode(String code) {
-        TemplateEntity entity =
-                templateRepository
-                        .findByCode(code)
-                        .orElseThrow(() -> new TemplateCodeNotFoundException(code));
-        if (entity.getStatus() == TemplateStatus.INACTIVE) {
-            return templateMapper.toView(entity);
-        }
-        entity.setStatus(TemplateStatus.INACTIVE);
-        entity.setUpdatedAt(clock.instant());
-        return templateMapper.toView(templateRepository.save(entity));
+  public TemplateView deactivateByCode(String code) {
+    TemplateEntity entity =
+        templateRepository
+            .findByCode(code)
+            .orElseThrow(() -> new TemplateCodeNotFoundException(code));
+    if (entity.getStatus() == TemplateStatus.INACTIVE) {
+      return templateMapper.toView(entity);
     }
+    entity.setStatus(TemplateStatus.INACTIVE);
+    entity.setUpdatedAt(clock.instant());
+    return templateMapper.toView(templateRepository.save(entity));
+  }
 
-    @Transactional(readOnly = true)
-    public TemplateEntity requireActiveByCode(String code) {
-        TemplateEntity entity =
-                templateRepository
-                        .findByCode(code)
-                        .orElseThrow(() -> new TemplateCodeNotFoundException(code));
-        if (entity.getStatus() != TemplateStatus.ACTIVE) {
-            throw new TemplateInactiveException(code);
-        }
-        return entity;
+  @Transactional(readOnly = true)
+  public TemplateEntity requireActiveByCode(String code) {
+    TemplateEntity entity =
+        templateRepository
+            .findByCode(code)
+            .orElseThrow(() -> new TemplateCodeNotFoundException(code));
+    if (entity.getStatus() != TemplateStatus.ACTIVE) {
+      throw new TemplateInactiveException(code);
     }
+    return entity;
+  }
 }

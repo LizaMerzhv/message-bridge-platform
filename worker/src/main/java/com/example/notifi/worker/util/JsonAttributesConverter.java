@@ -31,7 +31,9 @@ public class JsonAttributesConverter implements AttributeConverter<Map<String, O
       return Collections.emptyMap();
     }
     try {
-      return OBJECT_MAPPER.readValue(dbData, OBJECT_MAPPER.getTypeFactory().constructMapType(Map.class, String.class, Object.class));
+      return OBJECT_MAPPER.readValue(
+          dbData,
+          OBJECT_MAPPER.getTypeFactory().constructMapType(Map.class, String.class, Object.class));
     } catch (JsonProcessingException ex) {
       throw new UncheckedIOException(ex);
     }

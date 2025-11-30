@@ -30,8 +30,8 @@ services:
   rabbitmq:
     image: rabbitmq:3.12-management
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit loopback_users []"
     ports: ["5672:5672", "15672:15672"]
 
@@ -68,7 +68,7 @@ services:
       API_DB_USER: ${API_DB_USER:-notifi_api}
       API_DB_PASSWORD: ${API_DB_PASSWORD:-notifi_api}
       API_DB_SCHEMA: ${API_DB_SCHEMA:-public}
-      API_RABBIT_URL: amqp://guest:guest@rabbitmq:5672
+      API_RABBIT_URL: amqp://${RABBITMQ_DEFAULT_USER:-guest}:${RABBITMQ_DEFAULT_PASS:-guest}@rabbitmq:5672
       API_AMQP_EXCHANGE: ${API_AMQP_EXCHANGE:-notifi.exchange}
       API_AMQP_INGEST_ROUTING_KEY: ${API_AMQP_INGEST_ROUTING_KEY:-ingest}
       SERVER_PORT: 8080
@@ -93,9 +93,11 @@ services:
       WORKER_DB_USER: ${WORKER_DB_USER:-notifi_worker}
       WORKER_DB_PASSWORD: ${WORKER_DB_PASSWORD:-notifi_worker}
       WORKER_DB_SCHEMA: ${WORKER_DB_SCHEMA:-public}
-      WORKER_RABBIT_URL: amqp://guest:guest@rabbitmq:5672
-      SMTP_HOST: mailhog
-      SMTP_PORT: 1025
+      WORKER_RABBIT_URL: amqp://${RABBITMQ_DEFAULT_USER:-guest}:${RABBITMQ_DEFAULT_PASS:-guest}@rabbitmq:5672
+      SMTP_HOST: ${SMTP_HOST:-mailhog}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       API_INTERNAL_BASE_URL: http://api:8080
       SERVER_PORT: 8080
     depends_on:

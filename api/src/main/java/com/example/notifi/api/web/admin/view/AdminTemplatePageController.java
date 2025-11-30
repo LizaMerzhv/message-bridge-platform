@@ -21,63 +21,63 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin/ui/templates")
 public class AdminTemplatePageController {
 
-    private final TemplateService templateService;
+  private final TemplateService templateService;
 
-    public AdminTemplatePageController(TemplateService templateService) {
-        this.templateService = templateService;
+  public AdminTemplatePageController(TemplateService templateService) {
+    this.templateService = templateService;
+  }
+
+  @GetMapping
+  public String list(@PageableDefault(size = 20) Pageable pageable, Model model) {
+    Page<TemplateView> page = templateService.findAll(pageable);
+    model.addAttribute("page", page);
+    model.addAttribute("activePage", "templates");
+    return "admin/templates";
+  }
+
+  @GetMapping("/{code}")
+  public String detail(@PathVariable String code, Model model) {
+    TemplateView template = templateService.getByCode(code);
+    model.addAttribute("template", template);
+    model.addAttribute("activePage", "templates");
+    return "admin/template-detail";
+  }
+
+  @GetMapping("/new")
+  public String newForm(Model model) {
+    if (!model.containsAttribute("templateForm")) {
+      model.addAttribute("templateForm", new TemplateForm());
+    }
+    model.addAttribute("activePage", "templates");
+    return "admin/template-new";
+  }
+
+  @PostMapping
+  public String create(
+      @Valid @ModelAttribute("templateForm") TemplateForm form,
+      BindingResult bindingResult,
+      RedirectAttributes redirectAttributes,
+      Model model) {
+    if (bindingResult.hasErrors()) {
+      model.addAttribute("activePage", "templates");
+      return "admin/template-new";
     }
 
-    @GetMapping
-    public String list(@PageableDefault(size = 20) Pageable pageable, Model model) {
-        Page<TemplateView> page = templateService.findAll(pageable);
-        model.addAttribute("page", page);
-        model.addAttribute("activePage", "templates");
-        return "admin/templates";
-    }
+    TemplateCreateCommand command = new TemplateCreateCommand();
+    command.setCode(form.getCode());
+    command.setSubject(form.getSubject());
+    command.setBodyHtml(form.getBodyHtml());
+    command.setBodyText(form.getBodyText());
 
-    @GetMapping("/{code}")
-    public String detail(@PathVariable String code, Model model) {
-        TemplateView template = templateService.getByCode(code);
-        model.addAttribute("template", template);
-        model.addAttribute("activePage", "templates");
-        return "admin/template-detail";
-    }
+    TemplateView created = templateService.create(command);
+    redirectAttributes.addFlashAttribute("created", true);
+    return "redirect:/admin/ui/templates/" + created.getCode();
+  }
 
-    @GetMapping("/new")
-    public String newForm(Model model) {
-        if (!model.containsAttribute("templateForm")) {
-            model.addAttribute("templateForm", new TemplateForm());
-        }
-        model.addAttribute("activePage", "templates");
-        return "admin/template-new";
-    }
-
-    @PostMapping
-    public String create(
-        @Valid @ModelAttribute("templateForm") TemplateForm form,
-        BindingResult bindingResult,
-        RedirectAttributes redirectAttributes,
-        Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("activePage", "templates");
-            return "admin/template-new";
-        }
-
-        TemplateCreateCommand command = new TemplateCreateCommand();
-        command.setCode(form.getCode());
-        command.setSubject(form.getSubject());
-        command.setBodyHtml(form.getBodyHtml());
-        command.setBodyText(form.getBodyText());
-
-        TemplateView created = templateService.create(command);
-        redirectAttributes.addFlashAttribute("created", true);
-        return "redirect:/admin/ui/templates/" + created.getCode();
-    }
-
-    @PostMapping("/{code}/deactivate")
-    public String deactivate(@PathVariable String code, RedirectAttributes redirectAttributes) {
-        TemplateView updated = templateService.deactivateByCode(code);
-        redirectAttributes.addFlashAttribute("deactivated", true);
-        return "redirect:/admin/ui/templates/" + updated.getCode();
-    }
+  @PostMapping("/{code}/deactivate")
+  public String deactivate(@PathVariable String code, RedirectAttributes redirectAttributes) {
+    TemplateView updated = templateService.deactivateByCode(code);
+    redirectAttributes.addFlashAttribute("deactivated", true);
+    return "redirect:/admin/ui/templates/" + updated.getCode();
+  }
 }

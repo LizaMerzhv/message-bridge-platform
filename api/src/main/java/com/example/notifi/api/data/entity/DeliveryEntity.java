@@ -14,122 +14,122 @@ import java.util.UUID;
 @Table(name = "delivery")
 public class DeliveryEntity {
 
-    @Id private UUID id;
+  @Id private UUID id;
 
-    @Column(name = "\"notificationId\"", nullable = false)
-    private UUID notificationId;
+  @Column(name = "\"notificationId\"", nullable = false)
+  private UUID notificationId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private DeliveryStatus status;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private DeliveryStatus status;
 
-    @Column(nullable = false)
-    private int attempt;
+  @Column(nullable = false)
+  private int attempt;
 
-    private String channel;
+  private String channel;
 
-    @Column(name = "\"to\"", length = 254)
-    private String to;
+  @Column(name = "\"to\"", length = 254)
+  private String to;
 
-    private String subject;
+  private String subject;
 
-    @Column(name = "\"errorCode\"")
-    private String errorCode;
+  @Column(name = "\"errorCode\"")
+  private String errorCode;
 
-    @Column(name = "\"errorMessage\"")
-    private String errorMessage;
+  @Column(name = "\"errorMessage\"")
+  private String errorMessage;
 
-    @Column(name = "\"createdAt\"", nullable = false)
-    private Instant createdAt;
+  @Column(name = "\"createdAt\"", nullable = false)
+  private Instant createdAt;
 
-    @Column(name = "\"lastAttemptAt\"")
-    private Instant lastAttemptAt;
+  @Column(name = "\"lastAttemptAt\"")
+  private Instant lastAttemptAt;
 
-    public UUID getId() {
-        return id;
-    }
+  public UUID getId() {
+    return id;
+  }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public UUID getNotificationId() {
-        return notificationId;
-    }
+  public UUID getNotificationId() {
+    return notificationId;
+  }
 
-    public void setNotificationId(UUID notificationId) {
-        this.notificationId = notificationId;
-    }
+  public void setNotificationId(UUID notificationId) {
+    this.notificationId = notificationId;
+  }
 
-    public DeliveryStatus getStatus() {
-        return status;
-    }
+  public DeliveryStatus getStatus() {
+    return status;
+  }
 
-    public void setStatus(DeliveryStatus status) {
-        this.status = status;
-    }
+  public void setStatus(DeliveryStatus status) {
+    this.status = status;
+  }
 
-    public int getAttempt() {
-        return attempt;
-    }
+  public int getAttempt() {
+    return attempt;
+  }
 
-    public void setAttempt(int attempt) {
-        this.attempt = attempt;
-    }
+  public void setAttempt(int attempt) {
+    this.attempt = attempt;
+  }
 
-    public String getChannel() {
-        return channel;
-    }
+  public String getChannel() {
+    return channel;
+  }
 
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
+  public void setChannel(String channel) {
+    this.channel = channel;
+  }
 
-    public String getTo() {
-        return to;
-    }
+  public String getTo() {
+    return to;
+  }
 
-    public void setTo(String to) {
-        this.to = to;
-    }
+  public void setTo(String to) {
+    this.to = to;
+  }
 
-    public String getSubject() {
-        return subject;
-    }
+  public String getSubject() {
+    return subject;
+  }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
 
-    public String getErrorCode() {
-        return errorCode;
-    }
+  public String getErrorCode() {
+    return errorCode;
+  }
 
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
-    }
+  public void setErrorCode(String errorCode) {
+    this.errorCode = errorCode;
+  }
 
-    public String getErrorMessage() {
-        return errorMessage;
-    }
+  public String getErrorMessage() {
+    return errorMessage;
+  }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
+  public void setErrorMessage(String errorMessage) {
+    this.errorMessage = errorMessage;
+  }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
+  public void setCreatedAt(Instant createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public Instant getLastAttemptAt() {
-        return lastAttemptAt;
-    }
+  public Instant getLastAttemptAt() {
+    return lastAttemptAt;
+  }
 
-    public void setLastAttemptAt(Instant lastAttemptAt) {
-        this.lastAttemptAt = lastAttemptAt;
-    }
+  public void setLastAttemptAt(Instant lastAttemptAt) {
+    this.lastAttemptAt = lastAttemptAt;
+  }
 }

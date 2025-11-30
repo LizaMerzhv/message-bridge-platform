@@ -6,48 +6,45 @@ import jakarta.validation.constraints.Size;
 
 public class TemplateForm {
 
-        @NotBlank
-        @TemplateCode
-        private String code;
+  @NotBlank @TemplateCode private String code;
 
-        @NotBlank
-        private String subject;
+  @NotBlank private String subject;
 
-        @Size(max = 262_144)
-        private String bodyHtml;
+  @Size(max = 262_144)
+  private String bodyHtml;
 
-        @Size(max = 262_144)
-        private String bodyText;
+  @Size(max = 262_144)
+  private String bodyText;
 
-        public String getCode() {
-            return code;
-        }
+  public String getCode() {
+    return code;
+  }
 
-        public void setCode(String code) {
-            this.code = code;
-        }
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-        public String getSubject() {
-            return subject;
-        }
+  public String getSubject() {
+    return subject;
+  }
 
-        public void setSubject(String subject) {
-            this.subject = subject;
-        }
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
 
-        public String getBodyHtml() {
-            return bodyHtml;
-        }
+  public String getBodyHtml() {
+    return bodyHtml;
+  }
 
-        public void setBodyHtml(String bodyHtml) {
-            this.bodyHtml = bodyHtml;
-        }
+  public void setBodyHtml(String bodyHtml) {
+    this.bodyHtml = bodyHtml;
+  }
 
-        public String getBodyText() {
-            return bodyText;
-        }
+  public String getBodyText() {
+    return bodyText;
+  }
 
-        public void setBodyText(String bodyText) {
-            this.bodyText = bodyText;
-        }
-    }
+  public void setBodyText(String bodyText) {
+    this.bodyText = bodyText;
+  }
+}

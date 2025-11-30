@@ -18,32 +18,41 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Component
 public class NotificationApiClient {
 
-    private static final Logger log = LoggerFactory.getLogger(NotificationApiClient.class);
+  private static final Logger log = LoggerFactory.getLogger(NotificationApiClient.class);
 
-    private final RestTemplate restTemplate;
-    private final String baseUrl;
+  private final RestTemplate restTemplate;
+  private final String baseUrl;
 
-    public NotificationApiClient(RestTemplate restTemplate, @Value("${API_INTERNAL_BASE_URL:http://localhost:8080}") String baseUrl) {
-        this.restTemplate = restTemplate;
-        this.baseUrl = baseUrl;
-    }
+  public NotificationApiClient(
+      RestTemplate restTemplate,
+      @Value("${API_INTERNAL_BASE_URL:http://localhost:8080}") String baseUrl) {
+    this.restTemplate = restTemplate;
+    this.baseUrl = baseUrl;
+  }
 
-    public void sendDeliveryResult(UUID notificationId, NotificationStatus status, Instant attemptedAt, String errorMessage) {
-        DeliveryResultRequest body = new DeliveryResultRequest(status, errorMessage, attemptedAt);
-        URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
+  public void sendDeliveryResult(
+      UUID notificationId, NotificationStatus status, Instant attemptedAt, String errorMessage) {
+    DeliveryResultRequest body = new DeliveryResultRequest(status, errorMessage, attemptedAt);
+    URI uri =
+        UriComponentsBuilder.fromHttpUrl(baseUrl)
             .path("/internal/notifications/{id}/deliveries")
             .build(notificationId);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
 
-        ResponseEntity<Void> response = restTemplate.postForEntity(uri, new HttpEntity<>(body, headers), Void.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            log.debug("Reported delivery {} as {} to API", notificationId, status);
-        } else {
-            log.warn("API callback for notification {} responded with status {}", notificationId, response.getStatusCode());
-        }
+    ResponseEntity<Void> response =
+        restTemplate.postForEntity(uri, new HttpEntity<>(body, headers), Void.class);
+    if (response.getStatusCode().is2xxSuccessful()) {
+      log.debug("Reported delivery {} as {} to API", notificationId, status);
+    } else {
+      log.warn(
+          "API callback for notification {} responded with status {}",
+          notificationId,
+          response.getStatusCode());
     }
+  }
 
-    public record DeliveryResultRequest(NotificationStatus status, String errorMessage, Instant attemptedAt) {}
+  public record DeliveryResultRequest(
+      NotificationStatus status, String errorMessage, Instant attemptedAt) {}
 }

@@ -13,91 +13,91 @@ import java.util.UUID;
 @Table(name = "template")
 public class TemplateEntity {
 
-    @Id private UUID id;
+  @Id private UUID id;
 
-    @Column(nullable = false, length = 64)
-    private String code;
+  @Column(nullable = false, length = 64)
+  private String code;
 
-    @Column(nullable = false)
-    private String subject;
+  @Column(nullable = false)
+  private String subject;
 
-    @Column(name = "\"bodyHtml\"")
-    private String bodyHtml;
+  @Column(name = "\"bodyHtml\"")
+  private String bodyHtml;
 
-    @Column(name = "\"bodyText\"")
-    private String bodyText;
+  @Column(name = "\"bodyText\"")
+  private String bodyText;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TemplateStatus status;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private TemplateStatus status;
 
-    @Column(name = "\"createdAt\"", nullable = false)
-    private Instant createdAt;
+  @Column(name = "\"createdAt\"", nullable = false)
+  private Instant createdAt;
 
-    @Column(name = "\"updatedAt\"", nullable = false)
-    private Instant updatedAt;
+  @Column(name = "\"updatedAt\"", nullable = false)
+  private Instant updatedAt;
 
-    public UUID getId() {
-        return id;
-    }
+  public UUID getId() {
+    return id;
+  }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public String getCode() {
-        return code;
-    }
+  public String getCode() {
+    return code;
+  }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-    public String getSubject() {
-        return subject;
-    }
+  public String getSubject() {
+    return subject;
+  }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
 
-    public String getBodyHtml() {
-        return bodyHtml;
-    }
+  public String getBodyHtml() {
+    return bodyHtml;
+  }
 
-    public void setBodyHtml(String bodyHtml) {
-        this.bodyHtml = bodyHtml;
-    }
+  public void setBodyHtml(String bodyHtml) {
+    this.bodyHtml = bodyHtml;
+  }
 
-    public String getBodyText() {
-        return bodyText;
-    }
+  public String getBodyText() {
+    return bodyText;
+  }
 
-    public void setBodyText(String bodyText) {
-        this.bodyText = bodyText;
-    }
+  public void setBodyText(String bodyText) {
+    this.bodyText = bodyText;
+  }
 
-    public TemplateStatus getStatus() {
-        return status;
-    }
+  public TemplateStatus getStatus() {
+    return status;
+  }
 
-    public void setStatus(TemplateStatus status) {
-        this.status = status;
-    }
+  public void setStatus(TemplateStatus status) {
+    this.status = status;
+  }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
+  public void setCreatedAt(Instant createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
+  public Instant getUpdatedAt() {
+    return updatedAt;
+  }
 
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public void setUpdatedAt(Instant updatedAt) {
+    this.updatedAt = updatedAt;
+  }
 }

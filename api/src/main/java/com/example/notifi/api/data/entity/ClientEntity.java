@@ -11,90 +11,90 @@ import java.util.UUID;
 @Table(name = "client")
 public class ClientEntity {
 
-    @Id private UUID id;
+  @Id private UUID id;
 
-    @Column(nullable = false)
-    private String name;
+  @Column(nullable = false)
+  private String name;
 
-    @Column(name = "\"apiKey\"", nullable = false, unique = true, length = 64)
-    private String apiKey;
+  @Column(name = "\"apiKey\"", nullable = false, unique = true, length = 64)
+  private String apiKey;
 
-    @Column(name = "\"webhookUrl\"")
-    private String webhookUrl;
+  @Column(name = "\"webhookUrl\"")
+  private String webhookUrl;
 
-    @Column(name = "\"webhookSecret\"")
-    private String webhookSecret;
+  @Column(name = "\"webhookSecret\"")
+  private String webhookSecret;
 
-    @Column(name = "\"rateLimitPerMin\"", nullable = false)
-    private Integer rateLimitPerMin;
+  @Column(name = "\"rateLimitPerMin\"", nullable = false)
+  private Integer rateLimitPerMin;
 
-    @Column(name = "\"createdAt\"", nullable = false)
-    private Instant createdAt;
+  @Column(name = "\"createdAt\"", nullable = false)
+  private Instant createdAt;
 
-    @Column(name = "\"updatedAt\"", nullable = false)
-    private Instant updatedAt;
+  @Column(name = "\"updatedAt\"", nullable = false)
+  private Instant updatedAt;
 
-    public UUID getId() {
-        return id;
-    }
+  public UUID getId() {
+    return id;
+  }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getApiKey() {
-        return apiKey;
-    }
+  public String getApiKey() {
+    return apiKey;
+  }
 
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
-    }
+  public void setApiKey(String apiKey) {
+    this.apiKey = apiKey;
+  }
 
-    public String getWebhookUrl() {
-        return webhookUrl;
-    }
+  public String getWebhookUrl() {
+    return webhookUrl;
+  }
 
-    public void setWebhookUrl(String webhookUrl) {
-        this.webhookUrl = webhookUrl;
-    }
+  public void setWebhookUrl(String webhookUrl) {
+    this.webhookUrl = webhookUrl;
+  }
 
-    public String getWebhookSecret() {
-        return webhookSecret;
-    }
+  public String getWebhookSecret() {
+    return webhookSecret;
+  }
 
-    public void setWebhookSecret(String webhookSecret) {
-        this.webhookSecret = webhookSecret;
-    }
+  public void setWebhookSecret(String webhookSecret) {
+    this.webhookSecret = webhookSecret;
+  }
 
-    public Integer getRateLimitPerMin() {
-        return rateLimitPerMin;
-    }
+  public Integer getRateLimitPerMin() {
+    return rateLimitPerMin;
+  }
 
-    public void setRateLimitPerMin(Integer rateLimitPerMin) {
-        this.rateLimitPerMin = rateLimitPerMin;
-    }
+  public void setRateLimitPerMin(Integer rateLimitPerMin) {
+    this.rateLimitPerMin = rateLimitPerMin;
+  }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
+  public void setCreatedAt(Instant createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
+  public Instant getUpdatedAt() {
+    return updatedAt;
+  }
 
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public void setUpdatedAt(Instant updatedAt) {
+    this.updatedAt = updatedAt;
+  }
 }

@@ -7,139 +7,139 @@ import java.util.Map;
 import java.util.UUID;
 
 public class NotificationView {
-    private UUID id;
-    private UUID clientId;
-    private String channel;
-    private String to;
-    private String subject;
-    private String templateCode;
-    private Map<String, Object> variables;
-    private String externalRequestId;
-    private Instant sendAt;
-    private Instant sendAtEffective;
-    private NotificationStatus status;
-    private int attempts;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private List<DeliveryView> deliveries;
+  private UUID id;
+  private UUID clientId;
+  private String channel;
+  private String to;
+  private String subject;
+  private String templateCode;
+  private Map<String, Object> variables;
+  private String externalRequestId;
+  private Instant sendAt;
+  private Instant sendAtEffective;
+  private NotificationStatus status;
+  private int attempts;
+  private Instant createdAt;
+  private Instant updatedAt;
+  private List<DeliveryView> deliveries;
 
-    public UUID getId() {
-        return id;
-    }
+  public UUID getId() {
+    return id;
+  }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public UUID getClientId() {
-        return clientId;
-    }
+  public UUID getClientId() {
+    return clientId;
+  }
 
-    public void setClientId(UUID clientId) {
-        this.clientId = clientId;
-    }
+  public void setClientId(UUID clientId) {
+    this.clientId = clientId;
+  }
 
-    public String getChannel() {
-        return channel;
-    }
+  public String getChannel() {
+    return channel;
+  }
 
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
+  public void setChannel(String channel) {
+    this.channel = channel;
+  }
 
-    public String getTo() {
-        return to;
-    }
+  public String getTo() {
+    return to;
+  }
 
-    public void setTo(String to) {
-        this.to = to;
-    }
+  public void setTo(String to) {
+    this.to = to;
+  }
 
-    public String getSubject() {
-        return subject;
-    }
+  public String getSubject() {
+    return subject;
+  }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
 
-    public String getTemplateCode() {
-        return templateCode;
-    }
+  public String getTemplateCode() {
+    return templateCode;
+  }
 
-    public void setTemplateCode(String templateCode) {
-        this.templateCode = templateCode;
-    }
+  public void setTemplateCode(String templateCode) {
+    this.templateCode = templateCode;
+  }
 
-    public Map<String, Object> getVariables() {
-        return variables;
-    }
+  public Map<String, Object> getVariables() {
+    return variables;
+  }
 
-    public void setVariables(Map<String, Object> variables) {
-        this.variables = variables;
-    }
+  public void setVariables(Map<String, Object> variables) {
+    this.variables = variables;
+  }
 
-    public String getExternalRequestId() {
-        return externalRequestId;
-    }
+  public String getExternalRequestId() {
+    return externalRequestId;
+  }
 
-    public void setExternalRequestId(String externalRequestId) {
-        this.externalRequestId = externalRequestId;
-    }
+  public void setExternalRequestId(String externalRequestId) {
+    this.externalRequestId = externalRequestId;
+  }
 
-    public Instant getSendAt() {
-        return sendAt;
-    }
+  public Instant getSendAt() {
+    return sendAt;
+  }
 
-    public void setSendAt(Instant sendAt) {
-        this.sendAt = sendAt;
-    }
+  public void setSendAt(Instant sendAt) {
+    this.sendAt = sendAt;
+  }
 
-    public Instant getSendAtEffective() {
-        return sendAtEffective;
-    }
+  public Instant getSendAtEffective() {
+    return sendAtEffective;
+  }
 
-    public void setSendAtEffective(Instant sendAtEffective) {
-        this.sendAtEffective = sendAtEffective;
-    }
+  public void setSendAtEffective(Instant sendAtEffective) {
+    this.sendAtEffective = sendAtEffective;
+  }
 
-    public NotificationStatus getStatus() {
-        return status;
-    }
+  public NotificationStatus getStatus() {
+    return status;
+  }
 
-    public void setStatus(NotificationStatus status) {
-        this.status = status;
-    }
+  public void setStatus(NotificationStatus status) {
+    this.status = status;
+  }
 
-    public int getAttempts() {
-        return attempts;
-    }
+  public int getAttempts() {
+    return attempts;
+  }
 
-    public void setAttempts(int attempts) {
-        this.attempts = attempts;
-    }
+  public void setAttempts(int attempts) {
+    this.attempts = attempts;
+  }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
+  public void setCreatedAt(Instant createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
+  public Instant getUpdatedAt() {
+    return updatedAt;
+  }
 
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public void setUpdatedAt(Instant updatedAt) {
+    this.updatedAt = updatedAt;
+  }
 
-    public List<DeliveryView> getDeliveries() {
-        return deliveries;
-    }
+  public List<DeliveryView> getDeliveries() {
+    return deliveries;
+  }
 
-    public void setDeliveries(List<DeliveryView> deliveries) {
-        this.deliveries = deliveries;
-    }
+  public void setDeliveries(List<DeliveryView> deliveries) {
+    this.deliveries = deliveries;
+  }
 }

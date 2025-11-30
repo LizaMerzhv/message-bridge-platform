@@ -5,87 +5,83 @@ import jakarta.validation.constraints.NotBlank;
 
 public class NotificationForm {
 
-    @NotBlank
-    private String clientId;
+  @NotBlank private String clientId;
 
-    @NotBlank
-    private String channel = "EMAIL";
+  @NotBlank private String channel = "EMAIL";
 
-    @NotBlank
-    @Email
-    private String to;
+  @NotBlank @Email private String to;
 
-    private String subject;
+  private String subject;
 
-    private String templateCode;
+  private String templateCode;
 
-    private String variables;
+  private String variables;
 
-    private String sendAt;
+  private String sendAt;
 
-    private String externalRequestId;
+  private String externalRequestId;
 
-    public String getClientId() {
-        return clientId;
-    }
+  public String getClientId() {
+    return clientId;
+  }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
+  public void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
 
-    public String getChannel() {
-        return channel;
-    }
+  public String getChannel() {
+    return channel;
+  }
 
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
+  public void setChannel(String channel) {
+    this.channel = channel;
+  }
 
-    public String getTo() {
-        return to;
-    }
+  public String getTo() {
+    return to;
+  }
 
-    public void setTo(String to) {
-        this.to = to;
-    }
+  public void setTo(String to) {
+    this.to = to;
+  }
 
-    public String getSubject() {
-        return subject;
-    }
+  public String getSubject() {
+    return subject;
+  }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
 
-    public String getTemplateCode() {
-        return templateCode;
-    }
+  public String getTemplateCode() {
+    return templateCode;
+  }
 
-    public void setTemplateCode(String templateCode) {
-        this.templateCode = templateCode;
-    }
+  public void setTemplateCode(String templateCode) {
+    this.templateCode = templateCode;
+  }
 
-    public String getVariables() {
-        return variables;
-    }
+  public String getVariables() {
+    return variables;
+  }
 
-    public void setVariables(String variables) {
-        this.variables = variables;
-    }
+  public void setVariables(String variables) {
+    this.variables = variables;
+  }
 
-    public String getSendAt() {
-        return sendAt;
-    }
+  public String getSendAt() {
+    return sendAt;
+  }
 
-    public void setSendAt(String sendAt) {
-        this.sendAt = sendAt;
-    }
+  public void setSendAt(String sendAt) {
+    this.sendAt = sendAt;
+  }
 
-    public String getExternalRequestId() {
-        return externalRequestId;
-    }
+  public String getExternalRequestId() {
+    return externalRequestId;
+  }
 
-    public void setExternalRequestId(String externalRequestId) {
-        this.externalRequestId = externalRequestId;
-    }
+  public void setExternalRequestId(String externalRequestId) {
+    this.externalRequestId = externalRequestId;
+  }
 }

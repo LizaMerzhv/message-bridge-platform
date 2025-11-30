@@ -5,21 +5,21 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 public class ClientAuthenticationToken extends AbstractAuthenticationToken {
 
-    private final ClientPrincipal principal;
+  private final ClientPrincipal principal;
 
-    public ClientAuthenticationToken(ClientPrincipal principal) {
-        super(Collections.emptyList());
-        this.principal = principal;
-        setAuthenticated(true);
-    }
+  public ClientAuthenticationToken(ClientPrincipal principal) {
+    super(Collections.emptyList());
+    this.principal = principal;
+    setAuthenticated(true);
+  }
 
-    @Override
-    public Object getCredentials() {
-        return "";
-    }
+  @Override
+  public Object getCredentials() {
+    return "";
+  }
 
-    @Override
-    public ClientPrincipal getPrincipal() {
-        return principal;
-    }
+  @Override
+  public ClientPrincipal getPrincipal() {
+    return principal;
+  }
 }

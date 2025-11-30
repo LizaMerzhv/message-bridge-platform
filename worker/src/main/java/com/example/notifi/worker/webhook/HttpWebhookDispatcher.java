@@ -1,7 +1,7 @@
 package com.example.notifi.worker.webhook;
 
-import com.example.notifi.worker.metrics.WorkerMetrics;
 import com.example.notifi.worker.data.entity.NotificationEntity;
+import com.example.notifi.worker.metrics.WorkerMetrics;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.time.Duration;
@@ -27,7 +27,12 @@ public class HttpWebhookDispatcher implements WebhookDispatcher {
   private final ObjectMapper objectMapper;
   private final HmacSigner signer;
   private final WorkerMetrics metrics;
-  public HttpWebhookDispatcher(RestClient.Builder builder, ObjectMapper objectMapper, HmacSigner signer, WorkerMetrics metrics) {
+
+  public HttpWebhookDispatcher(
+      RestClient.Builder builder,
+      ObjectMapper objectMapper,
+      HmacSigner signer,
+      WorkerMetrics metrics) {
     this.restClient = builder.build();
     this.objectMapper = objectMapper;
     this.signer = signer;

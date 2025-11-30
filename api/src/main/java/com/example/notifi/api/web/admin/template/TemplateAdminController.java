@@ -23,37 +23,39 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin/templates")
 public class TemplateAdminController {
 
-    private final TemplateService templateService;
+  private final TemplateService templateService;
 
-    public TemplateAdminController(TemplateService templateService) {
-        this.templateService = templateService;
-    }
+  public TemplateAdminController(TemplateService templateService) {
+    this.templateService = templateService;
+  }
 
-    @PostMapping
-    public ResponseEntity<TemplateDetailDto> create(@Valid @RequestBody TemplateCreateRequest request) {
-        TemplateCreateCommand command = new TemplateCreateCommand();
-        command.setCode(request.getCode());
-        command.setSubject(request.getSubject());
-        command.setBodyHtml(request.getBodyHtml());
-        command.setBodyText(request.getBodyText());
-        TemplateView created = templateService.create(command);
-        return ResponseEntity.created(URI.create(String.format("/admin/templates/%s", created.getCode())))
-                .body(new TemplateDetailDto(created));
-    }
+  @PostMapping
+  public ResponseEntity<TemplateDetailDto> create(
+      @Valid @RequestBody TemplateCreateRequest request) {
+    TemplateCreateCommand command = new TemplateCreateCommand();
+    command.setCode(request.getCode());
+    command.setSubject(request.getSubject());
+    command.setBodyHtml(request.getBodyHtml());
+    command.setBodyText(request.getBodyText());
+    TemplateView created = templateService.create(command);
+    return ResponseEntity.created(
+            URI.create(String.format("/admin/templates/%s", created.getCode())))
+        .body(new TemplateDetailDto(created));
+  }
 
-    @GetMapping
-    public PageResponse<TemplateSummaryDto> list(Pageable pageable) {
-        Page<TemplateSummaryDto> page = templateService.findAll(pageable).map(TemplateSummaryDto::new);
-        return PageResponse.from(page);
-    }
+  @GetMapping
+  public PageResponse<TemplateSummaryDto> list(Pageable pageable) {
+    Page<TemplateSummaryDto> page = templateService.findAll(pageable).map(TemplateSummaryDto::new);
+    return PageResponse.from(page);
+  }
 
-    @GetMapping("/{code}")
-    public TemplateDetailDto get(@PathVariable String code) {
-        return new TemplateDetailDto(templateService.getByCode(code));
-    }
+  @GetMapping("/{code}")
+  public TemplateDetailDto get(@PathVariable String code) {
+    return new TemplateDetailDto(templateService.getByCode(code));
+  }
 
-    @PostMapping("/{code}/deactivate")
-    public TemplateDetailDto deactivate(@PathVariable String code) {
-        return new TemplateDetailDto(templateService.deactivateByCode(code));
-    }
+  @PostMapping("/{code}/deactivate")
+  public TemplateDetailDto deactivate(@PathVariable String code) {
+    return new TemplateDetailDto(templateService.deactivateByCode(code));
+  }
 }

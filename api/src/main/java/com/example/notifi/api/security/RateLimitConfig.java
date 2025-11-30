@@ -10,23 +10,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class RateLimitConfig implements WebMvcConfigurer {
 
-    private final RateLimiter rateLimiter;
-    private final Clock clock;
-    private final ObjectMapper objectMapper;
+  private final RateLimiter rateLimiter;
+  private final Clock clock;
+  private final ObjectMapper objectMapper;
 
-    public RateLimitConfig(RateLimiter rateLimiter, Clock clock, ObjectMapper objectMapper) {
-        this.rateLimiter = rateLimiter;
-        this.clock = clock;
-        this.objectMapper = objectMapper;
-    }
+  public RateLimitConfig(RateLimiter rateLimiter, Clock clock, ObjectMapper objectMapper) {
+    this.rateLimiter = rateLimiter;
+    this.clock = clock;
+    this.objectMapper = objectMapper;
+  }
 
-    @Bean
-    public RateLimitInterceptor rateLimitInterceptor() {
-        return new RateLimitInterceptor(rateLimiter, clock, objectMapper);
-    }
+  @Bean
+  public RateLimitInterceptor rateLimitInterceptor() {
+    return new RateLimitInterceptor(rateLimiter, clock, objectMapper);
+  }
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(rateLimitInterceptor()).addPathPatterns("/api/**");
-    }
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(rateLimitInterceptor()).addPathPatterns("/api/**");
+  }
 }

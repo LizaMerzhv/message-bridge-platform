@@ -5,76 +5,76 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class TemplateView {
-    private UUID id;
-    private String code;
-    private String subject;
-    private String bodyHtml;
-    private String bodyText;
-    private TemplateStatus status;
-    private Instant createdAt;
-    private Instant updatedAt;
+  private UUID id;
+  private String code;
+  private String subject;
+  private String bodyHtml;
+  private String bodyText;
+  private TemplateStatus status;
+  private Instant createdAt;
+  private Instant updatedAt;
 
-    public UUID getId() {
-        return id;
-    }
+  public UUID getId() {
+    return id;
+  }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public String getCode() {
-        return code;
-    }
+  public String getCode() {
+    return code;
+  }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-    public String getSubject() {
-        return subject;
-    }
+  public String getSubject() {
+    return subject;
+  }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
 
-    public String getBodyHtml() {
-        return bodyHtml;
-    }
+  public String getBodyHtml() {
+    return bodyHtml;
+  }
 
-    public void setBodyHtml(String bodyHtml) {
-        this.bodyHtml = bodyHtml;
-    }
+  public void setBodyHtml(String bodyHtml) {
+    this.bodyHtml = bodyHtml;
+  }
 
-    public String getBodyText() {
-        return bodyText;
-    }
+  public String getBodyText() {
+    return bodyText;
+  }
 
-    public void setBodyText(String bodyText) {
-        this.bodyText = bodyText;
-    }
+  public void setBodyText(String bodyText) {
+    this.bodyText = bodyText;
+  }
 
-    public TemplateStatus getStatus() {
-        return status;
-    }
+  public TemplateStatus getStatus() {
+    return status;
+  }
 
-    public void setStatus(TemplateStatus status) {
-        this.status = status;
-    }
+  public void setStatus(TemplateStatus status) {
+    this.status = status;
+  }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
+  public void setCreatedAt(Instant createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
+  public Instant getUpdatedAt() {
+    return updatedAt;
+  }
 
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public void setUpdatedAt(Instant updatedAt) {
+    this.updatedAt = updatedAt;
+  }
 }
