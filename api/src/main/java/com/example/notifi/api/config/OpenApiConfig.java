@@ -16,7 +16,12 @@ public class OpenApiConfig {
   @Bean
   public OpenAPI apiDocumentation() {
     return new OpenAPI()
-        .info(new Info().title("Notifi API").version("v1"))
+        .info(
+            new Info()
+                .title("Notification API")
+                .description(
+                    "HTTP gateway for scheduling notifications and querying delivery statuses.")
+                .version("1.0.0"))
         .components(
             new Components()
                 .addSecuritySchemes(

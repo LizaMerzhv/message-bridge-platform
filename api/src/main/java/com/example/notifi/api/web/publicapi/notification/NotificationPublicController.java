@@ -7,6 +7,9 @@ import com.example.notifi.api.security.ClientPrincipal;
 import com.example.notifi.api.security.SecurityUtils;
 import com.example.notifi.api.web.shared.notification.dto.CreateNotificationRequest;
 import com.example.notifi.api.web.shared.notification.dto.CreateNotificationResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.UUID;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/notifications")
+@Tag(name = "Notifications", description = "Public API for scheduling and tracking notifications")
 public class NotificationPublicController {
 
   private final NotificationService notificationService;
@@ -29,6 +33,9 @@ public class NotificationPublicController {
   }
 
   @PostMapping
+  @Operation(
+      summary = "Create notification",
+      description = "Schedules a notification for delivery. Supports idempotent retries via externalRequestId.")
   public ResponseEntity<CreateNotificationResponse> create(
       @Valid @RequestBody CreateNotificationRequest request) {
     ClientPrincipal principal = requirePrincipal();
@@ -50,7 +57,9 @@ public class NotificationPublicController {
   }
 
   @GetMapping("/{id}")
-  public NotificationView getById(@PathVariable UUID id) {
+  @Operation(summary = "Get notification", description = "Returns notification details for the authenticated client")
+  public NotificationView getById(
+      @Parameter(description = "Notification identifier") @PathVariable UUID id) {
     ClientPrincipal principal = requirePrincipal();
     return notificationService.findByIdForClient(id, principal.clientId());
   }

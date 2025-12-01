@@ -12,6 +12,9 @@ import com.example.notifi.api.web.admin.notification.dto.AdminCreateNotification
 import com.example.notifi.api.web.admin.notification.dto.DeliveryAttemptDto;
 import com.example.notifi.api.web.admin.notification.dto.NotificationDetailDto;
 import com.example.notifi.api.web.admin.notification.dto.NotificationSummaryDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.Instant;
@@ -31,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/admin/notifications")
+@Tag(name = "Admin Notifications", description = "Administrative operations for notifications")
 public class NotificationAdminController {
 
   private final NotificationService notificationService;
@@ -47,11 +51,20 @@ public class NotificationAdminController {
   }
 
   @GetMapping
+  @Operation(summary = "List notifications", description = "Returns paged notifications with optional filters")
   public PageResponse<NotificationSummaryDto> list(
-      @RequestParam(name = "status", required = false) String status,
-      @RequestParam(name = "clientId", required = false) String clientId,
-      @RequestParam(name = "createdFrom", required = false) String createdFrom,
-      @RequestParam(name = "createdTo", required = false) String createdTo,
+      @Parameter(description = "Filter by status", example = "SENT")
+      @RequestParam(name = "status", required = false)
+      String status,
+      @Parameter(description = "Filter by client id")
+      @RequestParam(name = "clientId", required = false)
+      String clientId,
+      @Parameter(description = "Created from timestamp in ISO-8601", example = "2024-06-10T12:00:00Z")
+      @RequestParam(name = "createdFrom", required = false)
+      String createdFrom,
+      @Parameter(description = "Created to timestamp in ISO-8601", example = "2024-06-18T12:00:00Z")
+      @RequestParam(name = "createdTo", required = false)
+      String createdTo,
       Pageable pageable) {
     NotificationFilter filter = new NotificationFilter();
     if (StringUtils.hasText(status)) {
@@ -72,17 +85,22 @@ public class NotificationAdminController {
   }
 
   @GetMapping("/{id}")
-  public NotificationDetailDto getById(@PathVariable UUID id) {
+  @Operation(summary = "Get notification by id")
+  public NotificationDetailDto getById(
+      @Parameter(description = "Notification identifier") @PathVariable UUID id) {
     NotificationView view = notificationService.findById(id);
     return mapper.toDetail(view);
   }
 
   @GetMapping("/{id}/attempts")
-  public List<DeliveryAttemptDto> attempts(@PathVariable UUID id) {
+  @Operation(summary = "List delivery attempts")
+  public List<DeliveryAttemptDto> attempts(
+      @Parameter(description = "Notification identifier") @PathVariable UUID id) {
     return mapper.toDeliveryAttempts(notificationService.findDeliveries(id));
   }
 
   @PostMapping
+  @Operation(summary = "Create notification on behalf of a client")
   public ResponseEntity<NotificationDetailDto> create(
       @Valid @RequestBody AdminCreateNotificationRequest request) {
     ClientPrincipal principal = resolvePrincipal(request.getClientId());
