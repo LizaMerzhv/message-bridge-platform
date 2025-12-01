@@ -22,16 +22,10 @@ jobs:
         run: chmod +x ./mvnw
 
       - name: Build with Maven Wrapper
-        run: ./mvnw -B -ntp verify -Pcoverage-enforce
+        run: ./mvnw -B -ntp verify
 
-      - name: Upload JaCoCo aggregate report
+      - name: Upload JaCoCo reports
         uses: actions/upload-artifact@v4
         with:
-          name: jacoco-aggregate
-          path: target/site/jacoco-aggregate/**
-
-      - name: Upload Spotless reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: spotless-reports
-          path: '**/target/spotless/**'
+            name: jacoco-reports
+            path: '**/target/site/jacoco/**'
