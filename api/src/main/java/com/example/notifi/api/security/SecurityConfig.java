@@ -54,49 +54,49 @@ public class SecurityConfig {
     return PasswordEncoderFactories.createDelegatingPasswordEncoder();
   }
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(
-      HttpSecurity http, RequestIdFilter requestIdFilter, ApiKeyAuthFilter apiKeyAuthFilter)
-      throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+        HttpSecurity http, RequestIdFilter requestIdFilter, ApiKeyAuthFilter apiKeyAuthFilter)
+        throws Exception {
 
-    http.csrf(csrf -> csrf.disable())
-        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(
-            auth ->
-                auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
-                    .permitAll()
-                    .requestMatchers("/internal/**")
-                    .permitAll()
-                    .requestMatchers("/actuator/health")
-                    .permitAll()
-                    .requestMatchers("/api/v1/**")
-                    .permitAll()
-                    .requestMatchers("/logout")
-                    .permitAll() // <- logout доступен всем
-                    .requestMatchers("/admin/ui/**")
-                    .hasRole("ADMIN")
-                    .requestMatchers("/admin/**")
-                    .hasRole("ADMIN")
-                    .requestMatchers("/actuator/**")
-                    .hasRole("ADMIN")
-                    .anyRequest()
-                    .authenticated())
-        .httpBasic(Customizer.withDefaults())
-        .addFilterBefore(requestIdFilter, UsernamePasswordAuthenticationFilter.class)
-        .addFilterAfter(apiKeyAuthFilter, RequestIdFilter.class)
-        .logout(
-            logout ->
-                logout
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
-                    .clearAuthentication(true)
-                    .logoutSuccessHandler(
-                        (request, response, authentication) -> {
-                          response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                          response.setHeader("WWW-Authenticate", "Basic realm=\"Notifi Admin\"");
-                        }));
+        http.csrf(csrf -> csrf.disable())
+            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(
+                auth ->
+                    auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+                        .permitAll()
+                        .requestMatchers("/internal/**")
+                        .permitAll()
+                        .requestMatchers("/actuator/health")
+                        .permitAll()
+                        .requestMatchers("/api/v1/**")
+                        .authenticated()
+                        .requestMatchers("/logout")
+                        .permitAll() // <- logout доступен всем
+                        .requestMatchers("/admin/ui/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers("/admin/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers("/actuator/**")
+                        .hasRole("ADMIN")
+                        .anyRequest()
+                        .authenticated())
+            .httpBasic(Customizer.withDefaults())
+            .addFilterBefore(requestIdFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(apiKeyAuthFilter, RequestIdFilter.class)
+            .logout(
+                logout ->
+                    logout
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+                        .clearAuthentication(true)
+                        .logoutSuccessHandler(
+                            (request, response, authentication) -> {
+                                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                                response.setHeader("WWW-Authenticate", "Basic realm=\"Notifi Admin\"");
+                            }));
 
-    return http.build();
-  }
+        return http.build();
+    }
 
   @Bean
   public UserDetailsService users() {
