@@ -4,85 +4,95 @@ import com.example.notifi.common.model.DeliveryStatus;
 import java.time.Instant;
 
 public class DeliveryView {
-  private int attempt;
-  private DeliveryStatus status;
-  private String channel;
-  private String to;
-  private String subject;
-  private String errorCode;
-  private String errorMessage;
-  private Instant createdAt;
-  private Instant lastAttemptAt;
 
-  public int getAttempt() {
-    return attempt;
-  }
+    private int attempt;
+    private DeliveryStatus status;
+    private String channel;
+    private String to;
+    private String subject;
+    private String errorCode;
+    private String errorMessage;
+    private Instant occurredAt;
+    private Instant createdAt;
+    private Instant lastAttemptAt;
 
-  public void setAttempt(int attempt) {
-    this.attempt = attempt;
-  }
+    public int getAttempt() {
+        return attempt;
+    }
 
-  public DeliveryStatus getStatus() {
-    return status;
-  }
+    public void setAttempt(int attempt) {
+        this.attempt = attempt;
+    }
 
-  public void setStatus(DeliveryStatus status) {
-    this.status = status;
-  }
+    public DeliveryStatus getStatus() {
+        return status;
+    }
 
-  public String getChannel() {
-    return channel;
-  }
+    public void setStatus(DeliveryStatus status) {
+        this.status = status;
+    }
 
-  public void setChannel(String channel) {
-    this.channel = channel;
-  }
+    public String getChannel() {
+        return channel;
+    }
 
-  public String getTo() {
-    return to;
-  }
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
 
-  public void setTo(String to) {
-    this.to = to;
-  }
+    public String getTo() {
+        return to;
+    }
 
-  public String getSubject() {
-    return subject;
-  }
+    public void setTo(String to) {
+        this.to = to;
+    }
 
-  public void setSubject(String subject) {
-    this.subject = subject;
-  }
+    public String getSubject() {
+        return subject;
+    }
 
-  public String getErrorCode() {
-    return errorCode;
-  }
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
 
-  public void setErrorCode(String errorCode) {
-    this.errorCode = errorCode;
-  }
+    public String getErrorCode() {
+        return errorCode;
+    }
 
-  public String getErrorMessage() {
-    return errorMessage;
-  }
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
 
-  public void setErrorMessage(String errorMessage) {
-    this.errorMessage = errorMessage;
-  }
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 
-  public Instant getCreatedAt() {
-    return createdAt;
-  }
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
-  public void setCreatedAt(Instant createdAt) {
-    this.createdAt = createdAt;
-  }
+    public Instant getOccurredAt() {
+        return occurredAt;
+    }
 
-  public Instant getLastAttemptAt() {
-    return lastAttemptAt;
-  }
+    public void setOccurredAt(Instant occurredAt) {
+        this.occurredAt = occurredAt;
+    }
 
-  public void setLastAttemptAt(Instant lastAttemptAt) {
-    this.lastAttemptAt = lastAttemptAt;
-  }
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getLastAttemptAt() {
+        return lastAttemptAt;
+    }
+
+    public void setLastAttemptAt(Instant lastAttemptAt) {
+        this.lastAttemptAt = lastAttemptAt;
+    }
 }
