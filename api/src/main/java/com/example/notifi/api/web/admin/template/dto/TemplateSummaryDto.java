@@ -1,52 +1,68 @@
 package com.example.notifi.api.web.admin.template.dto;
 
-import com.example.notifi.api.core.template.TemplateView;
-import com.example.notifi.api.data.entity.TemplateStatus;
 import java.time.Instant;
 import java.util.UUID;
 
 public class TemplateSummaryDto {
-  private UUID id;
-  private String code;
-  private String subject;
-  private TemplateStatus status;
-  private Instant createdAt;
-  private Instant updatedAt;
 
-  public TemplateSummaryDto() {
-    // needed for Jackson
-  }
+    private UUID id;
+    private String code;
+    private String subject;
+    private String status;
+    private Instant createdAt;
+    private Instant updatedAt;
 
-  public TemplateSummaryDto(TemplateView view) {
-    this.id = view.getId();
-    this.code = view.getCode();
-    this.subject = view.getSubject();
-    this.status = view.getStatus();
-    this.createdAt = view.getCreatedAt();
-    this.updatedAt = view.getUpdatedAt();
-  }
+    public UUID getId() {
+        return id;
+    }
 
-  public UUID getId() {
-    return id;
-  }
+    public TemplateSummaryDto setId(UUID id) {
+        this.id = id;
+        return this;
+    }
 
-  public String getCode() {
-    return code;
-  }
+    public String getCode() {
+        return code;
+    }
 
-  public String getSubject() {
-    return subject;
-  }
+    public TemplateSummaryDto setCode(String code) {
+        this.code = code;
+        return this;
+    }
 
-  public TemplateStatus getStatus() {
-    return status;
-  }
+    public String getSubject() {
+        return subject;
+    }
 
-  public Instant getCreatedAt() {
-    return createdAt;
-  }
+    public TemplateSummaryDto setSubject(String subject) {
+        this.subject = subject;
+        return this;
+    }
 
-  public Instant getUpdatedAt() {
-    return updatedAt;
-  }
+    public String getStatus() {
+        return status;
+    }
+
+    public TemplateSummaryDto setStatus(String status) {
+        this.status = status;
+        return this;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public TemplateSummaryDto setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public TemplateSummaryDto setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
 }

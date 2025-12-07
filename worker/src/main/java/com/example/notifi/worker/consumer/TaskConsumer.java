@@ -55,7 +55,7 @@ public class TaskConsumer {
         this.notificationApiClient = notificationApiClient;
     }
 
-    @RabbitListener(queues = "${worker.amqp.queue}")
+    @RabbitListener(queues = "${notifi.amqp.tasks-queue}")
     public void handle(NotificationTaskMessage message) {
         UUID notificationId = message.notificationId();
         int attempt = message.attempt();
@@ -87,7 +87,6 @@ public class TaskConsumer {
                 metrics.incrementDeliveriesSent(message.channel());
                 metrics.recordSendLatency(notification.getCreatedAt(), now);
 
-                // Успешная финальная попытка
                 notifyApi(notification, NotificationStatus.SENT, attempt, null);
 
                 webhookDispatcher.dispatch(notification);
@@ -129,7 +128,6 @@ public class TaskConsumer {
                     publisher.publishDlq(message);
                     webhookDispatcher.dispatch(notification);
 
-                    // Финальный фейл – репортим в API с кодом провайдера и текстом ошибки
                     notifyApi(notification, NotificationStatus.FAILED, attempt, ex);
                 }
             }
@@ -152,8 +150,7 @@ public class TaskConsumer {
         NotificationStatus status,
         int attempt,
         Exception ex) {
-        // В API хотим видеть «номер попытки» как количество попыток (1,2,3,...),
-        // даже если внутри воркера логика может оперировать тем же числом.
+
         int reportedAttempt = attempt + 1;
 
         String errorCode = (ex != null) ? "smtp" : null;

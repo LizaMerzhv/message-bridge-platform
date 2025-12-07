@@ -1,17 +1,10 @@
 package com.example.notifi.api.web.admin.template.dto;
 
 import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.util.StringUtils;
 
-public class TemplateCreateRequest {
-
-    @NotBlank
-    @Size(max = 64)
-    private String code;
-
-    @NotBlank
-    private String subject;
+public class UpdateTemplateRequest {
 
     @Size(max = 262_144)
     private String bodyHtml;
@@ -19,27 +12,16 @@ public class TemplateCreateRequest {
     @Size(max = 262_144)
     private String bodyText;
 
+    private String subject;
+
     private String status;
 
-    @AssertTrue(message = "Either bodyHtml or bodyText must be provided")
-    public boolean hasBody() {
-        return bodyHtml != null || bodyText != null;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
+    @AssertTrue(message = "At least one field must be provided")
+    public boolean hasAtLeastOneField() {
+        return StringUtils.hasText(subject)
+            || bodyHtml != null
+            || bodyText != null
+            || StringUtils.hasText(status);
     }
 
     public String getBodyHtml() {
@@ -56,6 +38,14 @@ public class TemplateCreateRequest {
 
     public void setBodyText(String bodyText) {
         this.bodyText = bodyText;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     public String getStatus() {

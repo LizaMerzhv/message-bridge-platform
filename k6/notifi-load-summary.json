@@ -1,0 +1,219 @@
+{
+    "metrics": {
+        "http_2xx": {
+            "count": 1029,
+            "rate": 8.487104329536264
+        },
+        "data_sent": {
+            "count": 395099,
+            "rate": 3258.7428896943134
+        },
+        "http_req_duration{expected_response:true}": {
+            "avg": 128.770139164237,
+            "min": 4.1548,
+            "med": 108.0944,
+            "max": 328.6596,
+            "p(90)": 225.59658000000002,
+            "p(95)": 259.1796999999999,
+            "thresholds": {
+                "p(95) < 500": false
+            }
+        },
+        "http_req_connecting": {
+            "p(95)": 0,
+            "avg": 0.009408931804465902,
+            "min": 0,
+            "med": 0,
+            "max": 1.5672,
+            "p(90)": 0
+        },
+        "http_req_failed": {
+            "passes": 628,
+            "fails": 1029,
+            "value": 0.37899818949909475
+        },
+        "vus_max": {
+            "value": 8,
+            "min": 8,
+            "max": 8
+        },
+        "iteration_duration": {
+            "avg": 1313.5238725092247,
+            "min": 1002.8902,
+            "med": 1020.17205,
+            "max": 2704.403,
+            "p(90)": 1959.49053,
+            "p(95)": 2121.74724
+        },
+        "http_reqs": {
+            "count": 1657,
+            "rate": 13.666794824141487
+        },
+        "checks": {
+            "passes": 1624,
+            "fails": 33,
+            "value": 0.9800844900422451
+        },
+        "http_req_duration": {
+            "med": 100.2871,
+            "max": 328.6596,
+            "p(90)": 205.14074000000002,
+            "p(95)": 235.22365999999968,
+            "avg": 102.0755140615571,
+            "min": 1.6469
+        },
+        "iterations": {
+            "rate": 4.470369821777118,
+            "count": 542
+        },
+        "data_received": {
+            "count": 1501858,
+            "rate": 12387.196826189187
+        },
+        "http_5xx": {
+            "count": 0,
+            "rate": 0,
+            "thresholds": {
+                "count == 0": false
+            }
+        },
+        "http_req_sending": {
+            "avg": 0.024566988533494274,
+            "min": 0,
+            "med": 0,
+            "max": 2.3313,
+            "p(90)": 0.009000000000000091,
+            "p(95)": 0.07847999999999974
+        },
+        "http_429": {
+            "count": 328,
+            "rate": 2.705316054507186
+        },
+        "http_req_blocked": {
+            "p(95)": 0.013039999999999963,
+            "avg": 0.08584773687386847,
+            "min": 0,
+            "med": 0,
+            "max": 29.7958,
+            "p(90)": 0
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "http_4xx": {
+            "count": 300,
+            "rate": 2.4743744400980363
+        },
+        "http_req_waiting": {
+            "min": 1.6469,
+            "med": 99.9285,
+            "max": 327.3692,
+            "p(90)": 205.14074000000002,
+            "p(95)": 234.54613999999953,
+            "avg": 101.52266970428495
+        },
+        "http_req_receiving": {
+            "avg": 0.5282773687386846,
+            "min": 0,
+            "med": 0.5276,
+            "max": 18.7568,
+            "p(90)": 1.17216,
+            "p(95)": 1.5598399999999977
+        },
+        "vus": {
+            "value": 1,
+            "min": 1,
+            "max": 8
+        }
+    },
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "get public notification -> 200/404/401/429 (ожидаемо)": {
+                    "name": "get public notification -> 200/404/401/429 (ожидаемо)",
+                    "path": "::get public notification -> 200/404/401/429 (ожидаемо)",
+                    "id": "db67a61e6059a58f6f6122e557da7dfa",
+                    "passes": 356,
+                    "fails": 0
+                },
+                "create public notification -> 201/200/429 (ожидаемо)": {
+                    "name": "create public notification -> 201/200/429 (ожидаемо)",
+                    "path": "::create public notification -> 201/200/429 (ожидаемо)",
+                    "id": "df1c9b75386c32705851f2b64f57cf41",
+                    "passes": 71,
+                    "fails": 33
+                },
+                "admin notifications list -> 200": {
+                    "id": "5e246372785145cd6162a018bf4e501d",
+                    "passes": 186,
+                    "fails": 0,
+                    "name": "admin notifications list -> 200",
+                    "path": "::admin notifications list -> 200"
+                },
+                "get admin notification -> 200/404": {
+                    "name": "get admin notification -> 200/404",
+                    "path": "::get admin notification -> 200/404",
+                    "id": "adeb7834376d2fc41aa5e10a6699b280",
+                    "passes": 186,
+                    "fails": 0
+                },
+                "list attempts -> 200/404": {
+                    "name": "list attempts -> 200/404",
+                    "path": "::list attempts -> 200/404",
+                    "id": "a33c7af6c650c1e3747d401067f8c57d",
+                    "passes": 186,
+                    "fails": 0
+                },
+                "list templates -> 200": {
+                    "name": "list templates -> 200",
+                    "path": "::list templates -> 200",
+                    "id": "b60189af7fc0b239cd5782a0e84f26b4",
+                    "passes": 186,
+                    "fails": 0
+                },
+                "search template by code -> 200": {
+                    "passes": 186,
+                    "fails": 0,
+                    "name": "search template by code -> 200",
+                    "path": "::search template by code -> 200",
+                    "id": "081bfc01f53dc7f4abe10099a0946f7d"
+                },
+                "get template by id -> 200/404": {
+                    "fails": 0,
+                    "name": "get template by id -> 200/404",
+                    "path": "::get template by id -> 200/404",
+                    "id": "a77164a537dda48d93cc6d2030c6fba7",
+                    "passes": 186
+                },
+                "update template -> 200/404/422": {
+                    "name": "update template -> 200/404/422",
+                    "path": "::update template -> 200/404/422",
+                    "id": "98f0bdbd71fcf0f6a24dfdcd1df42bc2",
+                    "passes": 27,
+                    "fails": 0
+                },
+                "deactivate template -> 200/404/422": {
+                    "id": "3f6e725bb8c9fa3363022cfba7d6aa62",
+                    "passes": 27,
+                    "fails": 0,
+                    "name": "deactivate template -> 200/404/422",
+                    "path": "::deactivate template -> 200/404/422"
+                },
+                "activate template -> 200/404/422": {
+                    "name": "activate template -> 200/404/422",
+                    "path": "::activate template -> 200/404/422",
+                    "id": "61e0443fad9582b245a3f1bb6ef92e63",
+                    "passes": 27,
+                    "fails": 0
+                }
+            }
+    }
+}

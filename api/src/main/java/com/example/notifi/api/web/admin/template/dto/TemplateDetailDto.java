@@ -1,60 +1,88 @@
 package com.example.notifi.api.web.admin.template.dto;
 
-import com.example.notifi.api.core.template.TemplateView;
-import com.example.notifi.api.data.entity.TemplateStatus;
 import java.time.Instant;
 import java.util.UUID;
 
 public class TemplateDetailDto {
-  private final UUID id;
-  private final String code;
-  private final String subject;
-  private final String bodyHtml;
-  private final String bodyText;
-  private final TemplateStatus status;
-  private final Instant createdAt;
-  private final Instant updatedAt;
 
-  public TemplateDetailDto(TemplateView view) {
-    this.id = view.getId();
-    this.code = view.getCode();
-    this.subject = view.getSubject();
-    this.bodyHtml = view.getBodyHtml();
-    this.bodyText = view.getBodyText();
-    this.status = view.getStatus();
-    this.createdAt = view.getCreatedAt();
-    this.updatedAt = view.getUpdatedAt();
-  }
+    private UUID id;
+    private String code;
+    private String subject;
+    private String bodyHtml;
+    private String bodyText;
+    private String status;
+    private Instant createdAt;
+    private Instant updatedAt;
 
-  public UUID getId() {
-    return id;
-  }
+    public UUID getId() {
+        return id;
+    }
 
-  public String getCode() {
-    return code;
-  }
+    public TemplateDetailDto setId(UUID id) {
+        this.id = id;
+        return this;
+    }
 
-  public String getSubject() {
-    return subject;
-  }
+    public String getCode() {
+        return code;
+    }
 
-  public String getBodyHtml() {
-    return bodyHtml;
-  }
+    public TemplateDetailDto setCode(String code) {
+        this.code = code;
+        return this;
+    }
 
-  public String getBodyText() {
-    return bodyText;
-  }
+    public String getSubject() {
+        return subject;
+    }
 
-  public TemplateStatus getStatus() {
-    return status;
-  }
+    public TemplateDetailDto setSubject(String subject) {
+        this.subject = subject;
+        return this;
+    }
 
-  public Instant getCreatedAt() {
-    return createdAt;
-  }
+    public String getBodyHtml() {
+        return bodyHtml;
+    }
 
-  public Instant getUpdatedAt() {
-    return updatedAt;
-  }
+    public TemplateDetailDto setBodyHtml(String bodyHtml) {
+        this.bodyHtml = bodyHtml;
+        return this;
+    }
+
+    public String getBodyText() {
+        return bodyText;
+    }
+
+    public TemplateDetailDto setBodyText(String bodyText) {
+        this.bodyText = bodyText;
+        return this;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public TemplateDetailDto setStatus(String status) {
+        this.status = status;
+        return this;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public TemplateDetailDto setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public TemplateDetailDto setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
 }
