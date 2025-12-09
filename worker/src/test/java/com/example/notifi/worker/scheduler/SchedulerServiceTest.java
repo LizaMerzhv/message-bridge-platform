@@ -35,15 +35,17 @@ class SchedulerServiceTest {
   @Mock private NotificationRepository notificationRepository;
   @Mock private AmqpPublisher amqpPublisher;
 
-  private final WorkerProperties properties = new WorkerProperties();
-  private final Clock clock = Clock.fixed(Instant.parse("2024-01-01T00:00:00Z"), ZoneOffset.UTC);
+  private WorkerProperties properties;
   private WorkerMetrics metrics;
+  private Clock clock;
   private SchedulerService schedulerService;
 
   @BeforeEach
   void setUp() {
+    properties = new WorkerProperties();
     properties.getScheduler().setBatchSize(10);
     metrics = new WorkerMetrics(new SimpleMeterRegistry());
+    clock = Clock.fixed(Instant.parse("2024-01-01T00:00:00Z"), ZoneOffset.UTC);
     schedulerService =
         new SchedulerService(
             notificationRepository,
@@ -78,6 +80,23 @@ class SchedulerServiceTest {
     schedulerService.publishDueNotifications();
 
     verify(amqpPublisher, never()).publishTask(any());
+  }
+
+  @Test
+  void usesConfiguredBatchSize() {
+    properties.getScheduler().setBatchSize(3);
+    schedulerService =
+        new SchedulerService(
+            notificationRepository,
+            new NotificationMessageMapper(),
+            amqpPublisher,
+            properties,
+            clock,
+            metrics);
+
+    schedulerService.publishDueNotifications();
+
+    verify(notificationRepository).lockCreatedBefore(clock.instant(), 3);
   }
 
   private NotificationEntity createNotification(Instant sendAt) {

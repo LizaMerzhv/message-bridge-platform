@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface TemplateRepository
     extends JpaRepository<TemplateEntity, UUID>, JpaSpecificationExecutor<TemplateEntity> {
 
-    Optional<TemplateEntity> findByCode(String code);
+  Optional<TemplateEntity> findByCode(String code);
 
-    List<TemplateEntity> findAllByStatus(TemplateStatus status);
+  List<TemplateEntity> findAllByStatus(TemplateStatus status);
 }

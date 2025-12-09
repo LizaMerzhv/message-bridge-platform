@@ -29,79 +29,79 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 class TemplateAdminControllerTest {
 
-    private MockMvc mockMvc;
-    private TemplateService templateService;
-    private ObjectMapper objectMapper;
+  private MockMvc mockMvc;
+  private TemplateService templateService;
+  private ObjectMapper objectMapper;
 
-    @BeforeEach
-    void setUp() {
-        MDC.put("traceId", "test-trace");
+  @BeforeEach
+  void setUp() {
+    MDC.put("traceId", "test-trace");
 
-        this.objectMapper = new ObjectMapper().findAndRegisterModules();
-        this.templateService = Mockito.mock(TemplateService.class);
+    this.objectMapper = new ObjectMapper().findAndRegisterModules();
+    this.templateService = Mockito.mock(TemplateService.class);
 
-        TemplateAdminController controller =
-            new TemplateAdminController(templateService, new TemplateAdminMapper());
+    TemplateAdminController controller =
+        new TemplateAdminController(templateService, new TemplateAdminMapper());
 
-        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-        validator.afterPropertiesSet();
+    LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+    validator.afterPropertiesSet();
 
-        this.mockMvc =
-            MockMvcBuilders.standaloneSetup(controller)
-                .setControllerAdvice(new ProblemDetailsAdvice())
-                .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
-                .setValidator(validator)
-                .build();
-    }
+    this.mockMvc =
+        MockMvcBuilders.standaloneSetup(controller)
+            .setControllerAdvice(new ProblemDetailsAdvice())
+            .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
+            .setValidator(validator)
+            .build();
+  }
 
-    @AfterEach
-    void tearDown() {
-        MDC.clear();
-    }
+  @AfterEach
+  void tearDown() {
+    MDC.clear();
+  }
 
-    @Test
-    void createTemplate_shouldReturnCreated() throws Exception {
-        TemplateEntity entity = buildEntity(TemplateStatus.ACTIVE);
-        when(templateService.createTemplate(any())).thenReturn(entity);
+  @Test
+  void createTemplate_shouldReturnCreated() throws Exception {
+    TemplateEntity entity = buildEntity(TemplateStatus.ACTIVE);
+    when(templateService.createTemplate(any())).thenReturn(entity);
 
-        String body =
-            "{"
-                + "\"code\":\"WELCOME\","
-                + "\"subject\":\"Subject\","
-                + "\"bodyHtml\":\"<p>Hello</p>\""
-                + "}";
+    String body =
+        "{"
+            + "\"code\":\"WELCOME\","
+            + "\"subject\":\"Subject\","
+            + "\"bodyHtml\":\"<p>Hello</p>\""
+            + "}";
 
-        mockMvc
-            .perform(post("/admin/templates").contentType(MediaType.APPLICATION_JSON).content(body))
-            .andExpect(status().isCreated())
-            .andExpect(header().string("Location", "/admin/templates/" + entity.getId()))
-            .andExpect(jsonPath("$.id").value(entity.getId().toString()))
-            .andExpect(jsonPath("$.status").value("ACTIVE"));
-    }
+    mockMvc
+        .perform(post("/admin/templates").contentType(MediaType.APPLICATION_JSON).content(body))
+        .andExpect(status().isCreated())
+        .andExpect(header().string("Location", "/admin/templates/" + entity.getId()))
+        .andExpect(jsonPath("$.id").value(entity.getId().toString()))
+        .andExpect(jsonPath("$.status").value("ACTIVE"));
+  }
 
-    @Test
-    void getTemplate_shouldReturnDetails() throws Exception {
-        TemplateEntity entity = buildEntity(TemplateStatus.INACTIVE);
-        when(templateService.findByIdOrThrow(entity.getId())).thenReturn(entity);
+  @Test
+  void getTemplate_shouldReturnDetails() throws Exception {
+    TemplateEntity entity = buildEntity(TemplateStatus.INACTIVE);
+    when(templateService.findByIdOrThrow(entity.getId())).thenReturn(entity);
 
-        mockMvc
-            .perform(get("/admin/templates/{id}", entity.getId()))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(entity.getId().toString()))
-            .andExpect(jsonPath("$.code").value("WELCOME"))
-            .andExpect(jsonPath("$.status").value("INACTIVE"));
-    }
+    mockMvc
+        .perform(get("/admin/templates/{id}", entity.getId()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(entity.getId().toString()))
+        .andExpect(jsonPath("$.code").value("WELCOME"))
+        .andExpect(jsonPath("$.status").value("INACTIVE"));
+  }
 
-    private TemplateEntity buildEntity(TemplateStatus status) {
-        TemplateEntity entity = new TemplateEntity();
-        entity.setId(UUID.randomUUID());
-        entity.setCode("WELCOME");
-        entity.setSubject("Subject");
-        entity.setBodyHtml("<p>Hello</p>");
-        entity.setBodyText("Hello");
-        entity.setStatus(status);
-        entity.setCreatedAt(Instant.parse("2024-01-01T00:00:00Z"));
-        entity.setUpdatedAt(Instant.parse("2024-01-02T00:00:00Z"));
-        return entity;
-    }
+  private TemplateEntity buildEntity(TemplateStatus status) {
+    TemplateEntity entity = new TemplateEntity();
+    entity.setId(UUID.randomUUID());
+    entity.setCode("WELCOME");
+    entity.setSubject("Subject");
+    entity.setBodyHtml("<p>Hello</p>");
+    entity.setBodyText("Hello");
+    entity.setStatus(status);
+    entity.setCreatedAt(Instant.parse("2024-01-01T00:00:00Z"));
+    entity.setUpdatedAt(Instant.parse("2024-01-02T00:00:00Z"));
+    return entity;
+  }
 }

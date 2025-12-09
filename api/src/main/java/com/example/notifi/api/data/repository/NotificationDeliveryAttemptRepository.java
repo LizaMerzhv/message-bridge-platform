@@ -8,8 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface NotificationDeliveryAttemptRepository
     extends JpaRepository<NotificationDeliveryAttemptEntity, UUID> {
 
-    List<NotificationDeliveryAttemptEntity> findByNotificationIdOrderByAttemptAsc(UUID notificationId);
+  List<NotificationDeliveryAttemptEntity> findByNotificationIdOrderByAttemptAsc(
+      UUID notificationId);
 
-    Optional<NotificationDeliveryAttemptEntity> findByNotificationIdAndAttempt(
-        UUID notificationId, int attempt);
+  Optional<NotificationDeliveryAttemptEntity> findByNotificationIdAndAttempt(
+      UUID notificationId, int attempt);
 }

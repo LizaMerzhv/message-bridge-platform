@@ -35,7 +35,8 @@ public class NotificationPublicController {
   @PostMapping
   @Operation(
       summary = "Create notification",
-      description = "Schedules a notification for delivery. Supports idempotent retries via externalRequestId.")
+      description =
+          "Schedules a notification for delivery. Supports idempotent retries via externalRequestId.")
   public ResponseEntity<CreateNotificationResponse> create(
       @Valid @RequestBody CreateNotificationRequest request) {
     ClientPrincipal principal = requirePrincipal();
@@ -57,7 +58,9 @@ public class NotificationPublicController {
   }
 
   @GetMapping("/{id}")
-  @Operation(summary = "Get notification", description = "Returns notification details for the authenticated client")
+  @Operation(
+      summary = "Get notification",
+      description = "Returns notification details for the authenticated client")
   public NotificationView getById(
       @Parameter(description = "Notification identifier") @PathVariable UUID id) {
     ClientPrincipal principal = requirePrincipal();

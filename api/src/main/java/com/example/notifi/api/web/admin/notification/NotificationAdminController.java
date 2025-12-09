@@ -51,20 +51,24 @@ public class NotificationAdminController {
   }
 
   @GetMapping
-  @Operation(summary = "List notifications", description = "Returns paged notifications with optional filters")
+  @Operation(
+      summary = "List notifications",
+      description = "Returns paged notifications with optional filters")
   public PageResponse<NotificationSummaryDto> list(
       @Parameter(description = "Filter by status", example = "SENT")
-      @RequestParam(name = "status", required = false)
-      String status,
+          @RequestParam(name = "status", required = false)
+          String status,
       @Parameter(description = "Filter by client id")
-      @RequestParam(name = "clientId", required = false)
-      String clientId,
-      @Parameter(description = "Created from timestamp in ISO-8601", example = "2024-06-10T12:00:00Z")
-      @RequestParam(name = "createdFrom", required = false)
-      String createdFrom,
+          @RequestParam(name = "clientId", required = false)
+          String clientId,
+      @Parameter(
+              description = "Created from timestamp in ISO-8601",
+              example = "2024-06-10T12:00:00Z")
+          @RequestParam(name = "createdFrom", required = false)
+          String createdFrom,
       @Parameter(description = "Created to timestamp in ISO-8601", example = "2024-06-18T12:00:00Z")
-      @RequestParam(name = "createdTo", required = false)
-      String createdTo,
+          @RequestParam(name = "createdTo", required = false)
+          String createdTo,
       Pageable pageable) {
     NotificationFilter filter = new NotificationFilter();
     if (StringUtils.hasText(status)) {

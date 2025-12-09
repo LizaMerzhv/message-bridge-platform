@@ -20,8 +20,10 @@
     <properties>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <spotless.maven.plugin.version>2.43.0</spotless.maven.plugin.version>
         <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
+        <jacocoArgLine></jacocoArgLine>
         <testcontainers.version>1.20.1</testcontainers.version>
         <springdoc.version>2.6.0</springdoc.version>
     </properties>
@@ -89,30 +91,62 @@
                 </executions>
             </plugin>
 
+            <!-- Агрегированный отчёт по всем модулям -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.maven.plugin.version}</version>
                 <executions>
-
                     <execution>
                         <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/api/web/admin/view/**</exclude>
+
+                                <exclude>**/api/data/entity/**</exclude>
+                                <exclude>**/api/data/repository/**</exclude>
+                                <exclude>**/api/data/specifications/**</exclude>
+
+                                <exclude>**/api/config/**</exclude>
+                                <exclude>**/api/web/error/**</exclude>
+
+                                <exclude>**/worker/data/entity/**</exclude>
+                                <exclude>**/worker/data/repository/**</exclude>
+                                <exclude>**/worker/util/**</exclude>
+                                <exclude>**/worker/config/**</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
 
                     <execution>
                         <id>report</id>
-                        <phase>verify</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
                     </execution>
 
+                    <execution>
+                        <id>report-aggregate</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                    </execution>
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>@{jacocoArgLine}</argLine>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

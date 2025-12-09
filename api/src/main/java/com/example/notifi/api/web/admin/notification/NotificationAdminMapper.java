@@ -12,8 +12,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class NotificationAdminMapper {
 
-    public NotificationSummaryDto toSummary(NotificationView view) {
-        return new NotificationSummaryDto()
+  public NotificationSummaryDto toSummary(NotificationView view) {
+    return new NotificationSummaryDto()
+        .setId(view.getId())
+        .setClientId(view.getClientId())
+        .setChannel(view.getChannel())
+        .setTo(view.getTo())
+        .setStatus(view.getStatus().name())
+        .setSubject(view.getSubject())
+        .setTemplateCode(view.getTemplateCode())
+        .setSendAt(view.getSendAt())
+        .setSendAtEffective(view.getSendAtEffective())
+        .setCreatedAt(view.getCreatedAt())
+        .setAttempts(view.getAttempts());
+  }
+
+  public NotificationDetailDto toDetail(NotificationView view) {
+    NotificationDetailDto dto =
+        new NotificationDetailDto()
             .setId(view.getId())
             .setClientId(view.getClientId())
             .setChannel(view.getChannel())
@@ -21,47 +37,31 @@ public class NotificationAdminMapper {
             .setStatus(view.getStatus().name())
             .setSubject(view.getSubject())
             .setTemplateCode(view.getTemplateCode())
+            .setVariables(view.getVariables())
+            .setExternalRequestId(view.getExternalRequestId())
             .setSendAt(view.getSendAt())
             .setSendAtEffective(view.getSendAtEffective())
             .setCreatedAt(view.getCreatedAt())
+            .setUpdatedAt(view.getUpdatedAt())
             .setAttempts(view.getAttempts());
-    }
+    dto.setDeliveries(view.getDeliveries().stream().map(this::toDelivery).toList());
+    return dto;
+  }
 
-    public NotificationDetailDto toDetail(NotificationView view) {
-        NotificationDetailDto dto =
-            new NotificationDetailDto()
-                .setId(view.getId())
-                .setClientId(view.getClientId())
-                .setChannel(view.getChannel())
-                .setTo(view.getTo())
-                .setStatus(view.getStatus().name())
-                .setSubject(view.getSubject())
-                .setTemplateCode(view.getTemplateCode())
-                .setVariables(view.getVariables())
-                .setExternalRequestId(view.getExternalRequestId())
-                .setSendAt(view.getSendAt())
-                .setSendAtEffective(view.getSendAtEffective())
-                .setCreatedAt(view.getCreatedAt())
-                .setUpdatedAt(view.getUpdatedAt())
-                .setAttempts(view.getAttempts());
-        dto.setDeliveries(view.getDeliveries().stream().map(this::toDelivery).toList());
-        return dto;
-    }
+  public List<DeliveryAttemptDto> toDeliveryAttempts(List<DeliveryView> deliveries) {
+    return deliveries.stream().map(this::toDelivery).toList();
+  }
 
-    public List<DeliveryAttemptDto> toDeliveryAttempts(List<DeliveryView> deliveries) {
-        return deliveries.stream().map(this::toDelivery).toList();
-    }
-
-    private DeliveryAttemptDto toDelivery(DeliveryView view) {
-        Instant timestamp =
-            view.getOccurredAt() != null
-                ? view.getOccurredAt()
-                : (view.getLastAttemptAt() != null ? view.getLastAttemptAt() : view.getCreatedAt());
-        return new DeliveryAttemptDto()
-            .setAttempt(view.getAttempt())
-            .setStatus(view.getStatus().name())
-            .setErrorCode(view.getErrorCode())
-            .setErrorMessage(view.getErrorMessage())
-            .setTimestamp(timestamp);
-    }
+  private DeliveryAttemptDto toDelivery(DeliveryView view) {
+    Instant timestamp =
+        view.getOccurredAt() != null
+            ? view.getOccurredAt()
+            : (view.getLastAttemptAt() != null ? view.getLastAttemptAt() : view.getCreatedAt());
+    return new DeliveryAttemptDto()
+        .setAttempt(view.getAttempt())
+        .setStatus(view.getStatus().name())
+        .setErrorCode(view.getErrorCode())
+        .setErrorMessage(view.getErrorMessage())
+        .setTimestamp(timestamp);
+  }
 }

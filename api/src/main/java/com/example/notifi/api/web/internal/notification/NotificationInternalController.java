@@ -20,26 +20,26 @@ import org.springframework.web.bind.annotation.RestController;
 @Hidden
 public class NotificationInternalController {
 
-    private final NotificationService notificationService;
+  private final NotificationService notificationService;
 
-    public NotificationInternalController(NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
+  public NotificationInternalController(NotificationService notificationService) {
+    this.notificationService = notificationService;
+  }
 
-    @PostMapping("/{id}/deliveries")
-    @Operation(summary = "Record delivery result")
-    public ResponseEntity<Void> updateStatus(
-        @Parameter(description = "Notification identifier") @PathVariable UUID id,
-        @Valid @RequestBody NotificationDeliveryUpdateRequest request) {
+  @PostMapping("/{id}/deliveries")
+  @Operation(summary = "Record delivery result")
+  public ResponseEntity<Void> updateStatus(
+      @Parameter(description = "Notification identifier") @PathVariable UUID id,
+      @Valid @RequestBody NotificationDeliveryUpdateRequest request) {
 
-        notificationService.recordDeliveryResult(
-            id,
-            request.getStatus(),
-            request.getAttempt(),
-            request.getOccurredAt(),
-            request.getErrorCode(),
-            request.getErrorMessage());
+    notificationService.recordDeliveryResult(
+        id,
+        request.getStatus(),
+        request.getAttempt(),
+        request.getOccurredAt(),
+        request.getErrorCode(),
+        request.getErrorMessage());
 
-        return ResponseEntity.noContent().build();
-    }
+    return ResponseEntity.noContent().build();
+  }
 }

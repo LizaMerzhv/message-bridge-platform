@@ -28,61 +28,61 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Admin Templates", description = "Administrative operations for templates")
 public class TemplateAdminController {
 
-    private final TemplateService templateService;
-    private final TemplateAdminMapper mapper;
+  private final TemplateService templateService;
+  private final TemplateAdminMapper mapper;
 
-    public TemplateAdminController(TemplateService templateService, TemplateAdminMapper mapper) {
-        this.templateService = templateService;
-        this.mapper = mapper;
-    }
+  public TemplateAdminController(TemplateService templateService, TemplateAdminMapper mapper) {
+    this.templateService = templateService;
+    this.mapper = mapper;
+  }
 
-    @GetMapping
-    @Operation(summary = "List templates")
-    public PageResponse<TemplateSummaryDto> list(
-        @Parameter(description = "Filter by status", example = "ACTIVE")
-        @RequestParam(value = "status", required = false)
-        String status,
-        @Parameter(description = "Filter by code (contains)")
-        @RequestParam(value = "code", required = false)
-        String code,
-        Pageable pageable) {
+  @GetMapping
+  @Operation(summary = "List templates")
+  public PageResponse<TemplateSummaryDto> list(
+      @Parameter(description = "Filter by status", example = "ACTIVE")
+          @RequestParam(value = "status", required = false)
+          String status,
+      @Parameter(description = "Filter by code (contains)")
+          @RequestParam(value = "code", required = false)
+          String code,
+      Pageable pageable) {
 
-        Page<TemplateEntity> page = templateService.findAll(status, code, pageable);
-        return PageResponse.from(page.map(mapper::toSummary));
-    }
+    Page<TemplateEntity> page = templateService.findAll(status, code, pageable);
+    return PageResponse.from(page.map(mapper::toSummary));
+  }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Get template by id")
-    public TemplateDetailDto get(@PathVariable UUID id) {
-        return mapper.toDetail(templateService.findByIdOrThrow(id));
-    }
+  @GetMapping("/{id}")
+  @Operation(summary = "Get template by id")
+  public TemplateDetailDto get(@PathVariable UUID id) {
+    return mapper.toDetail(templateService.findByIdOrThrow(id));
+  }
 
-    @PostMapping
-    @Operation(summary = "Create template")
-    public ResponseEntity<TemplateDetailDto> create(
-        @Valid @RequestBody TemplateCreateRequest request) {
+  @PostMapping
+  @Operation(summary = "Create template")
+  public ResponseEntity<TemplateDetailDto> create(
+      @Valid @RequestBody TemplateCreateRequest request) {
 
-        TemplateEntity created = templateService.createTemplate(request);
-        URI location = URI.create(String.format("/admin/templates/%s", created.getId()));
-        return ResponseEntity.created(location).body(mapper.toDetail(created));
-    }
+    TemplateEntity created = templateService.createTemplate(request);
+    URI location = URI.create(String.format("/admin/templates/%s", created.getId()));
+    return ResponseEntity.created(location).body(mapper.toDetail(created));
+  }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Update template")
-    public TemplateDetailDto update(
-        @PathVariable UUID id, @Valid @RequestBody UpdateTemplateRequest request) {
-        return mapper.toDetail(templateService.updateTemplate(id, request));
-    }
+  @PutMapping("/{id}")
+  @Operation(summary = "Update template")
+  public TemplateDetailDto update(
+      @PathVariable UUID id, @Valid @RequestBody UpdateTemplateRequest request) {
+    return mapper.toDetail(templateService.updateTemplate(id, request));
+  }
 
-    @PostMapping("/{id}/activate")
-    @Operation(summary = "Activate template")
-    public TemplateDetailDto activate(@PathVariable UUID id) {
-        return mapper.toDetail(templateService.activate(id));
-    }
+  @PostMapping("/{id}/activate")
+  @Operation(summary = "Activate template")
+  public TemplateDetailDto activate(@PathVariable UUID id) {
+    return mapper.toDetail(templateService.activate(id));
+  }
 
-    @PostMapping("/{id}/deactivate")
-    @Operation(summary = "Deactivate template")
-    public TemplateDetailDto deactivate(@PathVariable UUID id) {
-        return mapper.toDetail(templateService.deactivate(id));
-    }
+  @PostMapping("/{id}/deactivate")
+  @Operation(summary = "Deactivate template")
+  public TemplateDetailDto deactivate(@PathVariable UUID id) {
+    return mapper.toDetail(templateService.deactivate(id));
+  }
 }
