@@ -1,5 +1,0 @@
-?? repo-audit/files_ignored.txt
-?? repo-audit/files_in_head.txt
-?? repo-audit/files_tracked.txt
-?? repo-audit/files_untracked.txt
-?? repo-audit/status_porcelain.txt

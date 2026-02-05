@@ -1,2 +1,0 @@
-.github/workflows/ci.yml:1:name: CI
-.github/workflows/ci.yml:35:          name: jacoco-reports

@@ -1,3 +1,0 @@
-repo-audit/files_in_head.txt
-repo-audit/files_tracked.txt
-repo-audit/files_untracked.txt
