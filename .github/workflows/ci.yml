@@ -28,24 +28,3 @@ jobs:
 
       - name: Build with Maven Wrapper
         run: ./mvnw -B -ntp verify
-
-      - name: Upload JaCoCo reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: jacoco-reports
-          path: '**/target/site/jacoco/**'
-
-      - name: Generate JaCoCo Badge
-        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        uses: cicirello/jacoco-badge-generator@v2
-        with:
-          jacoco-report-path: api/target/site/jacoco/jacoco.xml
-          badges-directory: .github/badges
-          generate-branches-badge: false
-
-      - name: Commit badge
-        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: update jacoco coverage badge"
-          file_pattern: .github/badges/*.svg

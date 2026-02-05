@@ -1,0 +1,63 @@
+23f4156 (HEAD -> develop) update ci for jacoco
+5e6f6af (origin/develop) update ci
+f033ace update readme
+9f060a0 add tests
+86d226e add CRUD  operations
+8a987cb persist delivery attempts in API DB, extend internal callbacks, update worker client and tests
+99b5d85 update outbox_payload_as_text
+625ae9c add demo data migrations for API and Worker modules
+810e4eb improve OpenAPI docs
+3c55521 wire JaCoCo aggregate coverage check and expose failure
+eb06d0a apply code formatting and verify with coverage-enforce profile
+a202f2a implement outbox pattern for notification task publishing in API
+d4a2050 fix for message send result persistence in the API database
+a4f4f3b refactor project structure
+25e603b added functions to the admin panel
+af73700 add admin tempates
+e363d21 merge admin UI into API module
+55370cc fix worker processing flow and align delivery schema
+564fd88 add openapi configuration for api
+0891c0e add Dockerfile for api and worker
+1a25dc0 added independent DB for worker
+85cbb24 add main doker-compose
+7bfd1d5 create admin-ui module
+19e0d41 removed comment from import block
+7306e39 removed comment from import block
+826f3b8 refactor messaging: move AMQP constants and DTOs to common module, add NotificationTaskPublisher and AmqpConfig in API, replace worker listener with NotificationIngestionListener, add separate DB migrations
+037325b Adjust RetryPolicy to use 20% jitter range and TTL based on next attempt
+fc293b5 Updated worker tests for retry/backoff and message listener logic (TTL, jitter, metrics, status transitions)
+b589c9c Aligned worker JPA model and repository with actual database schema (column names, attempts, sendAt, ordering)
+f71d217 Normalized API enums and entity mappings; cleaned up imports and updated related tests
+df78d3c Updated security classes to use api.web.error.* and centralized header constants; refreshed related tests
+2a5b10f Removed RabbitMQ publishing from NotificationService; API only persists; updated unit tests
+c187668 Move DTOs, validation annotations, and ProblemDetails into API module; update imports and related tests
+61fb6f4 set AMQP expiration=ttl+jitter for retry messages
+cafed3a align NotificationEntity mapping with DB schema (to,send_at,attempts)
+2643324 retry based on nextAttempt; TTL=80% + jitter; max 3 attempts
+1a2134d  api/src/main/java/com/example/notifi/api/core/notification/NotificationService.java
+3ade517 update worker/pom
+1b891cf scheduler+consumer, retrie, HMAC webhooks, metrics
+e6b43f9 update /api/data/entity/NotificationEntity.java /common/model/Channel.java
+3363064 update api/pom.xml and api/../application.yml
+e5a90b5 add api module tests
+204d0cc update CreateNotificationResponse
+053b91f add NotifiApiApplication
+9ea220d add SecurityConfig
+66787fa add models and dtos
+9e6b209 expose REST endpoints and unify error handling via Problems.* (application/problem+json)
+3cf86b9 add AMQP publisher for notification tasks using common payload
+5510727 implement notification/template services, sendAt policy, idempotency and mappings
+dd96d6b introduce RateLimiter API, Decision model and InMemoryRateLimiter; add SecurityUtils
+19df3e5 add ApiKeyAuthFilter, ClientPrincipal, and RateLimitInterceptor with responses and headers
+958a498 register ObjectMapper(JavaTime, NON_NULL), Clock(UTC), OpenAPI, AMQP beans and SecurityFilterChain
+e81bb3a api(build): add spring-security starter
+80a3461 - ProblemDetails as clean bean, add traceId - Introduce Problems factory, add ProblemTypes constants
+f971d36 update SendAtWindowBoundaryTest
+23c1d12 update common/pom.xml
+6f71000 add minimal validation and  test suite
+18cf2ea add ProblemDetails + Problems factory. Add HTTP headers
+a182de0 Add enums and request/response DTOs. Add  minimal tests
+816ae4d  add initial Flyway migration, DB config and Flyway integration test
+51b358e update gitignore
+232081f add job to ci
+8ff0907 set up initial multi-module project structure
