@@ -35,7 +35,6 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
-    // 1) Забираем API-ключ
     final String apiKey = request.getHeader(HEADER);
     if (apiKey == null || apiKey.isBlank()) {
       writeUnauthorized(request, response, "Missing or invalid API key");
@@ -48,7 +47,6 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
       return;
     }
 
-    // 3) Устанавливаем аутентификацию в контекст
     final ClientEntity client = clientOpt.get();
     final ClientPrincipal principal =
         new ClientPrincipal(client.getId(), client.getName(), client.getRateLimitPerMin());

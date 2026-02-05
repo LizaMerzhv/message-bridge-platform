@@ -1,7 +1,5 @@
 package com.example.notifi.e2e;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.example.notifi.api.NotifiApiApplication;
 import com.example.notifi.api.core.notification.NotificationView;
 import com.example.notifi.api.data.entity.NotificationStatus;
@@ -10,10 +8,6 @@ import com.example.notifi.api.web.shared.notification.dto.CreateNotificationResp
 import com.example.notifi.common.model.Channel;
 import com.example.notifi.worker.NotifiWorkerApplication;
 import com.fasterxml.jackson.databind.JsonNode;
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -34,7 +28,12 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.lifecycle.Startables;
-import static java.util.Map.entry;
+
+import java.time.Duration;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
 @ActiveProfiles("test")
@@ -73,7 +72,6 @@ class ApiWorkerE2ETest {
     static void startEnvironment() {
         Startables.deepStart(java.util.stream.Stream.of(apiDb, workerDb, rabbit, mailhog)).join();
 
-        // Жёстко переопределяем datasource для API
         configureApiDatasource();
         apiContext = new SpringApplicationBuilder(NotifiApiApplication.class)
             .web(WebApplicationType.SERVLET)
@@ -86,7 +84,6 @@ class ApiWorkerE2ETest {
             .defaultHeaders(headers -> headers.set("X-API-Key", "demo-123"))
             .build();
 
-        // Жёстко переопределяем datasource для worker
         configureWorkerDatasource();
         workerContext = new SpringApplicationBuilder(NotifiWorkerApplication.class)
             .web(WebApplicationType.SERVLET)
@@ -205,7 +202,6 @@ class ApiWorkerE2ETest {
             "spring.datasource.url", apiDb.getJdbcUrl(),
             "spring.datasource.username", apiDb.getUsername(),
             "spring.datasource.password", apiDb.getPassword(),
-            // вот тут меняем
             "spring.rabbitmq.host", rabbit.getHost(),
             "spring.rabbitmq.port", rabbit.getMappedPort(5672),
             "notifi.amqp.exchange", "notifi.e2e.exchange",
@@ -233,8 +229,6 @@ class ApiWorkerE2ETest {
             Map.entry("logging.level.com.example.notifi", "INFO")
         );
     }
-
-
 
     private static void logContainers() {
         Slf4jLogConsumer consumer = new Slf4jLogConsumer(log);

@@ -27,7 +27,7 @@
             </div>
             <div>
                 <label for="clientId">Client ID</label>
-                <input id="clientId" name="clientId" type="text" placeholder="UUID" th:value="${clientFilter}" />
+                <input id="clientId" name="clientId" type="text" placeholder="UUID" th:value="${clientFilter}"/>
             </div>
             <div>
                 <button type="submit">Apply filters</button>
@@ -83,7 +83,9 @@
                     </td>
                     <td><span class="tag" th:text="${notification.status}">STATUS</span></td>
                     <td th:text="${#temporals.format(notification.createdAt, 'yyyy-MM-dd HH:mm')}">created</td>
-                    <td th:text="${notification.sendAtEffective != null ? #temporals.format(notification.sendAtEffective, 'yyyy-MM-dd HH:mm') : '-'}">send</td>
+                    <td th:text="${notification.sendAtEffective != null ? #temporals.format(notification.sendAtEffective, 'yyyy-MM-dd HH:mm') : '-'}">
+                        send
+                    </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(page.content)}">
                     <td colspan="8">No notifications found.</td>
@@ -93,7 +95,8 @@
             <div class="pagination">
                 <a th:if="${page.hasPrevious()}"
                    th:href="@{/admin/ui/notifications(status=${statusFilter}, clientId=${clientFilter}, page=${page.number - 1}, size=${page.size})}">Previous</a>
-                <span>Page <span th:text="${page.number + 1}"></span> of <span th:text="${page.totalPages == 0 ? 1 : page.totalPages}"></span></span>
+                <span>Page <span th:text="${page.number + 1}"></span> of <span
+                        th:text="${page.totalPages == 0 ? 1 : page.totalPages}"></span></span>
                 <a th:if="${page.hasNext()}"
                    th:href="@{/admin/ui/notifications(status=${statusFilter}, clientId=${clientFilter}, page=${page.number + 1}, size=${page.size})}">Next</a>
             </div>
@@ -101,9 +104,11 @@
     </section>
 </div>
 <script>
-    (function() {
+    (function () {
         const dataHolder = document.getElementById('chart-data');
-        if (!dataHolder) { return; }
+        if (!dataHolder) {
+            return;
+        }
         const sent = Number(dataHolder.dataset.sent || '0');
         const failed = Number(dataHolder.dataset.failed || '0');
         const ctx = document.getElementById('statusChart');
@@ -116,7 +121,7 @@
                     backgroundColor: ['#22c55e', '#f87171']
                 }]
             },
-            options: { plugins: { legend: { position: 'bottom' } } }
+            options: {plugins: {legend: {position: 'bottom'}}}
         });
     })();
 </script>

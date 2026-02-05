@@ -17,7 +17,8 @@
                     <div class="muted">Status</div>
                     <div class="tag"
                          th:classappend="${template.status} == 'ACTIVE' ? ' success' : ' danger'"
-                         th:text="${template.status}">ACTIVE</div>
+                         th:text="${template.status}">ACTIVE
+                    </div>
                 </div>
                 <div>
                     <div class="muted">Created</div>
@@ -25,7 +26,9 @@
                 </div>
                 <div>
                     <div class="muted">Updated</div>
-                    <div th:text="${template.updatedAt != null ? #temporals.format(template.updatedAt, 'yyyy-MM-dd HH:mm') : '-'}">updated</div>
+                    <div th:text="${template.updatedAt != null ? #temporals.format(template.updatedAt, 'yyyy-MM-dd HH:mm') : '-'}">
+                        updated
+                    </div>
                 </div>
             </div>
             <div style="margin-top: 14px;" class="actions">

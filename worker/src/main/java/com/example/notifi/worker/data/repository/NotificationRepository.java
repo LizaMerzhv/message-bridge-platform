@@ -16,12 +16,12 @@ public interface NotificationRepository extends JpaRepository<NotificationEntity
   @Query(
       value =
           """
-            SELECT * FROM notification
-            WHERE status = :status AND send_at <= :cutoff
-            ORDER BY send_at, id
-            LIMIT :limit
-            FOR UPDATE SKIP LOCKED
-            """,
+                SELECT * FROM notification
+                WHERE status = :status AND send_at <= :cutoff
+                ORDER BY send_at, id
+                LIMIT :limit
+                FOR UPDATE SKIP LOCKED
+                """,
       nativeQuery = true)
   List<NotificationEntity> lockNextBatch(
       @Param("status") String status, @Param("cutoff") Instant cutoff, @Param("limit") int limit);

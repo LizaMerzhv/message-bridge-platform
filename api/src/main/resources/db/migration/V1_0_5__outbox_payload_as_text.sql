@@ -1,3 +1,4 @@
 ALTER TABLE outbox
-ALTER COLUMN "payload" TYPE text
+ALTER
+COLUMN "payload" TYPE text
     USING "payload"::text;

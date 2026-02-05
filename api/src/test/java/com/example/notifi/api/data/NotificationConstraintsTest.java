@@ -2,11 +2,7 @@ package com.example.notifi.api.data;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.example.notifi.api.data.entity.ClientEntity;
-import com.example.notifi.api.data.entity.NotificationEntity;
-import com.example.notifi.api.data.entity.NotificationStatus;
-import com.example.notifi.api.data.entity.TemplateEntity;
-import com.example.notifi.api.data.entity.TemplateStatus;
+import com.example.notifi.api.data.entity.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 import java.time.Instant;
@@ -44,7 +40,6 @@ class NotificationConstraintsTest {
     r.add("spring.datasource.url", POSTGRES::getJdbcUrl);
     r.add("spring.datasource.username", POSTGRES::getUsername);
     r.add("spring.datasource.password", POSTGRES::getPassword);
-    // Если используете глобальное quoting/стратегию нейминга — добавлять ничего не нужно.
   }
 
   @Autowired private EntityManager em;
@@ -83,17 +78,15 @@ class NotificationConstraintsTest {
   void shouldEnforceXorConstraint() {
     NotificationEntity entity = baseNotification();
     entity.setSubject("Subject");
-    entity.setTemplateCode("WELCOME"); // нарушаем XOR
+    entity.setTemplateCode("WELCOME");
     assertConstraintViolation(() -> persist(entity), "notification_subject_template_xor");
   }
 
   @Test
   void shouldEnforceUniqueClientExternal() {
-    // первый — валидный
     NotificationEntity first = baseNotification();
     persist(first);
 
-    // второй — тот же clientId и ТОТ ЖЕ externalRequestId
     NotificationEntity duplicate = baseNotification();
     duplicate.setExternalRequestId(first.getExternalRequestId());
     assertConstraintViolation(() -> persist(duplicate), "uq_notification_client_external");
@@ -112,8 +105,7 @@ class NotificationConstraintsTest {
     NotificationEntity e = new NotificationEntity();
     e.setId(UUID.randomUUID());
     e.setClientId(clientId);
-    e.setExternalRequestId(
-        "ext-" + UUID.randomUUID()); // по умолчанию разный; в тесте unique мы его переписываем
+    e.setExternalRequestId("ext-" + UUID.randomUUID());
     e.setChannel("email");
     e.setTo("user@example.com");
     e.setStatus(NotificationStatus.CREATED);
@@ -121,15 +113,14 @@ class NotificationConstraintsTest {
     e.setSendAt(Instant.now());
     e.setCreatedAt(Instant.now());
     e.setUpdatedAt(Instant.now());
-    e.setSubject("Subject"); // валидный кейс
-    // variables: либо null, либо валидный JSON — чтобы не мешал типом
+    e.setSubject("Subject");
     e.setVariables(Map.of("k", "v"));
     return e;
   }
 
   private void persist(NotificationEntity entity) {
     em.persist(entity);
-    em.flush(); // сразу ловим нарушение ограничения
+    em.flush();
     em.clear();
   }
 

@@ -10,10 +10,11 @@
             <h1>Create notification</h1>
             <a class="btn-secondary" th:href="@{/admin/ui/notifications}">Back to list</a>
         </div>
-        <form th:action="@{/admin/ui/notifications}" method="post" th:object="${notificationForm}" class="grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px;">
+        <form th:action="@{/admin/ui/notifications}" method="post" th:object="${notificationForm}" class="grid"
+              style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px;">
             <div>
                 <label>Client ID</label>
-                <input type="text" th:field="*{clientId}" placeholder="UUID" />
+                <input type="text" th:field="*{clientId}" placeholder="UUID"/>
                 <div class="field-error" th:if="${#fields.hasErrors('clientId')}" th:errors="*{clientId}"></div>
             </div>
             <div>
@@ -24,17 +25,17 @@
             </div>
             <div>
                 <label>To</label>
-                <input type="email" th:field="*{to}" placeholder="user@example.com" />
+                <input type="email" th:field="*{to}" placeholder="user@example.com"/>
                 <div class="field-error" th:if="${#fields.hasErrors('to')}" th:errors="*{to}"></div>
             </div>
             <div>
                 <label>Subject</label>
-                <input type="text" th:field="*{subject}" placeholder="Optional if template provided" />
+                <input type="text" th:field="*{subject}" placeholder="Optional if template provided"/>
                 <div class="field-error" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></div>
             </div>
             <div>
                 <label>Template code</label>
-                <input type="text" th:field="*{templateCode}" placeholder="Optional if subject provided" />
+                <input type="text" th:field="*{templateCode}" placeholder="Optional if subject provided"/>
                 <div class="field-error" th:if="${#fields.hasErrors('templateCode')}" th:errors="*{templateCode}"></div>
             </div>
             <div>
@@ -44,15 +45,16 @@
             </div>
             <div>
                 <label>Send at (ISO timestamp)</label>
-                <input type="text" th:field="*{sendAt}" placeholder="2024-01-01T12:00:00Z" />
+                <input type="text" th:field="*{sendAt}" placeholder="2024-01-01T12:00:00Z"/>
                 <div class="field-error" th:if="${#fields.hasErrors('sendAt')}" th:errors="*{sendAt}"></div>
             </div>
             <div>
                 <label>External request ID</label>
-                <input type="text" th:field="*{externalRequestId}" placeholder="Optional" />
+                <input type="text" th:field="*{externalRequestId}" placeholder="Optional"/>
             </div>
             <div style="grid-column: 1 / -1;">
-                <div class="field-error" th:if="${#fields.hasGlobalErrors()}" th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+                <div class="field-error" th:if="${#fields.hasGlobalErrors()}" th:each="err : ${#fields.globalErrors()}"
+                     th:text="${err}"></div>
                 <button type="submit">Create</button>
             </div>
         </form>

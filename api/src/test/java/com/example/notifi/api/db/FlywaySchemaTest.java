@@ -62,11 +62,11 @@ class FlywaySchemaTest {
             () ->
                 jdbc.execute(
                     """
-                INSERT INTO notification
-                  (id,"clientId","externalRequestId",channel,"to","sendAt",status,attempts,"createdAt","updatedAt")
-                VALUES
-                  (gen_random_uuid(), gen_random_uuid(), 'dup', 'email', 'u@example.com', now(), 'CREATED', 0, now(), now())
-            """))
+                            INSERT INTO notification
+                              (id,"clientId","externalRequestId",channel,"to","sendAt",status,attempts,"createdAt","updatedAt")
+                            VALUES
+                              (gen_random_uuid(), gen_random_uuid(), 'dup', 'email', 'u@example.com', now(), 'CREATED', 0, now(), now())
+                        """))
         .hasRootCauseInstanceOf(SQLException.class)
         .hasMessageContaining("notification_subject_template_xor");
   }

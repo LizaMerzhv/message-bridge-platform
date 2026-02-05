@@ -72,7 +72,7 @@ public class SecurityConfig {
                     .requestMatchers("/api/v1/**")
                     .authenticated()
                     .requestMatchers("/logout")
-                    .permitAll() // <- logout доступен всем
+                    .permitAll()
                     .requestMatchers("/admin/ui/**")
                     .hasRole("ADMIN")
                     .requestMatchers("/admin/**")

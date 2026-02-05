@@ -28,6 +28,6 @@ public class ProblemDetailsJsonTest {
         new com.fasterxml.jackson.databind.ObjectMapper().findAndRegisterModules();
     String json = om.writeValueAsString(p);
     assertThat(json).contains("\"status\":404");
-    assertThat(json).doesNotContain("\"errors\":{}"); // пустое -> null
+    assertThat(json).doesNotContain("\"errors\":{}");
   }
 }

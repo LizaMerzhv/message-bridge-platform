@@ -97,10 +97,6 @@ public class TemplateService {
     return entity;
   }
 
-  /**
-   * Админский лист с фильтрами по статусу и коду (contains). Возвращаем сущности, маппинг в DTO
-   * делается на уровне контроллера.
-   */
   @Transactional(readOnly = true)
   public Page<TemplateEntity> findAll(String status, String code, Pageable pageable) {
     Specification<TemplateEntity> specification = Specification.where(null);

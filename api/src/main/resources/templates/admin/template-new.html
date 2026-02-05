@@ -10,15 +10,16 @@
             <h1>Create template</h1>
             <a class="btn-secondary" th:href="@{/admin/ui/templates}">Back to list</a>
         </div>
-        <form th:action="@{/admin/ui/templates}" th:object="${templateForm}" method="post" class="grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px;">
+        <form th:action="@{/admin/ui/templates}" th:object="${templateForm}" method="post" class="grid"
+              style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px;">
             <div>
                 <label>Code</label>
-                <input type="text" th:field="*{code}" placeholder="WELCOME" />
+                <input type="text" th:field="*{code}" placeholder="WELCOME"/>
                 <div class="field-error" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></div>
             </div>
             <div>
                 <label>Subject</label>
-                <input type="text" th:field="*{subject}" placeholder="Welcome email" />
+                <input type="text" th:field="*{subject}" placeholder="Welcome email"/>
                 <div class="field-error" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></div>
             </div>
             <div style="grid-column: 1 / -1;">

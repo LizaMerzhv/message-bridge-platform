@@ -5,11 +5,7 @@ import java.net.http.HttpClient;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -32,9 +28,7 @@ public class WorkerConfiguration {
   @Bean
   public RetryPolicy retryPolicy(WorkerProperties properties) {
     return new RetryPolicy(
-        ThreadLocalRandom.current()::nextDouble,
-        properties.getRetry().getMaxAttempts() // <-- было getConsumer().getRetry()
-        );
+        ThreadLocalRandom.current()::nextDouble, properties.getRetry().getMaxAttempts());
   }
 
   @Bean
@@ -57,8 +51,7 @@ public class WorkerConfiguration {
 
   @Bean
   public Queue ingestQueue(WorkerProperties properties) {
-    return QueueBuilder.durable(properties.getAmqp().getIngestQueue())
-        .build(); // ingestion queue keeps raw tasks for worker DB
+    return QueueBuilder.durable(properties.getAmqp().getIngestQueue()).build();
   }
 
   @Bean
@@ -110,7 +103,7 @@ public class WorkerConfiguration {
   public RabbitTemplate rabbitTemplate(
       ConnectionFactory connectionFactory, Jackson2JsonMessageConverter messageConverter) {
     RabbitTemplate template = new RabbitTemplate(connectionFactory);
-    template.setMessageConverter(messageConverter); // align producer serialization with API
+    template.setMessageConverter(messageConverter);
     return template;
   }
 

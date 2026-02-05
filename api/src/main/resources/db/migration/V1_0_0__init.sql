@@ -1,25 +1,26 @@
-
-CREATE TABLE client (
-    id UUID PRIMARY KEY,
-    name TEXT NOT NULL,
-    "apiKey" TEXT NOT NULL UNIQUE,
-    "webhookUrl" TEXT,
-    "webhookSecret" TEXT,
-    "rateLimitPerMin" INTEGER NOT NULL DEFAULT 60,
-    "createdAt" TIMESTAMPTZ NOT NULL,
-    "updatedAt" TIMESTAMPTZ NOT NULL,
+CREATE TABLE client
+(
+    id                UUID PRIMARY KEY,
+    name              TEXT        NOT NULL,
+    "apiKey"          TEXT        NOT NULL UNIQUE,
+    "webhookUrl"      TEXT,
+    "webhookSecret"   TEXT,
+    "rateLimitPerMin" INTEGER     NOT NULL DEFAULT 60,
+    "createdAt"       TIMESTAMPTZ NOT NULL,
+    "updatedAt"       TIMESTAMPTZ NOT NULL,
 
     CONSTRAINT ck_client_apikey_len CHECK (char_length("apiKey") <= 64)
 );
 
 
-CREATE TABLE template (
-    id UUID PRIMARY KEY,
-    code VARCHAR(64) NOT NULL UNIQUE,
-    subject TEXT NOT NULL,
-    "bodyHtml" TEXT,
-    "bodyText" TEXT,
-    status TEXT NOT NULL CHECK (status IN ('ACTIVE', 'INACTIVE')),
+CREATE TABLE template
+(
+    id          UUID PRIMARY KEY,
+    code        VARCHAR(64) NOT NULL UNIQUE,
+    subject     TEXT        NOT NULL,
+    "bodyHtml"  TEXT,
+    "bodyText"  TEXT,
+    status      TEXT        NOT NULL CHECK (status IN ('ACTIVE', 'INACTIVE')),
     "createdAt" TIMESTAMPTZ NOT NULL,
     "updatedAt" TIMESTAMPTZ NOT NULL,
     CONSTRAINT ck_template_html_size CHECK ("bodyHtml" IS NULL OR octet_length("bodyHtml") <= 262144),
@@ -27,20 +28,21 @@ CREATE TABLE template (
 );
 
 
-CREATE TABLE notification (
-    id UUID PRIMARY KEY,
-    "clientId" UUID NOT NULL REFERENCES client (id),
-    "externalRequestId" VARCHAR(64) NOT NULL,
-    channel TEXT NOT NULL CHECK (channel = 'email'),
-    "to" VARCHAR(254) NOT NULL,
-    subject TEXT,
-    "templateCode" VARCHAR(64),
-    variables JSONB,
-    "sendAt" TIMESTAMPTZ,
-    status TEXT NOT NULL CHECK (status IN ('CREATED', 'QUEUED', 'SENT', 'FAILED')),
-    attempts INTEGER NOT NULL DEFAULT 0,
-    "createdAt" TIMESTAMPTZ NOT NULL,
-    "updatedAt" TIMESTAMPTZ NOT NULL,
+CREATE TABLE notification
+(
+    id                  UUID PRIMARY KEY,
+    "clientId"          UUID         NOT NULL REFERENCES client (id),
+    "externalRequestId" VARCHAR(64)  NOT NULL,
+    channel             TEXT         NOT NULL CHECK (channel = 'email'),
+    "to"                VARCHAR(254) NOT NULL,
+    subject             TEXT,
+    "templateCode"      VARCHAR(64),
+    variables           JSONB,
+    "sendAt"            TIMESTAMPTZ,
+    status              TEXT         NOT NULL CHECK (status IN ('CREATED', 'QUEUED', 'SENT', 'FAILED')),
+    attempts            INTEGER      NOT NULL DEFAULT 0,
+    "createdAt"         TIMESTAMPTZ  NOT NULL,
+    "updatedAt"         TIMESTAMPTZ  NOT NULL,
 
     CONSTRAINT notification_subject_template_xor
         CHECK ((subject IS NOT NULL) <> ("templateCode" IS NOT NULL)),
@@ -57,21 +59,23 @@ CREATE INDEX ix_notification_status_send_at ON notification (status, "sendAt");
 CREATE INDEX ix_notification_client_created_at ON notification ("clientId", "createdAt");
 
 
-CREATE TABLE delivery (
-    id UUID PRIMARY KEY,
-    "notificationId" UUID NOT NULL REFERENCES notification (id),
-    status TEXT NOT NULL CHECK (status IN ('PENDING', 'SENT', 'FAILED')),
-    attempt INTEGER NOT NULL,
-    channel TEXT,
-    "to" VARCHAR(254),
-    subject TEXT,
-    "errorCode" TEXT,
-    "errorMessage" TEXT,
-    "createdAt" TIMESTAMPTZ NOT NULL,
-    "lastAttemptAt" TIMESTAMPTZ
+CREATE TABLE delivery
+(
+    id               UUID PRIMARY KEY,
+    "notificationId" UUID        NOT NULL REFERENCES notification (id),
+    status           TEXT        NOT NULL CHECK (status IN ('PENDING', 'SENT', 'FAILED')),
+    attempt          INTEGER     NOT NULL,
+    channel          TEXT,
+    "to"             VARCHAR(254),
+    subject          TEXT,
+    "errorCode"      TEXT,
+    "errorMessage"   TEXT,
+    "createdAt"      TIMESTAMPTZ NOT NULL,
+    "lastAttemptAt"  TIMESTAMPTZ
 );
 
 CREATE INDEX ix_delivery_notification_attempt ON delivery ("notificationId", attempt);
 CREATE INDEX ix_delivery_status ON delivery (status);
 
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE
+EXTENSION IF NOT EXISTS "pgcrypto";

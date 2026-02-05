@@ -37,7 +37,9 @@
                     </span>
                     </td>
                     <td th:text="${#temporals.format(template.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
-                    <td th:text="${template.updatedAt != null ? #temporals.format(template.updatedAt, 'yyyy-MM-dd HH:mm') : '-'}">2024-01-02</td>
+                    <td th:text="${template.updatedAt != null ? #temporals.format(template.updatedAt, 'yyyy-MM-dd HH:mm') : '-'}">
+                        2024-01-02
+                    </td>
                     <td><a th:href="@{'/admin/ui/templates/' + ${template.code}}">View</a></td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(page.content)}">
@@ -46,11 +48,13 @@
                 </tbody>
             </table>
             <div class="pagination">
-                <a th:if="${page.hasPrevious()}" th:href="@{/admin/ui/templates(page=${page.number - 1}, size=${page.size})}">Previous</a>
+                <a th:if="${page.hasPrevious()}"
+                   th:href="@{/admin/ui/templates(page=${page.number - 1}, size=${page.size})}">Previous</a>
                 <span>Page <span th:text="${page.number + 1}"></span> of
                 <span th:text="${page.totalPages == 0 ? 1 : page.totalPages}"></span>
             </span>
-                <a th:if="${page.hasNext()}" th:href="@{/admin/ui/templates(page=${page.number + 1}, size=${page.size})}">Next</a>
+                <a th:if="${page.hasNext()}"
+                   th:href="@{/admin/ui/templates(page=${page.number + 1}, size=${page.size})}">Next</a>
             </div>
         </div>
     </section>

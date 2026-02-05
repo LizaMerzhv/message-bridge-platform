@@ -16,7 +16,7 @@ public class WorkerMetrics {
   private final MeterRegistry registry;
   private final Counter notificationsQueued;
   private final Map<Channel, Counter> deliveriesSent;
-  private final Map<Channel, Counter> deliveriesFailed; // ← был один Counter, делаем per-channel
+  private final Map<Channel, Counter> deliveriesFailed;
   private final Counter webhooksSent;
   private final Counter webhooksFailed;
   private final Timer sendLatency;
@@ -56,7 +56,6 @@ public class WorkerMetrics {
   }
 
   private static String tag(Channel c) {
-    // На будущее легко расширить для новых каналов
     return switch (c) {
       case EMAIL -> "email";
       default -> c.name().toLowerCase(Locale.ROOT);

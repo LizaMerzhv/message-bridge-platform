@@ -44,7 +44,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
       if (decision.retryAfterSeconds() > 0) {
         response.setHeader("Retry-After", Long.toString(decision.retryAfterSeconds()));
       }
-      return writeTooManyRequestsProblem(request, response); // всегда возвращает false
+      return writeTooManyRequestsProblem(request, response);
     }
 
     return true;

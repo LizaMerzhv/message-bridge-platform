@@ -111,8 +111,6 @@ class NotificationAdminControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(view.getId().toString()))
         .andExpect(jsonPath("$.deliveries[0].status").value("SENT"));
-    // формат timestamp завязан на глобальную Jackson-конфигурацию,
-    // поэтому тут намеренно не проверяем точное значение
   }
 
   private NotificationView view() {
