@@ -1,5 +1,6 @@
 package com.example.notifi.api.web.admin.template;
 
+import static org.hamcrest.Matchers.endsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -72,7 +73,7 @@ class TemplateAdminControllerTest {
     mockMvc
         .perform(post("/admin/templates").contentType(MediaType.APPLICATION_JSON).content(body))
         .andExpect(status().isCreated())
-        .andExpect(header().string("Location", "/admin/templates/" + entity.getId()))
+        .andExpect(header().string("Location", endsWith("/admin/templates/" + entity.getId())))
         .andExpect(jsonPath("$.id").value(entity.getId().toString()))
         .andExpect(jsonPath("$.status").value("ACTIVE"));
   }

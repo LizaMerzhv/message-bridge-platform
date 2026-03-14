@@ -14,9 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
-@RequestMapping("/internal/admin/v1/templates")
+@RequestMapping({"/internal/admin/v1/templates", "/admin/templates"})
 @Tag(name = "Admin Templates", description = "Administrative operations for templates")
 public class TemplateAdminController {
 
@@ -55,7 +56,12 @@ public class TemplateAdminController {
       @Valid @RequestBody TemplateCreateRequest request) {
 
     TemplateEntity created = templateService.createTemplate(request);
-    URI location = URI.create(String.format("/internal/admin/v1/templates/%s", created.getId()));
+    URI location =
+        ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(created.getId())
+            .toUri();
+
     return ResponseEntity.created(location).body(mapper.toDetail(created));
   }
 

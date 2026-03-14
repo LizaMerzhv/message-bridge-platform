@@ -77,7 +77,7 @@ class NotificationServiceTest {
     assertThat(result.isReplayed()).isFalse();
     NotificationEntity saved = result.getEntity();
     assertThat(saved.getClientId()).isEqualTo(principal.clientId());
-    assertThat(saved.getChannel()).isEqualTo(Channel.EMAIL.name());
+    assertThat(saved.getChannel()).isEqualTo(Channel.EMAIL.toValue());
     assertThat(saved.getTo()).isEqualTo("user@example.com");
     assertThat(saved.getSubject()).isEqualTo("Subject");
     assertThat(saved.getStatus()).isEqualTo(NotificationStatus.CREATED);

@@ -2,9 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -18,11 +19,14 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
           cache: maven
 
       - name: Make mvnw executable
         run: chmod +x ./mvnw
+
+      - name: Verify Docker is available
+        run: docker info
 
       - name: Spotless check
         run: ./mvnw -B -ntp spotless:check

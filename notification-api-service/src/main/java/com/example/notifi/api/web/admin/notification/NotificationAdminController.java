@@ -25,9 +25,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
-@RequestMapping("/internal/admin/v1/notifications")
+@RequestMapping({"/internal/admin/v1/notifications", "/admin/notifications"})
 @Tag(name = "Admin Notifications", description = "Administrative operations for notifications")
 public class NotificationAdminController {
 
@@ -105,7 +106,12 @@ public class NotificationAdminController {
     CreateNotificationResult result = notificationService.create(request, principal);
     NotificationDetailDto body =
         mapper.toDetail(notificationService.findById(result.getEntity().getId()));
-    URI location = URI.create(String.format("/internal/admin/v1/notifications/%s", body.getId()));
+    URI location =
+        ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(body.getId())
+            .toUri();
+
     return ResponseEntity.created(location).body(body);
   }
 
