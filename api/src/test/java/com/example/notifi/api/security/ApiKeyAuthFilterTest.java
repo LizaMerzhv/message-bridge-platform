@@ -1,18 +1,13 @@
 package com.example.notifi.api.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-import com.example.notifi.common.security.ResolvedClientPrincipal;
 import com.example.notifi.api.test.WebTestBase;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockFilterConfig;
@@ -23,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 class ApiKeyAuthFilterTest extends WebTestBase {
 
-  private ApiKeyResolverClient apiKeyResolverClient;
   private ApiKeyAuthFilter filter;
   private MockMvc mvc;
 
@@ -37,9 +31,7 @@ class ApiKeyAuthFilterTest extends WebTestBase {
 
   @BeforeEach
   void setUpMvc() throws Exception {
-    this.apiKeyResolverClient = Mockito.mock(ApiKeyResolverClient.class);
-    this.filter =
-        new ApiKeyAuthFilter(apiKeyResolverClient, new ObjectMapper().findAndRegisterModules());
+    this.filter = new ApiKeyAuthFilter(new ObjectMapper().findAndRegisterModules(), "shared-secret");
     this.filter.init(new MockFilterConfig());
 
     this.mvc =
@@ -49,7 +41,7 @@ class ApiKeyAuthFilterTest extends WebTestBase {
   }
 
   @Test
-  void should_return_401_when_missing_key() throws Exception {
+  void shouldReturn401WhenGatewayHeadersMissing() throws Exception {
     var result = mvc.perform(get("/api/v1/secure")).andReturn();
 
     assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
@@ -58,14 +50,29 @@ class ApiKeyAuthFilterTest extends WebTestBase {
   }
 
   @Test
-  void should_pass_when_valid_key() throws Exception {
-    var resolvedPrincipal =
-        new ResolvedClientPrincipal(UUID.randomUUID(), "Client", 60);
-
-    when(apiKeyResolverClient.resolveByApiKey(anyString())).thenReturn(Optional.of(resolvedPrincipal));
-
+  void shouldReturn401WhenSharedSecretIsInvalid() throws Exception {
     var result =
-        mvc.perform(get("/api/v1/secure").header(ApiKeyAuthFilter.HEADER, "key")).andReturn();
+        mvc.perform(
+                get("/api/v1/secure")
+                    .header(ApiKeyAuthFilter.CLIENT_ID_HEADER, UUID.randomUUID().toString())
+                    .header(ApiKeyAuthFilter.CLIENT_NAME_HEADER, "Client")
+                    .header(ApiKeyAuthFilter.RATE_LIMIT_HEADER, "60")
+                    .header(ApiKeyAuthFilter.GATEWAY_AUTH_HEADER, "wrong-secret"))
+            .andReturn();
+
+    assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+  }
+
+  @Test
+  void shouldPassWhenForwardedHeadersAndSharedSecretAreValid() throws Exception {
+    var result =
+        mvc.perform(
+                get("/api/v1/secure")
+                    .header(ApiKeyAuthFilter.CLIENT_ID_HEADER, UUID.randomUUID().toString())
+                    .header(ApiKeyAuthFilter.CLIENT_NAME_HEADER, "Client")
+                    .header(ApiKeyAuthFilter.RATE_LIMIT_HEADER, "60")
+                    .header(ApiKeyAuthFilter.GATEWAY_AUTH_HEADER, "shared-secret"))
+            .andReturn();
 
     assertThat(result.getResponse().getStatus()).isEqualTo(200);
   }

@@ -52,5 +52,5 @@ notifi:
   admin:
     username: ${API_ADMIN_USERNAME:admin}
     password: ${API_ADMIN_PASSWORD:admin}
-  security-service:
-    base-url: ${SECURITY_SERVICE_BASE_URL:http://localhost:8083}
+  gateway:
+    shared-secret: ${API_GATEWAY_SHARED_SECRET:notifi-gateway-dev-secret}

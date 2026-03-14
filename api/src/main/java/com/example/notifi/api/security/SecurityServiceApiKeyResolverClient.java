@@ -1,6 +1,7 @@
 package com.example.notifi.api.security;
 
 import com.example.notifi.common.security.ResolvedClientPrincipal;
+import com.example.notifi.api.web.http.Headers;
 import java.util.Optional;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -20,7 +21,7 @@ public class SecurityServiceApiKeyResolverClient implements ApiKeyResolverClient
           restClient
               .get()
               .uri("/internal/security/resolve")
-              .header(ApiKeyAuthFilter.HEADER, apiKey)
+              .header(Headers.X_API_KEY, apiKey)
               .retrieve()
               .body(ResolvedClientPrincipal.class);
       return Optional.ofNullable(principal);

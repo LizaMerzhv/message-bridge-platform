@@ -27,6 +27,19 @@ services:
       timeout: 3s
       retries: 20
 
+  postgres-security:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: notifi_security
+      POSTGRES_USER: ${SECURITY_DB_USER:-notifi_security}
+      POSTGRES_PASSWORD: ${SECURITY_DB_PASSWORD:-notifi_security}
+    ports: [ "5444:5432" ]
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${SECURITY_DB_USER:-notifi_security} -d notifi_security" ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
   rabbitmq:
     image: rabbitmq:3.12-management
     environment:
@@ -44,20 +57,32 @@ services:
     tty: true
     stdin_open: true
     depends_on:
-      api:
+      api-gateway:
         condition: service_healthy
     entrypoint: [ "sh","-lc","apk add --no-cache jq >/dev/null 2>&1 || true; sleep infinity" ]
 
-  swagger:
-    image: swaggerapi/swagger-ui:v5.17.14
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
     environment:
-      SWAGGER_JSON: http://api:8080/v3/api-docs
-    ports:
-      - "8082:8080"
+      SERVER_PORT: 8080
+      API_SERVICE_URL: ${API_SERVICE_URL:-http://api:8080}
+      SECURITY_SERVICE_URL: ${SECURITY_SERVICE_URL:-http://security-service:8080}
+      API_GATEWAY_SHARED_SECRET: ${API_GATEWAY_SHARED_SECRET:-notifi-gateway-dev-secret}
     depends_on:
       api:
         condition: service_healthy
-
+      security-service:
+        condition: service_healthy
+    ports:
+      - "${API_GATEWAY_PORT:-8080}:8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
 
   api:
     build:
@@ -71,14 +96,12 @@ services:
       API_RABBIT_URL: amqp://${RABBITMQ_DEFAULT_USER:-guest}:${RABBITMQ_DEFAULT_PASS:-guest}@rabbitmq:5672
       API_AMQP_EXCHANGE: ${API_AMQP_EXCHANGE:-notifi.exchange}
       API_AMQP_INGEST_ROUTING_KEY: ${API_AMQP_INGEST_ROUTING_KEY:-ingest}
-      SECURITY_SERVICE_BASE_URL: http://security-service:8080
+      API_GATEWAY_SHARED_SECRET: ${API_GATEWAY_SHARED_SECRET:-notifi-gateway-dev-secret}
       SERVER_PORT: 8080
     depends_on:
       - postgres-api
       - rabbitmq
       - security-service
-    ports:
-      - "${API_PORT:-8080}:8080"
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
       interval: 10s
@@ -106,23 +129,19 @@ services:
       - postgres-worker
       - rabbitmq
       - mailhog
-    ports:
-      - "${WORKER_PORT:-8081}:8080"
 
   security-service:
     build:
       context: .
       dockerfile: security-service/Dockerfile
     environment:
-      SECURITY_DB_URL: jdbc:postgresql://postgres-api:5432/notifi_api
-      SECURITY_DB_USER: ${API_DB_USER:-notifi_api}
-      SECURITY_DB_PASSWORD: ${API_DB_PASSWORD:-notifi_api}
-      SECURITY_DB_SCHEMA: ${API_DB_SCHEMA:-public}
+      SECURITY_DB_URL: jdbc:postgresql://postgres-security:5432/notifi_security
+      SECURITY_DB_USER: ${SECURITY_DB_USER:-notifi_security}
+      SECURITY_DB_PASSWORD: ${SECURITY_DB_PASSWORD:-notifi_security}
+      SECURITY_DB_SCHEMA: ${SECURITY_DB_SCHEMA:-public}
       SERVER_PORT: 8080
     depends_on:
-      - postgres-api
-    ports:
-      - "${SECURITY_SERVICE_PORT:-8083}:8080"
+      - postgres-security
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
       interval: 10s

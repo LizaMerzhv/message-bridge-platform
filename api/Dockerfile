@@ -8,6 +8,7 @@ COPY common/pom.xml common/pom.xml
 COPY api/pom.xml api/pom.xml
 COPY worker/pom.xml worker/pom.xml
 COPY security-service/pom.xml security-service/pom.xml
+COPY api-gateway/pom.xml api-gateway/pom.xml
 COPY common/src common/src
 COPY api/src api/src
 RUN mvn -B -DskipTests -pl api -am package

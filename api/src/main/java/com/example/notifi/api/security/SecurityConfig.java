@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,12 +24,15 @@ public class SecurityConfig {
 
   private final String adminUsername;
   private final String adminPassword;
+  private final String gatewaySharedSecret;
 
   public SecurityConfig(
       @Value("${notifi.admin.username:admin}") String adminUsername,
-      @Value("${notifi.admin.password:changeit}") String adminPassword) {
+      @Value("${notifi.admin.password:changeit}") String adminPassword,
+      @Value("${notifi.gateway.shared-secret:notifi-gateway-dev-secret}") String gatewaySharedSecret) {
     this.adminUsername = adminUsername;
     this.adminPassword = adminPassword;
+    this.gatewaySharedSecret = gatewaySharedSecret;
   }
 
   @Bean
@@ -39,17 +41,8 @@ public class SecurityConfig {
   }
 
   @Bean
-  public ApiKeyResolverClient apiKeyResolverClient(
-      RestClient.Builder restClientBuilder,
-      @Value("${notifi.security-service.base-url:http://localhost:8083}") String securityServiceBaseUrl) {
-    RestClient restClient = restClientBuilder.baseUrl(securityServiceBaseUrl).build();
-    return new SecurityServiceApiKeyResolverClient(restClient);
-  }
-
-  @Bean
-  public ApiKeyAuthFilter apiKeyAuthFilter(
-      ApiKeyResolverClient apiKeyResolverClient, ObjectMapper objectMapper) {
-    return new ApiKeyAuthFilter(apiKeyResolverClient, objectMapper);
+  public ApiKeyAuthFilter apiKeyAuthFilter(ObjectMapper objectMapper) {
+    return new ApiKeyAuthFilter(objectMapper, gatewaySharedSecret);
   }
 
   @Bean

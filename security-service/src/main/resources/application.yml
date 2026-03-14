@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${SECURITY_DB_URL:jdbc:postgresql://localhost:5442/notifi_api}
-    username: ${SECURITY_DB_USER:notifi_api}
-    password: ${SECURITY_DB_PASSWORD:notifi_api}
+    url: ${SECURITY_DB_URL:jdbc:postgresql://localhost:5444/notifi_security}
+    username: ${SECURITY_DB_USER:notifi_security}
+    password: ${SECURITY_DB_PASSWORD:notifi_security}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -14,7 +14,11 @@ spring:
         globally_quoted_identifiers: true
         default_schema: ${SECURITY_DB_SCHEMA:public}
   flyway:
-    enabled: false
+    enabled: true
+    locations: classpath:db/migration
+    default-schema: ${SECURITY_DB_SCHEMA:public}
+    placeholders:
+      demoApiKey: ${NOTIFI_DEMO_API_KEY:demo-123}
 management:
   endpoints:
     web:
