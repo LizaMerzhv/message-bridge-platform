@@ -1,10 +1,10 @@
 package com.example.notifi.api.security;
 
-import com.example.notifi.api.data.repository.ClientRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,9 +39,17 @@ public class SecurityConfig {
   }
 
   @Bean
+  public ApiKeyResolverClient apiKeyResolverClient(
+      RestClient.Builder restClientBuilder,
+      @Value("${notifi.security-service.base-url:http://localhost:8083}") String securityServiceBaseUrl) {
+    RestClient restClient = restClientBuilder.baseUrl(securityServiceBaseUrl).build();
+    return new SecurityServiceApiKeyResolverClient(restClient);
+  }
+
+  @Bean
   public ApiKeyAuthFilter apiKeyAuthFilter(
-      ClientRepository clientRepository, ObjectMapper objectMapper) {
-    return new ApiKeyAuthFilter(clientRepository, objectMapper);
+      ApiKeyResolverClient apiKeyResolverClient, ObjectMapper objectMapper) {
+    return new ApiKeyAuthFilter(apiKeyResolverClient, objectMapper);
   }
 
   @Bean

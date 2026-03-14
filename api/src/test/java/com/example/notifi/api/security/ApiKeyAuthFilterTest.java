@@ -5,11 +5,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-import com.example.notifi.api.data.entity.ClientEntity;
-import com.example.notifi.api.data.repository.ClientRepository;
+import com.example.notifi.common.security.ResolvedClientPrincipal;
 import com.example.notifi.api.test.WebTestBase;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 class ApiKeyAuthFilterTest extends WebTestBase {
 
-  private ClientRepository clientRepository;
+  private ApiKeyResolverClient apiKeyResolverClient;
   private ApiKeyAuthFilter filter;
   private MockMvc mvc;
 
@@ -39,9 +37,9 @@ class ApiKeyAuthFilterTest extends WebTestBase {
 
   @BeforeEach
   void setUpMvc() throws Exception {
-    this.clientRepository = Mockito.mock(ClientRepository.class);
+    this.apiKeyResolverClient = Mockito.mock(ApiKeyResolverClient.class);
     this.filter =
-        new ApiKeyAuthFilter(clientRepository, new ObjectMapper().findAndRegisterModules());
+        new ApiKeyAuthFilter(apiKeyResolverClient, new ObjectMapper().findAndRegisterModules());
     this.filter.init(new MockFilterConfig());
 
     this.mvc =
@@ -61,15 +59,10 @@ class ApiKeyAuthFilterTest extends WebTestBase {
 
   @Test
   void should_pass_when_valid_key() throws Exception {
-    ClientEntity client = new ClientEntity();
-    client.setId(UUID.randomUUID());
-    client.setName("Client");
-    client.setApiKey("key");
-    client.setRateLimitPerMin(60);
-    client.setCreatedAt(Instant.now());
-    client.setUpdatedAt(Instant.now());
+    var resolvedPrincipal =
+        new ResolvedClientPrincipal(UUID.randomUUID(), "Client", 60);
 
-    when(clientRepository.findByApiKey(anyString())).thenReturn(Optional.of(client));
+    when(apiKeyResolverClient.resolveByApiKey(anyString())).thenReturn(Optional.of(resolvedPrincipal));
 
     var result =
         mvc.perform(get("/api/v1/secure").header(ApiKeyAuthFilter.HEADER, "key")).andReturn();

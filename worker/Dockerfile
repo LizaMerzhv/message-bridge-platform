@@ -7,6 +7,7 @@ RUN chmod +x mvnw
 COPY common/pom.xml common/pom.xml
 COPY api/pom.xml api/pom.xml
 COPY worker/pom.xml worker/pom.xml
+COPY security-service/pom.xml security-service/pom.xml
 COPY common/src common/src
 COPY worker/src worker/src
 RUN mvn -B -DskipTests -pl worker -am package

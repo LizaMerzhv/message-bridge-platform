@@ -3,8 +3,7 @@ package com.example.notifi.api.security;
 import static com.example.notifi.api.web.error.Problems.unauthorized;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 
-import com.example.notifi.api.data.entity.ClientEntity;
-import com.example.notifi.api.data.repository.ClientRepository;
+import com.example.notifi.common.security.ResolvedClientPrincipal;
 import com.example.notifi.api.web.error.ProblemDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -12,7 +11,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,11 +20,11 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
 
   public static final String HEADER = "X-API-Key";
 
-  private final ClientRepository clientRepository;
+  private final ApiKeyResolverClient apiKeyResolverClient;
   private final ObjectMapper objectMapper;
 
-  public ApiKeyAuthFilter(ClientRepository clientRepository, ObjectMapper objectMapper) {
-    this.clientRepository = clientRepository;
+  public ApiKeyAuthFilter(ApiKeyResolverClient apiKeyResolverClient, ObjectMapper objectMapper) {
+    this.apiKeyResolverClient = apiKeyResolverClient;
     this.objectMapper = objectMapper;
   }
 
@@ -41,15 +39,18 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
       return;
     }
 
-    final Optional<ClientEntity> clientOpt = clientRepository.findByApiKey(apiKey);
-    if (clientOpt.isEmpty()) {
+    final ResolvedClientPrincipal resolvedPrincipal =
+        apiKeyResolverClient.resolveByApiKey(apiKey).orElse(null);
+    if (resolvedPrincipal == null) {
       writeUnauthorized(request, response, "Missing or invalid API key");
       return;
     }
 
-    final ClientEntity client = clientOpt.get();
     final ClientPrincipal principal =
-        new ClientPrincipal(client.getId(), client.getName(), client.getRateLimitPerMin());
+        new ClientPrincipal(
+            resolvedPrincipal.clientId(),
+            resolvedPrincipal.clientName(),
+            resolvedPrincipal.rateLimitPerMin());
 
     final ClientAuthenticationToken authentication = new ClientAuthenticationToken(principal);
     SecurityContextHolder.getContext().setAuthentication(authentication);

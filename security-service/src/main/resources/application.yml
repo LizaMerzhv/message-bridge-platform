@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: ${SECURITY_DB_URL:jdbc:postgresql://localhost:5442/notifi_api}
+    username: ${SECURITY_DB_USER:notifi_api}
+    password: ${SECURITY_DB_PASSWORD:notifi_api}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+        default_schema: ${SECURITY_DB_SCHEMA:public}
+  flyway:
+    enabled: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always

@@ -71,10 +71,12 @@ services:
       API_RABBIT_URL: amqp://${RABBITMQ_DEFAULT_USER:-guest}:${RABBITMQ_DEFAULT_PASS:-guest}@rabbitmq:5672
       API_AMQP_EXCHANGE: ${API_AMQP_EXCHANGE:-notifi.exchange}
       API_AMQP_INGEST_ROUTING_KEY: ${API_AMQP_INGEST_ROUTING_KEY:-ingest}
+      SECURITY_SERVICE_BASE_URL: http://security-service:8080
       SERVER_PORT: 8080
     depends_on:
       - postgres-api
       - rabbitmq
+      - security-service
     ports:
       - "${API_PORT:-8080}:8080"
     healthcheck:
@@ -106,3 +108,24 @@ services:
       - mailhog
     ports:
       - "${WORKER_PORT:-8081}:8080"
+
+  security-service:
+    build:
+      context: .
+      dockerfile: security-service/Dockerfile
+    environment:
+      SECURITY_DB_URL: jdbc:postgresql://postgres-api:5432/notifi_api
+      SECURITY_DB_USER: ${API_DB_USER:-notifi_api}
+      SECURITY_DB_PASSWORD: ${API_DB_PASSWORD:-notifi_api}
+      SECURITY_DB_SCHEMA: ${API_DB_SCHEMA:-public}
+      SERVER_PORT: 8080
+    depends_on:
+      - postgres-api
+    ports:
+      - "${SECURITY_SERVICE_PORT:-8083}:8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s

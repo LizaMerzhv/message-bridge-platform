@@ -30,6 +30,7 @@
         <module>common</module>
         <module>api</module>
         <module>worker</module>
+        <module>security-service</module>
     </modules>
 
     <dependencyManagement>

@@ -9,11 +9,11 @@ COPY api/pom.xml api/pom.xml
 COPY worker/pom.xml worker/pom.xml
 COPY security-service/pom.xml security-service/pom.xml
 COPY common/src common/src
-COPY api/src api/src
-RUN mvn -B -DskipTests -pl api -am package
+COPY security-service/src security-service/src
+RUN mvn -B -DskipTests -pl security-service -am package
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=build /workspace/api/target/notifi-api-*-SNAPSHOT.jar app.jar
+COPY --from=build /workspace/security-service/target/notifi-security-service-*-SNAPSHOT.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app/app.jar"]
