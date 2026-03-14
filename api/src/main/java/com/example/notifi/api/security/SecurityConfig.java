@@ -25,14 +25,18 @@ public class SecurityConfig {
   private final String adminUsername;
   private final String adminPassword;
   private final String gatewaySharedSecret;
+  private final String internalSharedSecret;
 
   public SecurityConfig(
       @Value("${notifi.admin.username:admin}") String adminUsername,
       @Value("${notifi.admin.password:changeit}") String adminPassword,
-      @Value("${notifi.gateway.shared-secret:notifi-gateway-dev-secret}") String gatewaySharedSecret) {
+      @Value("${notifi.gateway.shared-secret:notifi-gateway-dev-secret}") String gatewaySharedSecret,
+      @Value("${notifi.internal.shared-secret:notifi-internal-dev-secret}")
+          String internalSharedSecret) {
     this.adminUsername = adminUsername;
     this.adminPassword = adminPassword;
     this.gatewaySharedSecret = gatewaySharedSecret;
+    this.internalSharedSecret = internalSharedSecret;
   }
 
   @Bean
@@ -46,9 +50,10 @@ public class SecurityConfig {
   }
 
   @Bean
-  public RateLimiter rateLimiter() {
-    return new InMemoryRateLimiter();
+  public InternalServiceAuthFilter internalServiceAuthFilter(ObjectMapper objectMapper) {
+    return new InternalServiceAuthFilter(objectMapper, internalSharedSecret);
   }
+
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -57,7 +62,10 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(
-      HttpSecurity http, RequestIdFilter requestIdFilter, ApiKeyAuthFilter apiKeyAuthFilter)
+      HttpSecurity http,
+      RequestIdFilter requestIdFilter,
+      ApiKeyAuthFilter apiKeyAuthFilter,
+      InternalServiceAuthFilter internalServiceAuthFilter)
       throws Exception {
 
     http.csrf(csrf -> csrf.disable())
@@ -67,7 +75,7 @@ public class SecurityConfig {
                 auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                     .permitAll()
                     .requestMatchers("/internal/**")
-                    .permitAll()
+                    .authenticated()
                     .requestMatchers("/actuator/health")
                     .permitAll()
                     .requestMatchers("/api/v1/**")
@@ -85,6 +93,7 @@ public class SecurityConfig {
         .httpBasic(Customizer.withDefaults())
         .addFilterBefore(requestIdFilter, UsernamePasswordAuthenticationFilter.class)
         .addFilterAfter(apiKeyAuthFilter, RequestIdFilter.class)
+        .addFilterAfter(internalServiceAuthFilter, ApiKeyAuthFilter.class)
         .logout(
             logout ->
                 logout

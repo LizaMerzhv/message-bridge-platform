@@ -22,6 +22,8 @@ public class ApiKeyGatewayFilter implements GlobalFilter, Ordered {
   public static final String X_CLIENT_NAME = "X-Client-Name";
   public static final String X_RATE_LIMIT_PER_MIN = "X-RateLimit-Per-Min";
   public static final String X_GATEWAY_AUTH = "X-Gateway-Auth";
+  public static final String RESOLVED_CLIENT_PRINCIPAL_ATTR =
+      ApiKeyGatewayFilter.class.getName() + ".resolvedClientPrincipal";
 
   private final WebClient webClient;
   private final String gatewaySharedSecret;
@@ -77,7 +79,10 @@ public class ApiKeyGatewayFilter implements GlobalFilter, Ordered {
                             }
                           });
 
-              return chain.filter(exchange.mutate().request(requestBuilder.build()).build());
+              ServerWebExchange mutatedExchange =
+                  exchange.mutate().request(requestBuilder.build()).build();
+              mutatedExchange.getAttributes().put(RESOLVED_CLIENT_PRINCIPAL_ATTR, principal);
+              return chain.filter(mutatedExchange);
             })
         .onErrorResume(ex -> writeUnauthorized(exchange, "Missing or invalid API key"));
   }

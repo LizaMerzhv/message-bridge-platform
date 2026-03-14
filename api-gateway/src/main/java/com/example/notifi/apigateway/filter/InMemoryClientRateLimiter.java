@@ -1,20 +1,24 @@
-package com.example.notifi.api.security;
+package com.example.notifi.apigateway.filter;
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
-public class InMemoryRateLimiter implements RateLimiter {
+@Component
+public class InMemoryClientRateLimiter implements ClientRateLimiter {
 
-  private final Map<UUID, WindowState> state = new ConcurrentHashMap<>();
+  private final Map<String, WindowState> state = new ConcurrentHashMap<>();
 
   @Override
-  public RateLimitDecision checkAndConsume(UUID clientId, int limitPerMinute, Instant nowUtc) {
+  public Mono<ClientRateLimitDecision> checkAndConsume(String key, int limitPerMinute) {
+    Instant nowUtc = Instant.now();
     long windowKey = nowUtc.getEpochSecond() / 60;
+
     WindowState result =
         state.compute(
-            clientId,
+            key,
             (id, current) -> {
               if (current == null || current.windowKey != windowKey) {
                 return new WindowState(windowKey, 1);
@@ -26,11 +30,11 @@ public class InMemoryRateLimiter implements RateLimiter {
     if (result.used > limitPerMinute) {
       long nextWindowStart = (windowKey + 1) * 60;
       long retryAfter = Math.max(0, nextWindowStart - nowUtc.getEpochSecond());
-      return new RateLimitDecision(false, 0, retryAfter);
+      return Mono.just(new ClientRateLimitDecision(false, 0, retryAfter));
     }
 
     int remaining = Math.max(0, limitPerMinute - result.used);
-    return new RateLimitDecision(true, remaining, 0);
+    return Mono.just(new ClientRateLimitDecision(true, remaining, 0));
   }
 
   private record WindowState(long windowKey, int used) {}

@@ -61,6 +61,10 @@ worker:
   webhook:
     default-url: ${WEBHOOK_DEFAULT_URL:}
     secret: ${WEBHOOK_SECRET:}
+  api:
+    internal:
+      base-url: ${API_INTERNAL_BASE_URL:http://localhost:8080}
+      shared-secret: ${API_INTERNAL_SHARED_SECRET:notifi-internal-dev-secret}
 
 notifi:
   amqp:
@@ -83,4 +87,3 @@ logging:
     com.zaxxer.hikari: INFO
   pattern:
     console: '%msg%n'
-
