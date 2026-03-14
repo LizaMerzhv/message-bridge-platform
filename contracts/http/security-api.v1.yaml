@@ -1,0 +1,37 @@
+openapi: 3.0.3
+info:
+  title: Security internal API
+  version: v1
+paths:
+  /internal/security/resolve:
+    get:
+      summary: Resolve API key to client principal
+      parameters:
+        - in: header
+          name: X-API-Key
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Resolved principal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResolvedClientPrincipal'
+        '401':
+          description: Missing or invalid API key
+components:
+  schemas:
+    ResolvedClientPrincipal:
+      type: object
+      required: [clientId, clientName, rateLimitPerMin]
+      properties:
+        clientId:
+          type: string
+          format: uuid
+        clientName:
+          type: string
+        rateLimitPerMin:
+          type: integer
+          minimum: 1

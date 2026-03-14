@@ -5,7 +5,7 @@ import com.example.notifi.api.core.notification.NotificationView;
 import com.example.notifi.api.data.entity.NotificationStatus;
 import com.example.notifi.api.web.shared.notification.dto.CreateNotificationRequest;
 import com.example.notifi.api.web.shared.notification.dto.CreateNotificationResponse;
-import com.example.notifi.common.model.Channel;
+import com.example.notifi.api.model.Channel;
 import com.example.notifi.worker.NotifiWorkerApplication;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.awaitility.Awaitility;

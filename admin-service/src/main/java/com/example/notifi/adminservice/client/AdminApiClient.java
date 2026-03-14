@@ -19,7 +19,8 @@ public class AdminApiClient {
   public AdminApiClient(
       RestClient.Builder builder,
       @Value("${admin.api.base-url:http://localhost:8080}") String baseUrl,
-      @Value("${admin.api.internal-shared-secret:notifi-internal-dev-secret}") String sharedSecret) {
+      @Value("${admin.api.internal-shared-secret:notifi-internal-dev-secret}")
+          String sharedSecret) {
     this.restClient =
         builder
             .baseUrl(baseUrl)
@@ -28,7 +29,8 @@ public class AdminApiClient {
             .build();
   }
 
-  public PageResponse<NotificationSummaryDto> listNotifications(String status, String clientId, int page, int size) {
+  public PageResponse<NotificationSummaryDto> listNotifications(
+      String status, String clientId, int page, int size) {
     return restClient
         .get()
         .uri(
@@ -45,7 +47,11 @@ public class AdminApiClient {
   }
 
   public NotificationDetailDto getNotification(UUID id) {
-    return restClient.get().uri("/internal/admin/v1/notifications/{id}", id).retrieve().body(NotificationDetailDto.class);
+    return restClient
+        .get()
+        .uri("/internal/admin/v1/notifications/{id}", id)
+        .retrieve()
+        .body(NotificationDetailDto.class);
   }
 
   public List<DeliveryAttemptDto> getNotificationAttempts(UUID id) {
@@ -57,26 +63,50 @@ public class AdminApiClient {
   }
 
   public NotificationDetailDto createNotification(AdminCreateNotificationRequest request) {
-    return restClient.post().uri("/internal/admin/v1/notifications").body(request).retrieve().body(NotificationDetailDto.class);
+    return restClient
+        .post()
+        .uri("/internal/admin/v1/notifications")
+        .body(request)
+        .retrieve()
+        .body(NotificationDetailDto.class);
   }
 
   public PageResponse<TemplateSummaryDto> listTemplates(int page, int size) {
     return restClient
         .get()
-        .uri(uriBuilder -> uriBuilder.path("/internal/admin/v1/templates").queryParam("page", page).queryParam("size", size).build())
+        .uri(
+            uriBuilder ->
+                uriBuilder
+                    .path("/internal/admin/v1/templates")
+                    .queryParam("page", page)
+                    .queryParam("size", size)
+                    .build())
         .retrieve()
         .body(new ParameterizedTypeReference<>() {});
   }
 
   public TemplateDetailDto getTemplateByCode(String code) {
-    return restClient.get().uri("/internal/admin/v1/templates/by-code/{code}", code).retrieve().body(TemplateDetailDto.class);
+    return restClient
+        .get()
+        .uri("/internal/admin/v1/templates/by-code/{code}", code)
+        .retrieve()
+        .body(TemplateDetailDto.class);
   }
 
   public TemplateDetailDto createTemplate(TemplateCreateRequest request) {
-    return restClient.post().uri("/internal/admin/v1/templates").body(request).retrieve().body(TemplateDetailDto.class);
+    return restClient
+        .post()
+        .uri("/internal/admin/v1/templates")
+        .body(request)
+        .retrieve()
+        .body(TemplateDetailDto.class);
   }
 
   public TemplateDetailDto deactivateTemplate(String code) {
-    return restClient.post().uri("/internal/admin/v1/templates/by-code/{code}/deactivate", code).retrieve().body(TemplateDetailDto.class);
+    return restClient
+        .post()
+        .uri("/internal/admin/v1/templates/by-code/{code}/deactivate", code)
+        .retrieve()
+        .body(TemplateDetailDto.class);
   }
 }

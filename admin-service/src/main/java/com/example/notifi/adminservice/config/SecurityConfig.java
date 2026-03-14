@@ -36,6 +36,9 @@ public class SecurityConfig {
       @Value("${notifi.admin.password:admin}") String password,
       PasswordEncoder passwordEncoder) {
     return new InMemoryUserDetailsManager(
-        User.withUsername(username).password(passwordEncoder.encode(password)).roles("ADMIN").build());
+        User.withUsername(username)
+            .password(passwordEncoder.encode(password))
+            .roles("ADMIN")
+            .build());
   }
 }

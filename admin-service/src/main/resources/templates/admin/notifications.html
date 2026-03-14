@@ -18,12 +18,15 @@
             <div>
                 <label for="status">Status</label>
                 <select id="status" name="status">
-                    <option value="" th:selected="${statusFilter == null || statusFilter.isEmpty()}">Any</option>
-                    <option th:each="status : ${availableStatuses}"
-                            th:value="${status}"
-                            th:text="${status}"
-                            th:selected="${statusFilter != null and statusFilter.equalsIgnoreCase(status.name())}"></option>
+                    <option value="" th:selected="${#strings.isEmpty(statusFilter)}">Any</option>
+
+                    <option th:each="st : ${availableStatuses}"
+                            th:value="${st}"
+                            th:text="${st}"
+                            th:selected="${#strings.equalsIgnoreCase(statusFilter, st)}">
+                    </option>
                 </select>
+
             </div>
             <div>
                 <label for="clientId">Client ID</label>

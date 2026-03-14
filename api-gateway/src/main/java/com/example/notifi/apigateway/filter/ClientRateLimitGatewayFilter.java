@@ -1,6 +1,6 @@
 package com.example.notifi.apigateway.filter;
 
-import com.example.notifi.common.security.ResolvedClientPrincipal;
+import com.example.notifi.apigateway.security.ResolvedClientPrincipal;
 import java.nio.charset.StandardCharsets;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -42,7 +42,10 @@ public class ClientRateLimitGatewayFilter implements GlobalFilter, Ordered {
         principal != null
             ? principal.rateLimitPerMin()
             : parseLimitPerMinute(
-                exchange.getRequest().getHeaders().getFirst(ApiKeyGatewayFilter.X_RATE_LIMIT_PER_MIN));
+                exchange
+                    .getRequest()
+                    .getHeaders()
+                    .getFirst(ApiKeyGatewayFilter.X_RATE_LIMIT_PER_MIN));
 
     if (clientKey == null || clientKey.isBlank()) {
       return chain.filter(exchange);
@@ -53,7 +56,10 @@ public class ClientRateLimitGatewayFilter implements GlobalFilter, Ordered {
         .checkAndConsume(clientKey, safeLimit)
         .flatMap(
             decision -> {
-              exchange.getResponse().getHeaders().set(X_RATE_LIMIT_LIMIT, Integer.toString(safeLimit));
+              exchange
+                  .getResponse()
+                  .getHeaders()
+                  .set(X_RATE_LIMIT_LIMIT, Integer.toString(safeLimit));
               exchange
                   .getResponse()
                   .getHeaders()

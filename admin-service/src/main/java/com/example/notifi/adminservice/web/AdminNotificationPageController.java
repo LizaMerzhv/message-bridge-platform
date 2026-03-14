@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Controller;
@@ -36,15 +35,22 @@ public class AdminNotificationPageController {
       @RequestParam(name = "page", defaultValue = "0") int page,
       @RequestParam(name = "size", defaultValue = "20") int size,
       Model model) {
-    PageResponse<NotificationSummaryDto> result = adminApiClient.listNotifications(status, clientId, page, size);
+    PageResponse<NotificationSummaryDto> result =
+        adminApiClient.listNotifications(status, clientId, page, size);
 
-    long sentCount = result.getContent().stream().filter(it -> "SENT".equalsIgnoreCase(it.getStatus())).count();
-    long failedCount = result.getContent().stream().filter(it -> "FAILED".equalsIgnoreCase(it.getStatus())).count();
+    long sentCount =
+        result.getContent().stream().filter(it -> "SENT".equalsIgnoreCase(it.getStatus())).count();
+    long failedCount =
+        result.getContent().stream()
+            .filter(it -> "FAILED".equalsIgnoreCase(it.getStatus()))
+            .count();
 
     model.addAttribute("page", new UiPage<>(result));
-    model.addAttribute("statusFilter", status);
+    model.addAttribute("statusFilter", status == null ? "" : status);
     model.addAttribute("clientFilter", clientId);
-    model.addAttribute("availableStatuses", List.of("PENDING", "SENT", "FAILED", "RETRYING", "CANCELLED"));
+    model.addAttribute(
+        "availableStatuses",
+        java.util.Arrays.stream(NotificationStatus.values()).map(Enum::name).toList());
     model.addAttribute("sentCount", sentCount);
     model.addAttribute("failedCount", failedCount);
     model.addAttribute("activePage", "notifications");
@@ -82,7 +88,8 @@ public class AdminNotificationPageController {
     request.setChannel(form.getChannel().toUpperCase());
     request.setTo(form.getTo());
     request.setSubject(StringUtils.hasText(form.getSubject()) ? form.getSubject() : null);
-    request.setTemplateCode(StringUtils.hasText(form.getTemplateCode()) ? form.getTemplateCode() : null);
+    request.setTemplateCode(
+        StringUtils.hasText(form.getTemplateCode()) ? form.getTemplateCode() : null);
     request.setVariables(variables);
     request.setSendAt(sendAt);
     request.setExternalRequestId(form.getExternalRequestId());
@@ -101,7 +108,9 @@ public class AdminNotificationPageController {
   }
 
   private UUID parseClientId(String clientId, BindingResult bindingResult) {
-    try { return UUID.fromString(clientId); } catch (Exception ex) {
+    try {
+      return UUID.fromString(clientId);
+    } catch (Exception ex) {
       bindingResult.rejectValue("clientId", "invalid", "Client ID must be a valid UUID");
       return null;
     }
@@ -109,15 +118,20 @@ public class AdminNotificationPageController {
 
   private Instant parseSendAt(String sendAt, BindingResult bindingResult) {
     if (!StringUtils.hasText(sendAt)) return null;
-    try { return Instant.parse(sendAt); } catch (DateTimeParseException ex) {
-      bindingResult.rejectValue("sendAt", "invalid", "Use ISO-8601 format, e.g. 2024-01-01T12:00:00Z");
+    try {
+      return Instant.parse(sendAt);
+    } catch (DateTimeParseException ex) {
+      bindingResult.rejectValue(
+          "sendAt", "invalid", "Use ISO-8601 format, e.g. 2024-01-01T12:00:00Z");
       return null;
     }
   }
 
   private Map<String, Object> parseVariables(String variables, BindingResult bindingResult) {
     if (!StringUtils.hasText(variables)) return Collections.emptyMap();
-    try { return objectMapper.readValue(variables, new TypeReference<>() {}); } catch (Exception ex) {
+    try {
+      return objectMapper.readValue(variables, new TypeReference<>() {});
+    } catch (Exception ex) {
       bindingResult.rejectValue("variables", "invalid", "Must be valid JSON");
       return Collections.emptyMap();
     }

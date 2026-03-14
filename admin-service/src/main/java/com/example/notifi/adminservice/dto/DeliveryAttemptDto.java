@@ -12,12 +12,35 @@ public class DeliveryAttemptDto {
   private String errorMessage;
   private Instant timestamp;
 
-  public int getAttempt() { return attempt; }
-  public String getStatus() { return status; }
-  public String getChannel() { return channel; }
-  public String getTo() { return to; }
-  public String getSubject() { return subject; }
-  public String getErrorCode() { return errorCode; }
-  public String getErrorMessage() { return errorMessage; }
-  public Instant getTimestamp() { return timestamp; }
+  public int getAttempt() {
+    return attempt;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public String getChannel() {
+    return channel;
+  }
+
+  public String getTo() {
+    return to;
+  }
+
+  public String getSubject() {
+    return subject;
+  }
+
+  public String getErrorCode() {
+    return errorCode;
+  }
+
+  public String getErrorMessage() {
+    return errorMessage;
+  }
+
+  public Instant getTimestamp() {
+    return timestamp;
+  }
 }

@@ -1,6 +1,6 @@
 package com.example.notifi.apigateway.filter;
 
-import com.example.notifi.common.security.ResolvedClientPrincipal;
+import com.example.notifi.apigateway.security.ResolvedClientPrincipal;
 import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;

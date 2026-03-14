@@ -26,7 +26,8 @@ public class AdminTemplatePageController {
       @RequestParam(name = "page", defaultValue = "0") int page,
       @RequestParam(name = "size", defaultValue = "20") int size,
       Model model) {
-    model.addAttribute("page", new UiPage<TemplateSummaryDto>(adminApiClient.listTemplates(page, size)));
+    model.addAttribute(
+        "page", new UiPage<TemplateSummaryDto>(adminApiClient.listTemplates(page, size)));
     model.addAttribute("activePage", "templates");
     return "admin/templates";
   }
@@ -40,7 +41,8 @@ public class AdminTemplatePageController {
 
   @GetMapping("/new")
   public String newForm(Model model) {
-    if (!model.containsAttribute("templateForm")) model.addAttribute("templateForm", new TemplateForm());
+    if (!model.containsAttribute("templateForm"))
+      model.addAttribute("templateForm", new TemplateForm());
     model.addAttribute("activePage", "templates");
     return "admin/template-new";
   }

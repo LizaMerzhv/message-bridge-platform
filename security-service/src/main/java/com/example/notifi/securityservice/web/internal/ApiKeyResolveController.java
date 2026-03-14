@@ -1,7 +1,7 @@
 package com.example.notifi.securityservice.web.internal;
 
 import com.example.notifi.securityservice.data.repository.ClientRepository;
-import com.example.notifi.common.security.ResolvedClientPrincipal;
+import com.example.notifi.securityservice.web.internal.dto.ResolvedClientPrincipal;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -34,7 +34,6 @@ public class ApiKeyResolveController {
         .map(c -> new ResolvedClientPrincipal(c.getId(), c.getName(), c.getRateLimitPerMin()))
         .orElseThrow(
             () ->
-                new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "Missing or invalid API key"));
+                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid API key"));
   }
 }

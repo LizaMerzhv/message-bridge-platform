@@ -40,7 +40,6 @@
                     <td th:text="${template.updatedAt != null ? #temporals.format(template.updatedAt, 'yyyy-MM-dd HH:mm') : '-'}">
                         2024-01-02
                     </td>
-                    <td><a th:href="@{'/admin/ui/templates/' + ${template.code}}">View</a></td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(page.content)}">
                     <td colspan="6">No templates found.</td>

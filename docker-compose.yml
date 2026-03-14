@@ -67,11 +67,11 @@ services:
       dockerfile: api-gateway/Dockerfile
     environment:
       SERVER_PORT: 8080
-      API_SERVICE_URL: ${API_SERVICE_URL:-http://api:8080}
+      API_SERVICE_URL: ${API_SERVICE_URL:-http://notification-api-service:8080}
       SECURITY_SERVICE_URL: ${SECURITY_SERVICE_URL:-http://security-service:8080}
       API_GATEWAY_SHARED_SECRET: ${API_GATEWAY_SHARED_SECRET:-notifi-gateway-dev-secret}
     depends_on:
-      api:
+      notification-api-service:
         condition: service_healthy
       security-service:
         condition: service_healthy
@@ -84,10 +84,10 @@ services:
       retries: 5
       start_period: 15s
 
-  api:
+  notification-api-service:
     build:
       context: .
-      dockerfile: api/Dockerfile
+      dockerfile: notification-api-service/Dockerfile
     environment:
       API_DB_URL: jdbc:postgresql://postgres-api:5432/notifi_api
       API_DB_USER: ${API_DB_USER:-notifi_api}
@@ -116,12 +116,12 @@ services:
       dockerfile: admin-service/Dockerfile
     environment:
       SERVER_PORT: 8090
-      ADMIN_API_BASE_URL: http://api:8080
+      ADMIN_API_BASE_URL: http://notification-api-service:8080
       API_INTERNAL_SHARED_SECRET: ${API_INTERNAL_SHARED_SECRET:-notifi-internal-dev-secret}
       ADMIN_UI_USERNAME: ${ADMIN_UI_USERNAME:-admin}
       ADMIN_UI_PASSWORD: ${ADMIN_UI_PASSWORD:-admin}
     depends_on:
-      api:
+      notification-api-service:
         condition: service_healthy
     ports:
       - "${ADMIN_SERVICE_PORT:-8090}:8090"
@@ -132,10 +132,10 @@ services:
       retries: 5
       start_period: 15s
 
-  worker:
+  notification-delivery-service:
     build:
       context: .
-      dockerfile: worker/Dockerfile
+      dockerfile: notification-delivery-service/Dockerfile
     environment:
       WORKER_DB_URL: jdbc:postgresql://postgres-worker:5432/notifi_worker
       WORKER_DB_USER: ${WORKER_DB_USER:-notifi_worker}
@@ -146,7 +146,7 @@ services:
       SMTP_PORT: ${SMTP_PORT:-1025}
       SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
-      API_INTERNAL_BASE_URL: http://api:8080
+      API_INTERNAL_BASE_URL: http://notification-api-service:8080
       API_INTERNAL_SHARED_SECRET: ${API_INTERNAL_SHARED_SECRET:-notifi-internal-dev-secret}
       SERVER_PORT: 8080
     depends_on:

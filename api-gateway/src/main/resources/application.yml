@@ -1,14 +1,8 @@
-server:
-  port: ${SERVER_PORT:8080}
-
 spring:
-  application:
-    name: api-gateway
   cloud:
     gateway:
-      httpclient:
-        connect-timeout: ${GATEWAY_CONNECT_TIMEOUT_MS:3000}
-        response-timeout: ${GATEWAY_RESPONSE_TIMEOUT:5s}
+      default-filters:
+        - PreserveHostHeader
       routes:
         - id: block-internal
           uri: no://op
@@ -16,32 +10,25 @@ spring:
             - Path=/internal/**
           filters:
             - SetStatus=403
+
+        - id: admin-route
+          uri: ${API_SERVICE_URL:http://notification-api-service:8080}
+          predicates:
+            - Path=/admin/**
+
+        - id: docs-route
+          uri: ${API_SERVICE_URL:http://notification-api-service:8080}
+          predicates:
+            - Path=/v3/api-docs/**,/swagger-ui/**,/swagger-ui.html
+
         - id: api-route
-          uri: ${API_SERVICE_URL:http://api:8080}
+          uri: ${API_SERVICE_URL:http://notification-api-service:8080}
           predicates:
             - Path=/api/**
+
         - id: security-route
           uri: ${SECURITY_SERVICE_URL:http://security-service:8080}
           predicates:
             - Path=/security/**
           filters:
             - RewritePath=/security/?(?<segment>.*), /internal/security/${segment}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-      base-path: /actuator
-
-logging:
-  level:
-    root: INFO
-    org.springframework.cloud.gateway: INFO
-
-
-notifi:
-  security-service:
-    base-url: ${SECURITY_SERVICE_URL:http://security-service:8080}
-  gateway:
-    shared-secret: ${API_GATEWAY_SHARED_SECRET:notifi-gateway-dev-secret}
