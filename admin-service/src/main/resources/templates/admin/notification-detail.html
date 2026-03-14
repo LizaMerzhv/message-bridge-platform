@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Notification detail</title>
+</head>
+<body>
+<div th:replace="admin/layout :: layout('Notification detail', ~{::section})">
+    <section class="grid">
+        <div class="card">
+            <div class="flex-between">
+                <h1 th:text="${notification.id}">id</h1>
+                <a class="btn-secondary" th:href="@{/admin/ui/notifications}">Back to notifications</a>
+            </div>
+            <div class="grid" style="margin-top: 12px;">
+                <div><div class="muted">Client</div><div th:text="${notification.clientId}"></div></div>
+                <div><div class="muted">Status</div><div class="tag" th:text="${notification.status}"></div></div>
+                <div><div class="muted">Channel</div><div th:text="${notification.channel}"></div></div>
+                <div><div class="muted">To</div><div th:text="${notification.to}"></div></div>
+                <div><div class="muted">Subject</div><div th:text="${notification.subject ?: '-'}"></div></div>
+                <div><div class="muted">Template</div><div th:text="${notification.templateCode ?: '-'}"></div></div>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Delivery attempts</h2>
+            <ul class="timeline">
+                <li th:each="attempt : ${attempts}">
+                    <span class="status" th:text="${attempt.status}"></span>
+                    <span th:text="${attempt.attempt}"></span>
+                    <span th:text="${attempt.timestamp}"></span>
+                    <div class="muted" th:text="${attempt.errorMessage}"></div>
+                </li>
+                <li th:if="${#lists.isEmpty(attempts)}">No attempts yet.</li>
+            </ul>
+        </div>
+    </section>
+</div>
+</body>
+</html>

@@ -32,6 +32,7 @@
         <module>worker</module>
         <module>security-service</module>
         <module>api-gateway</module>
+        <module>admin-service</module>
     </modules>
 
     <dependencyManagement>

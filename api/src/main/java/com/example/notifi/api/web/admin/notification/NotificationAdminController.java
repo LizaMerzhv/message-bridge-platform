@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin/notifications")
+@RequestMapping("/internal/admin/v1/notifications")
 @Tag(name = "Admin Notifications", description = "Administrative operations for notifications")
 public class NotificationAdminController {
 
@@ -105,7 +105,7 @@ public class NotificationAdminController {
     CreateNotificationResult result = notificationService.create(request, principal);
     NotificationDetailDto body =
         mapper.toDetail(notificationService.findById(result.getEntity().getId()));
-    URI location = URI.create(String.format("/admin/notifications/%s", body.getId()));
+    URI location = URI.create(String.format("/internal/admin/v1/notifications/%s", body.getId()));
     return ResponseEntity.created(location).body(body);
   }
 

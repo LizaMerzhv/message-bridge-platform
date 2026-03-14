@@ -12,6 +12,7 @@
         </div>
         <form th:action="@{/admin/ui/templates}" th:object="${templateForm}" method="post" class="grid"
               style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <div>
                 <label>Code</label>
                 <input type="text" th:field="*{code}" placeholder="WELCOME"/>

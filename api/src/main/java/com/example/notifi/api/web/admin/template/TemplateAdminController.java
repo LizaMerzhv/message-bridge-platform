@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin/templates")
+@RequestMapping("/internal/admin/v1/templates")
 @Tag(name = "Admin Templates", description = "Administrative operations for templates")
 public class TemplateAdminController {
 
@@ -55,7 +55,7 @@ public class TemplateAdminController {
       @Valid @RequestBody TemplateCreateRequest request) {
 
     TemplateEntity created = templateService.createTemplate(request);
-    URI location = URI.create(String.format("/admin/templates/%s", created.getId()));
+    URI location = URI.create(String.format("/internal/admin/v1/templates/%s", created.getId()));
     return ResponseEntity.created(location).body(mapper.toDetail(created));
   }
 
@@ -77,4 +77,18 @@ public class TemplateAdminController {
   public TemplateDetailDto deactivate(@PathVariable UUID id) {
     return mapper.toDetail(templateService.deactivate(id));
   }
+
+
+  @GetMapping("/by-code/{code}")
+  @Operation(summary = "Get template by code")
+  public TemplateDetailDto getByCode(@PathVariable String code) {
+    return mapper.toDetail(templateService.getByCode(code));
+  }
+
+  @PostMapping("/by-code/{code}/deactivate")
+  @Operation(summary = "Deactivate template by code")
+  public TemplateDetailDto deactivateByCode(@PathVariable String code) {
+    return mapper.toDetail(templateService.deactivateByCode(code));
+  }
+
 }

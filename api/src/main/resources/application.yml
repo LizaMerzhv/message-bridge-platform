@@ -49,9 +49,6 @@ notifi:
   amqp:
     exchange: ${API_AMQP_EXCHANGE:notifi.exchange} # shared direct exchange name
     ingest-routing-key: ${API_AMQP_INGEST_ROUTING_KEY:ingest} # routing key that targets worker ingestion queue
-  admin:
-    username: ${API_ADMIN_USERNAME:admin}
-    password: ${API_ADMIN_PASSWORD:admin}
   gateway:
     shared-secret: ${API_GATEWAY_SHARED_SECRET:notifi-gateway-dev-secret}
   internal:
