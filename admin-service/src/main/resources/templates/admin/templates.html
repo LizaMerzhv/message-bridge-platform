@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Templates</title>
+</head>
+<body>
+<div th:replace="admin/layout :: layout('Templates', ~{::section})">
+    <section>
+        <div class="flex-between actions">
+            <div>
+                <h1>Templates</h1>
+                <p class="muted" th:text="${page.totalElements} + ' total templates'"></p>
+            </div>
+            <a class="button" th:href="@{/admin/ui/templates/new}">New template</a>
+        </div>
+        <div class="card">
+            <table>
+                <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="template : ${page.content}">
+                    <td th:text="${template.code}">WELCOME</td>
+                    <td th:text="${template.subject}">Welcome email</td>
+                    <td>
+                    <span class="tag"
+                          th:classappend="${template.status} == 'ACTIVE' ? ' success' : ' danger'"
+                          th:text="${template.status}">
+                        ACTIVE
+                    </span>
+                    </td>
+                    <td th:text="${#temporals.format(template.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
+                    <td th:text="${template.updatedAt != null ? #temporals.format(template.updatedAt, 'yyyy-MM-dd HH:mm') : '-'}">
+                        2024-01-02
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(page.content)}">
+                    <td colspan="6">No templates found.</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <a th:if="${page.hasPrevious()}"
+                   th:href="@{/admin/ui/templates(page=${page.number - 1}, size=${page.size})}">Previous</a>
+                <span>Page <span th:text="${page.number + 1}"></span> of
+                <span th:text="${page.totalPages == 0 ? 1 : page.totalPages}"></span>
+            </span>
+                <a th:if="${page.hasNext()}"
+                   th:href="@{/admin/ui/templates(page=${page.number + 1}, size=${page.size})}">Next</a>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

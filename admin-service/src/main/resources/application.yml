@@ -1,0 +1,23 @@
+server:
+  port: ${SERVER_PORT:8090}
+
+spring:
+  application:
+    name: admin-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+
+notifi:
+  admin:
+    username: ${ADMIN_UI_USERNAME:admin}
+    password: ${ADMIN_UI_PASSWORD:admin}
+
+admin:
+  api:
+    base-url: ${ADMIN_API_BASE_URL:http://localhost:8080}
+    internal-shared-secret: ${API_INTERNAL_SHARED_SECRET:notifi-internal-dev-secret}

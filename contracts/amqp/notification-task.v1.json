@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://notifi.example/contracts/amqp/notification-task.v1.json",
+  "title": "NotificationTaskMessageV1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "notificationId",
+    "clientId",
+    "channel",
+    "recipient",
+    "createdAt",
+    "attempt"
+  ],
+  "properties": {
+    "schemaVersion": {"const": "v1"},
+    "eventId": {"type": "string", "format": "uuid"},
+    "notificationId": {"type": "string", "format": "uuid"},
+    "clientId": {"type": "string", "format": "uuid"},
+    "externalRequestId": {"type": ["string", "null"]},
+    "channel": {"type": "string", "enum": ["email"]},
+    "recipient": {"type": "string"},
+    "subject": {"type": ["string", "null"]},
+    "templateCode": {"type": ["string", "null"]},
+    "variables": {"type": ["object", "null"], "additionalProperties": true},
+    "sendAt": {"type": ["string", "null"], "format": "date-time"},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "attempt": {"type": "integer", "minimum": 0},
+    "traceId": {"type": ["string", "null"]},
+    "webhookUrl": {"type": ["string", "null"]},
+    "webhookSecret": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}

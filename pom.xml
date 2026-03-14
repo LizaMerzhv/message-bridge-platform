@@ -27,9 +27,11 @@
     </properties>
 
     <modules>
-        <module>common</module>
-        <module>api</module>
-        <module>worker</module>
+        <module>admin-service</module>
+        <module>notification-api-service</module>
+        <module>notification-delivery-service</module>
+        <module>security-service</module>
+        <module>api-gateway</module>
     </modules>
 
     <dependencyManagement>

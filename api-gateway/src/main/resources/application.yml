@@ -1,0 +1,34 @@
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - PreserveHostHeader
+      routes:
+        - id: block-internal
+          uri: no://op
+          predicates:
+            - Path=/internal/**
+          filters:
+            - SetStatus=403
+
+        - id: admin-route
+          uri: ${API_SERVICE_URL:http://notification-api-service:8080}
+          predicates:
+            - Path=/admin/**
+
+        - id: docs-route
+          uri: ${API_SERVICE_URL:http://notification-api-service:8080}
+          predicates:
+            - Path=/v3/api-docs/**,/swagger-ui/**,/swagger-ui.html
+
+        - id: api-route
+          uri: ${API_SERVICE_URL:http://notification-api-service:8080}
+          predicates:
+            - Path=/api/**
+
+        - id: security-route
+          uri: ${SECURITY_SERVICE_URL:http://security-service:8080}
+          predicates:
+            - Path=/security/**
+          filters:
+            - RewritePath=/security/?(?<segment>.*), /internal/security/${segment}
