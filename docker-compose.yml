@@ -52,15 +52,6 @@ services:
     image: mailhog/mailhog:latest
     ports: [ "8025:8025", "1025:1025" ]
 
-  devbox:
-    image: curlimages/curl:8.10.1
-    tty: true
-    stdin_open: true
-    depends_on:
-      api-gateway:
-        condition: service_healthy
-    entrypoint: [ "sh","-lc","apk add --no-cache jq >/dev/null 2>&1 || true; sleep infinity" ]
-
   api-gateway:
     build:
       context: .
@@ -88,6 +79,10 @@ services:
     build:
       context: .
       dockerfile: notification-api-service/Dockerfile
+    networks:
+     default:
+       aliases:
+         - api
     environment:
       API_DB_URL: jdbc:postgresql://postgres-api:5432/notifi_api
       API_DB_USER: ${API_DB_USER:-notifi_api}
