@@ -1,4 +1,4 @@
-# **Microservices Notification System**
+# **MessageBridge**
 
 A microservices-based notification system designed for asynchronous message ingestion, notification delivery, and scheduled sending.
 
