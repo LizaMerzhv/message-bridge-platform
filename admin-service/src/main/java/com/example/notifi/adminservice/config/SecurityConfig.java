@@ -15,30 +15,34 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.authorizeHttpRequests(
-            auth ->
-                auth.requestMatchers("/actuator/health").permitAll().anyRequest().hasRole("ADMIN"))
-        .formLogin(Customizer.withDefaults())
-        .logout(Customizer.withDefaults());
-    return http.build();
-  }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(
+                auth ->
+                    auth.requestMatchers("/actuator/health")
+                        .permitAll()
+                        .anyRequest()
+                        .hasRole("ADMIN"))
+            .httpBasic(Customizer.withDefaults())
+            .logout(Customizer.withDefaults());
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-  }
+        return http.build();
+    }
 
-  @Bean
-  public UserDetailsService users(
-      @Value("${notifi.admin.username:admin}") String username,
-      @Value("${notifi.admin.password:admin}") String password,
-      PasswordEncoder passwordEncoder) {
-    return new InMemoryUserDetailsManager(
-        User.withUsername(username)
-            .password(passwordEncoder.encode(password))
-            .roles("ADMIN")
-            .build());
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
+    public UserDetailsService users(
+        @Value("${notifi.admin.username:admin}") String username,
+        @Value("${notifi.admin.password:admin}") String password,
+        PasswordEncoder passwordEncoder) {
+        return new InMemoryUserDetailsManager(
+            User.withUsername(username)
+                .password(passwordEncoder.encode(password))
+                .roles("ADMIN")
+                .build());
+    }
 }
