@@ -1,4 +1,4 @@
-# MessageBridge
+# **MessageBridge**
 
 A microservices-based notification platform for creating email notifications, asynchronous RabbitMQ delivery, and delivery status tracking through a public API or Admin UI.
 
