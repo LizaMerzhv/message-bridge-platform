@@ -27,19 +27,6 @@ services:
       timeout: 3s
       retries: 20
 
-  postgres-security:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: notifi_security
-      POSTGRES_USER: ${SECURITY_DB_USER:-notifi_security}
-      POSTGRES_PASSWORD: ${SECURITY_DB_PASSWORD:-notifi_security}
-    ports: [ "5444:5432" ]
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${SECURITY_DB_USER:-notifi_security} -d notifi_security" ]
-      interval: 5s
-      timeout: 3s
-      retries: 20
-
   rabbitmq:
     image: rabbitmq:3.12-management
     environment:
@@ -52,6 +39,15 @@ services:
     image: mailhog/mailhog:latest
     ports: [ "8025:8025", "1025:1025" ]
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8081:8080"
+
   api-gateway:
     build:
       context: .
@@ -59,30 +55,27 @@ services:
     environment:
       SERVER_PORT: 8080
       API_SERVICE_URL: ${API_SERVICE_URL:-http://notification-api-service:8080}
-      SECURITY_SERVICE_URL: ${SECURITY_SERVICE_URL:-http://security-service:8080}
-      API_GATEWAY_SHARED_SECRET: ${API_GATEWAY_SHARED_SECRET:-notifi-gateway-dev-secret}
+      ADMIN_SERVICE_URL: ${ADMIN_SERVICE_URL:-http://admin-service:8090}
+      KEYCLOAK_ISSUER_URI: ${KEYCLOAK_ISSUER_URI:-http://localhost:8081/realms/message-bridge}
+      KEYCLOAK_JWK_SET_URI: ${KEYCLOAK_JWK_SET_URI:-http://keycloak:8080/realms/message-bridge/protocol/openid-connect/certs}
     depends_on:
       notification-api-service:
         condition: service_healthy
-      security-service:
+      admin-service:
         condition: service_healthy
+      keycloak:
+        condition: service_started
     ports:
       - "${API_GATEWAY_PORT:-8080}:8080"
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-      start_period: 15s
 
   notification-api-service:
     build:
       context: .
       dockerfile: notification-api-service/Dockerfile
     networks:
-     default:
-       aliases:
-         - api
+      default:
+        aliases:
+          - api
     environment:
       API_DB_URL: jdbc:postgresql://postgres-api:5432/notifi_api
       API_DB_USER: ${API_DB_USER:-notifi_api}
@@ -91,13 +84,14 @@ services:
       API_RABBIT_URL: amqp://${RABBITMQ_DEFAULT_USER:-guest}:${RABBITMQ_DEFAULT_PASS:-guest}@rabbitmq:5672
       API_AMQP_EXCHANGE: ${API_AMQP_EXCHANGE:-notifi.exchange}
       API_AMQP_INGEST_ROUTING_KEY: ${API_AMQP_INGEST_ROUTING_KEY:-ingest}
-      API_GATEWAY_SHARED_SECRET: ${API_GATEWAY_SHARED_SECRET:-notifi-gateway-dev-secret}
       API_INTERNAL_SHARED_SECRET: ${API_INTERNAL_SHARED_SECRET:-notifi-internal-dev-secret}
+      KEYCLOAK_ISSUER_URI: ${KEYCLOAK_ISSUER_URI:-http://localhost:8081/realms/message-bridge}
+      KEYCLOAK_JWK_SET_URI: ${KEYCLOAK_JWK_SET_URI:-http://keycloak:8080/realms/message-bridge/protocol/openid-connect/certs}
       SERVER_PORT: 8080
     depends_on:
       - postgres-api
       - rabbitmq
-      - security-service
+      - keycloak
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
       interval: 10s
@@ -148,22 +142,3 @@ services:
       - postgres-worker
       - rabbitmq
       - mailhog
-
-  security-service:
-    build:
-      context: .
-      dockerfile: security-service/Dockerfile
-    environment:
-      SECURITY_DB_URL: jdbc:postgresql://postgres-security:5432/notifi_security
-      SECURITY_DB_USER: ${SECURITY_DB_USER:-notifi_security}
-      SECURITY_DB_PASSWORD: ${SECURITY_DB_PASSWORD:-notifi_security}
-      SECURITY_DB_SCHEMA: ${SECURITY_DB_SCHEMA:-public}
-      SERVER_PORT: 8080
-    depends_on:
-      - postgres-security
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-      start_period: 15s

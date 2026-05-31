@@ -1,4 +1,10 @@
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/message-bridge}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://keycloak:8080/realms/message-bridge/protocol/openid-connect/certs}
   cloud:
     gateway:
       default-filters:
@@ -12,7 +18,7 @@ spring:
             - SetStatus=403
 
         - id: admin-route
-          uri: ${API_SERVICE_URL:http://notification-api-service:8080}
+          uri: ${ADMIN_SERVICE_URL:http://admin-service:8090}
           predicates:
             - Path=/admin/**
 
@@ -25,10 +31,3 @@ spring:
           uri: ${API_SERVICE_URL:http://notification-api-service:8080}
           predicates:
             - Path=/api/**
-
-        - id: security-route
-          uri: ${SECURITY_SERVICE_URL:http://security-service:8080}
-          predicates:
-            - Path=/security/**
-          filters:
-            - RewritePath=/security/?(?<segment>.*), /internal/security/${segment}

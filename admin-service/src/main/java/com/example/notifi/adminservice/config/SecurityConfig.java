@@ -20,8 +20,9 @@ public class SecurityConfig {
     http.authorizeHttpRequests(
             auth ->
                 auth.requestMatchers("/actuator/health").permitAll().anyRequest().hasRole("ADMIN"))
-        .formLogin(Customizer.withDefaults())
+        .httpBasic(Customizer.withDefaults())
         .logout(Customizer.withDefaults());
+
     return http.build();
   }
 

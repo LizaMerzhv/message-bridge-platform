@@ -30,7 +30,6 @@
         <module>admin-service</module>
         <module>notification-api-service</module>
         <module>notification-delivery-service</module>
-        <module>security-service</module>
         <module>api-gateway</module>
     </modules>
 

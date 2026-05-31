@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfig {
 
-  private static final String SECURITY_SCHEME_NAME = "ApiKeyAuth";
+  private static final String SECURITY_SCHEME_NAME = "BearerJwt";
 
   @Bean
   public OpenAPI apiDocumentation() {
@@ -27,9 +27,9 @@ public class OpenApiConfig {
                 .addSecuritySchemes(
                     SECURITY_SCHEME_NAME,
                     new SecurityScheme()
-                        .type(SecurityScheme.Type.APIKEY)
-                        .in(SecurityScheme.In.HEADER)
-                        .name("X-API-Key")))
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")))
         .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME));
   }
 }

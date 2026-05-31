@@ -19,6 +19,9 @@ public class ClientEntity {
   @Column(name = "\"apiKey\"", nullable = false, unique = true, length = 64)
   private String apiKey;
 
+  @Column(name = "\"keycloakClientId\"", unique = true)
+  private String keycloakClientId;
+
   @Column(name = "\"webhookUrl\"")
   private String webhookUrl;
 
@@ -96,5 +99,13 @@ public class ClientEntity {
 
   public void setUpdatedAt(Instant updatedAt) {
     this.updatedAt = updatedAt;
+  }
+
+  public String getKeycloakClientId() {
+    return keycloakClientId;
+  }
+
+  public void setKeycloakClientId(String keycloakClientId) {
+    this.keycloakClientId = keycloakClientId;
   }
 }

@@ -1,12 +1,15 @@
 package com.example.notifi.apigateway.filter;
 
-import com.example.notifi.apigateway.security.ResolvedClientPrincipal;
 import java.nio.charset.StandardCharsets;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -19,39 +22,39 @@ public class ClientRateLimitGatewayFilter implements GlobalFilter, Ordered {
   private static final String RETRY_AFTER = "Retry-After";
 
   private final ClientRateLimiter clientRateLimiter;
+  private final int defaultLimitPerMinute;
 
-  public ClientRateLimitGatewayFilter(ClientRateLimiter clientRateLimiter) {
+  public ClientRateLimitGatewayFilter(
+      ClientRateLimiter clientRateLimiter,
+      @Value("${notifi.gateway.rate-limit.default-per-minute:60}") int defaultLimitPerMinute) {
     this.clientRateLimiter = clientRateLimiter;
+    this.defaultLimitPerMinute = defaultLimitPerMinute;
   }
 
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
     String path = exchange.getRequest().getURI().getPath();
-    if (!path.startsWith("/api/v1/")) {
+    if (!path.startsWith("/api/")) {
       return chain.filter(exchange);
     }
 
-    ResolvedClientPrincipal principal =
-        exchange.getAttribute(ApiKeyGatewayFilter.RESOLVED_CLIENT_PRINCIPAL_ATTR);
+    return exchange
+        .getPrincipal()
+        .cast(Authentication.class)
+        .map(this::clientKeyFromAuthentication)
+        .defaultIfEmpty("")
+        .flatMap(
+            clientKey -> {
+              if (clientKey.isBlank()) {
+                return chain.filter(exchange);
+              }
+              return applyRateLimit(exchange, chain, clientKey);
+            });
+  }
 
-    String clientKey =
-        principal != null
-            ? principal.clientId().toString()
-            : exchange.getRequest().getHeaders().getFirst(ApiKeyGatewayFilter.X_CLIENT_ID);
-    int limitPerMinute =
-        principal != null
-            ? principal.rateLimitPerMin()
-            : parseLimitPerMinute(
-                exchange
-                    .getRequest()
-                    .getHeaders()
-                    .getFirst(ApiKeyGatewayFilter.X_RATE_LIMIT_PER_MIN));
-
-    if (clientKey == null || clientKey.isBlank()) {
-      return chain.filter(exchange);
-    }
-
-    int safeLimit = Math.max(1, limitPerMinute);
+  private Mono<Void> applyRateLimit(
+      ServerWebExchange exchange, GatewayFilterChain chain, String clientKey) {
+    int safeLimit = Math.max(1, defaultLimitPerMinute);
     return clientRateLimiter
         .checkAndConsume(clientKey, safeLimit)
         .flatMap(
@@ -87,16 +90,26 @@ public class ClientRateLimitGatewayFilter implements GlobalFilter, Ordered {
             });
   }
 
+  String clientKeyFromAuthentication(Authentication authentication) {
+    if (authentication instanceof JwtAuthenticationToken jwtAuthentication) {
+      Jwt jwt = jwtAuthentication.getToken();
+      return firstNonBlank(
+          jwt.getClaimAsString("azp"), jwt.getClaimAsString("client_id"), jwt.getSubject());
+    }
+    return "";
+  }
+
+  private String firstNonBlank(String... values) {
+    for (String value : values) {
+      if (value != null && !value.isBlank()) {
+        return value;
+      }
+    }
+    return "";
+  }
+
   @Override
   public int getOrder() {
     return Ordered.HIGHEST_PRECEDENCE + 20;
-  }
-
-  private int parseLimitPerMinute(String rawLimit) {
-    try {
-      return rawLimit == null ? 1 : Integer.parseInt(rawLimit);
-    } catch (NumberFormatException ex) {
-      return 1;
-    }
   }
 }

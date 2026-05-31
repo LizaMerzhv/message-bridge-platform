@@ -1,4 +1,10 @@
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/message-bridge}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://keycloak:8080/realms/message-bridge/protocol/openid-connect/certs}
   application:
     name: notification-api-service
   datasource:
@@ -51,7 +57,5 @@ notifi:
   amqp:
     exchange: ${API_AMQP_EXCHANGE:notifi.exchange} # shared direct exchange name
     ingest-routing-key: ${API_AMQP_INGEST_ROUTING_KEY:ingest} # routing key that targets worker ingestion queue
-  gateway:
-    shared-secret: ${API_GATEWAY_SHARED_SECRET:notifi-gateway-dev-secret}
   internal:
     shared-secret: ${API_INTERNAL_SHARED_SECRET:notifi-internal-dev-secret}
