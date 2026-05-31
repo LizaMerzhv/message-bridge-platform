@@ -6,17 +6,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtClientIdentityExtractor {
 
-    public String extractClientIdentity(Jwt jwt) {
-        return firstNonBlank(
-            jwt.getClaimAsString("azp"), jwt.getClaimAsString("client_id"), jwt.getSubject());
-    }
+  public String extractClientIdentity(Jwt jwt) {
+    return firstNonBlank(
+        jwt.getClaimAsString("azp"), jwt.getClaimAsString("client_id"), jwt.getSubject());
+  }
 
-    private String firstNonBlank(String... values) {
-        for (String value : values) {
-            if (value != null && !value.isBlank()) {
-                return value;
-            }
-        }
-        return null;
+  private String firstNonBlank(String... values) {
+    for (String value : values) {
+      if (value != null && !value.isBlank()) {
+        return value;
+      }
     }
+    return null;
+  }
 }

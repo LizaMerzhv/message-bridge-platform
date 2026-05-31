@@ -22,7 +22,7 @@ public class ClientEntity {
   @Column(name = "\"keycloakClientId\"", unique = true)
   private String keycloakClientId;
 
-    @Column(name = "\"webhookUrl\"")
+  @Column(name = "\"webhookUrl\"")
   private String webhookUrl;
 
   @Column(name = "\"webhookSecret\"")
@@ -101,7 +101,11 @@ public class ClientEntity {
     this.updatedAt = updatedAt;
   }
 
-  public String getKeycloakClientId() { return keycloakClientId; }
+  public String getKeycloakClientId() {
+    return keycloakClientId;
+  }
 
-    public void setKeycloakClientId(String keycloakClientId) { this.keycloakClientId = keycloakClientId; }
+  public void setKeycloakClientId(String keycloakClientId) {
+    this.keycloakClientId = keycloakClientId;
+  }
 }

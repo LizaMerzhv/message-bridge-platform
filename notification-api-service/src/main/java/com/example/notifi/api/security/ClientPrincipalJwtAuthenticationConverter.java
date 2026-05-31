@@ -12,30 +12,29 @@ import org.springframework.stereotype.Component;
 public class ClientPrincipalJwtAuthenticationConverter
     implements Converter<Jwt, AbstractAuthenticationToken> {
 
-    private final JwtClientIdentityExtractor identityExtractor;
-    private final ClientRepository clientRepository;
+  private final JwtClientIdentityExtractor identityExtractor;
+  private final ClientRepository clientRepository;
 
-    public ClientPrincipalJwtAuthenticationConverter(
-        JwtClientIdentityExtractor identityExtractor, ClientRepository clientRepository) {
-        this.identityExtractor = identityExtractor;
-        this.clientRepository = clientRepository;
+  public ClientPrincipalJwtAuthenticationConverter(
+      JwtClientIdentityExtractor identityExtractor, ClientRepository clientRepository) {
+    this.identityExtractor = identityExtractor;
+    this.clientRepository = clientRepository;
+  }
+
+  @Override
+  public AbstractAuthenticationToken convert(Jwt jwt) {
+    String keycloakClientId = identityExtractor.extractClientIdentity(jwt);
+    if (keycloakClientId == null) {
+      throw new BadCredentialsException("JWT does not contain azp, client_id, or sub");
     }
 
-    @Override
-    public AbstractAuthenticationToken convert(Jwt jwt) {
-        String keycloakClientId = identityExtractor.extractClientIdentity(jwt);
-        if (keycloakClientId == null) {
-            throw new BadCredentialsException("JWT does not contain azp, client_id, or sub");
-        }
+    ClientEntity client =
+        clientRepository
+            .findByKeycloakClientId(keycloakClientId)
+            .orElseThrow(
+                () -> new BadCredentialsException("Unknown Keycloak client: " + keycloakClientId));
 
-        ClientEntity client =
-            clientRepository
-                .findByKeycloakClientId(keycloakClientId)
-                .orElseThrow(
-                    () ->
-                        new BadCredentialsException("Unknown Keycloak client: " + keycloakClientId));
-
-        return new ClientAuthenticationToken(
-            new ClientPrincipal(client.getId(), client.getName(), client.getRateLimitPerMin()));
-    }
+    return new ClientAuthenticationToken(
+        new ClientPrincipal(client.getId(), client.getName(), client.getRateLimitPerMin()));
+  }
 }
