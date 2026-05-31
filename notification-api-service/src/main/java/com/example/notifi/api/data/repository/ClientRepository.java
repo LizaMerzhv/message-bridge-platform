@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ClientRepository extends JpaRepository<ClientEntity, UUID> {
   Optional<ClientEntity> findByApiKey(String apiKey);
+  Optional<ClientEntity> findByKeycloakClientId(String keycloakClientId);
 }

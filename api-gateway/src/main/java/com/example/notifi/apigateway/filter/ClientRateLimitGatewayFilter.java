@@ -42,9 +42,14 @@ public class ClientRateLimitGatewayFilter implements GlobalFilter, Ordered {
             .getPrincipal()
             .cast(Authentication.class)
             .map(this::clientKeyFromAuthentication)
-            .filter(clientKey -> !clientKey.isBlank())
-            .flatMap(clientKey -> applyRateLimit(exchange, chain, clientKey))
-            .switchIfEmpty(Mono.defer(() -> chain.filter(exchange)));
+            .defaultIfEmpty("")
+            .flatMap(
+                clientKey -> {
+                    if (clientKey.isBlank()) {
+                        return chain.filter(exchange);
+                    }
+                    return applyRateLimit(exchange, chain, clientKey);
+                });
     }
 
     private Mono<Void> applyRateLimit(

@@ -20,6 +20,8 @@ public class SecurityConfig {
                         .permitAll()
                         .pathMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                         .permitAll()
+                        .pathMatchers("/admin/**")
+                        .permitAll()
                         .pathMatchers("/internal/**")
                         .denyAll()
                         .pathMatchers("/api/**")
