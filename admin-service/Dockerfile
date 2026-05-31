@@ -6,7 +6,6 @@ COPY .mvn .mvn
 RUN chmod +x mvnw
 COPY notification-api-service/pom.xml notification-api-service/pom.xml
 COPY notification-delivery-service/pom.xml notification-delivery-service/pom.xml
-COPY security-service/pom.xml security-service/pom.xml
 COPY api-gateway/pom.xml api-gateway/pom.xml
 COPY admin-service/pom.xml admin-service/pom.xml
 COPY admin-service/src admin-service/src
